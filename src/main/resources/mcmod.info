@@ -1,0 +1,16 @@
+[
+{
+  "modid": "cmdcam",
+  "name": "Enhanced Visuals",
+  "description": "Experience realism and extra video effects for your in-game experience.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Sonicjumper"],
+  "credits": "Authored by Sonicjumper",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
