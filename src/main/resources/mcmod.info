@@ -1,14 +1,13 @@
 [
 {
   "modid": "cmdcam",
-  "name": "Enhanced Visuals",
-  "description": "Experience realism and extra video effects for your in-game experience.",
-  "version": "${version}",
+  "name": "CMDCam",
+  "description": "Another camera mod",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["Sonicjumper"],
-  "credits": "Authored by Sonicjumper",
+  "authorList": ["CreativeMD"],
+  "credits": "",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
