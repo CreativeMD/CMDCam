@@ -151,7 +151,7 @@ public class CamCommand extends CommandBase{
 							CMDCam.roll = (float) point.roll;
 							mc.gameSettings.fovSetting = (float) point.zoom;
 							mc.thePlayer.setPositionAndRotation(point.x, point.y, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
-							mc.thePlayer.setLocationAndAngles(point.x, point.y-mc.thePlayer.getEyeHeight(), point.z, (float)point.rotationYaw, (float)point.rotationPitch);
+							mc.thePlayer.setLocationAndAngles(point.x, point.y/*-mc.thePlayer.getEyeHeight()*/, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
 						}else
 							sender.addChatMessage(new TextComponentString("The given index '" + args[1] + "' is too high/low!"));
 					}catch(Exception e){

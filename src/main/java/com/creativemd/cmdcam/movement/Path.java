@@ -45,6 +45,8 @@ public abstract class Path {
 	public double lastYaw;
 	public double lastPitch;
 	
+	public boolean isFirst = true;
+	
 	public ArrayList<CamPoint> points = new ArrayList<>();
 	
 	public Path(ArrayList<CamPoint> points, long duration, Movement movement, Object target)
@@ -74,9 +76,10 @@ public abstract class Path {
 			if(target instanceof Entity)
 			{
 				//double y;
+				pos = ((Entity) target).getPositionEyes(renderTickTime);
 				if (target instanceof EntityLivingBase)
 		        {
-					pos = ((EntityLivingBase) target).getPositionEyes(renderTickTime);
+					pos = ((EntityLivingBase) target).getPositionEyes(renderTickTime).subtract(new Vec3d(0,((EntityLivingBase) target).getEyeHeight(),0));
 					
 					//if(target instanceof EntityPlayer)
 						//pos.yCoord -= ((Entity) target).yOffset/2;
@@ -85,7 +88,8 @@ public abstract class Path {
 		        }
 		        else
 		        {
-		            pos = new Vec3d(((Entity) target).posX, (((Entity) target).getEntityBoundingBox().minY + ((Entity) target).getEntityBoundingBox().maxY) / 2.0D, ((Entity) target).posZ);
+		        	pos = ((Entity) target).getPositionEyes(renderTickTime);
+		            //pos = new Vec3d(((Entity) target).posX, (((Entity) target).getEntityBoundingBox().minY + ((Entity) target).getEntityBoundingBox().maxY) / 2.0D, ((Entity) target).posZ);
 		        }
 				
 				
@@ -104,8 +108,18 @@ public abstract class Path {
 		return newPoint;
 	}
 	
+	public void onPathStart()
+	{
+		
+	}
+	
 	public void tick(float renderTickTime)
 	{
+		if(isFirst)
+		{
+			onPathStart();
+			isFirst = false;
+		}
 		long time = System.currentTimeMillis() - started;
 		if(time >= duration)
 		{

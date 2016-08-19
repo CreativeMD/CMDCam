@@ -8,6 +8,8 @@ import org.lwjgl.opengl.Display;
 import com.creativemd.cmdcam.CMDCam;
 import com.creativemd.cmdcam.utils.CamPoint;
 
+import net.minecraft.util.MouseHelper;
+
 public class DefaultPath extends Path{
 	
 	public DefaultPath(ArrayList<CamPoint> points, long duration, Movement movement, Object target)
@@ -32,13 +34,13 @@ public class DefaultPath extends Path{
 	{
 		super.processPoint(point);
 		
-		Mouse.setGrabbed(false);
+		//Mouse.setGrabbed(false);
 		Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2);
 	    Mouse.setGrabbed(true);
 		
 		mc.thePlayer.capabilities.isFlying = true;
 		mc.thePlayer.setPositionAndRotation(point.x, point.y, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
-		mc.thePlayer.setLocationAndAngles(point.x, point.y-mc.thePlayer.getEyeHeight(), point.z, (float)point.rotationYaw, (float)point.rotationPitch);
+		mc.thePlayer.setLocationAndAngles(point.x, point.y/*-mc.thePlayer.getEyeHeight()*/, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
 	}
 
 }
