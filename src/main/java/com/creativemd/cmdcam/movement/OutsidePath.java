@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.creativemd.cmdcam.utils.CamPoint;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
@@ -45,7 +46,7 @@ public class OutsidePath extends Path{
 		if(camPlayer instanceof EntityPlayer)
 			((EntityPlayer)camPlayer).capabilities.isFlying = true;
 		camPlayer.setPositionAndRotation(point.x, point.y, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
-		camPlayer.setLocationAndAngles(point.x, point.y-mc.thePlayer.getEyeHeight(), point.z, (float)point.rotationYaw, (float)point.rotationPitch);
+		camPlayer.setLocationAndAngles(point.x, point.y/*-mc.thePlayer.getEyeHeight()*/, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
 	}
 
 }
