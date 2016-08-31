@@ -31,10 +31,11 @@ public abstract class Movement {
 	public static void initMovements()
 	{
 		registerMovement("linear", new LinearMovement());
+		registerMovement("cubic", new CubicMovement());
 	}
 	
 	public abstract void initMovement(ArrayList<CamPoint> points);
 	
-	public abstract CamPoint getPointInBetween(CamPoint point1, CamPoint point2, double percent);
+	public abstract CamPoint getPointInBetween(CamPoint point1, CamPoint point2, double percent, double wholeProgress);
 	
 }

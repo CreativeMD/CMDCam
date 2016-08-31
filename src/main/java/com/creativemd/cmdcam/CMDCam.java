@@ -54,7 +54,7 @@ public class CMDCam extends DummyModContainer {
 	
 	public static long lastDuration = 10000;
 	public static String lastPath = "default";
-	public static String lastMovement = "linear";
+	public static String lastMovement = "cubic";
 	public static Object target = null;
 	public static ArrayList<CamPoint> points = new ArrayList<>();
 	
@@ -94,5 +94,6 @@ public class CMDCam extends DummyModContainer {
 			target = mc.thePlayer;
 		}
 		currentPath = parser.createPath(points, lastDuration, movement, target);
+		currentPath.movement.initMovement(points);
 	}
 }

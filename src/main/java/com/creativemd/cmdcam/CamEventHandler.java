@@ -1,6 +1,5 @@
 package com.creativemd.cmdcam;
 
-
 import com.creativemd.cmdcam.key.KeyHandler;
 import com.creativemd.cmdcam.movement.OutsidePath;
 import com.creativemd.cmdcam.utils.CamPoint;

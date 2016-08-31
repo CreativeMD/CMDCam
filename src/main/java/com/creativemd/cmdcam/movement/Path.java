@@ -65,9 +65,9 @@ public abstract class Path {
 	
 	public abstract Path createPath(ArrayList<CamPoint> points, long duration, Movement movement, Object target);
 	
-	public CamPoint getCamPoint(CamPoint point1, CamPoint point2, double percent, float renderTickTime)
+	public CamPoint getCamPoint(CamPoint point1, CamPoint point2, double percent, double wholeProgress, float renderTickTime)
 	{
-		CamPoint newPoint = movement.getPointInBetween(point1, point2, percent);
+		CamPoint newPoint = movement.getPointInBetween(point1, point2, percent, wholeProgress);
 		if(target != null)
 		{
 			newPoint.rotationPitch = lastPitch;
@@ -138,7 +138,7 @@ public abstract class Path {
 			CamPoint point2 = points.get(currentPoint+1);
 			double percent = (time % durationOfPoint) / (double)durationOfPoint;
 			//System.out.println(percent);
-			CamPoint newPoint = getCamPoint(point1, point2, percent, renderTickTime);
+			CamPoint newPoint = getCamPoint(point1, point2, percent, (double)time/duration, renderTickTime);
 			if(newPoint != null)
 			{
 				processPoint(newPoint);
