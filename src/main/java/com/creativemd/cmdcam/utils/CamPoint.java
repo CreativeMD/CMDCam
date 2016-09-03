@@ -37,7 +37,7 @@ public class CamPoint {
 		this.y = mc.thePlayer.posY;
 		this.z = mc.thePlayer.posZ;
 		
-		this.rotationYaw = MathHelper.wrapDegrees(mc.thePlayer.rotationYawHead);
+		this.rotationYaw = mc.thePlayer.rotationYawHead;//MathHelper.wrapDegrees(mc.thePlayer.rotationYawHead);
 		this.rotationPitch = mc.thePlayer.rotationPitch;
 		
 		this.roll = CMDCam.roll;
@@ -47,18 +47,16 @@ public class CamPoint {
 	public CamPoint getPointBetween(CamPoint point, double percent)
 	{
 		//player.rotationYaw);
-		double yawDifference1 = (point.rotationYaw - this.rotationYaw);
+		/*double yawDifference1 = (point.rotationYaw - this.rotationYaw);
 		double yawDifference2 = (point.rotationYaw - 360 - this.rotationYaw);
 		double diff = yawDifference1;
 		if(Math.abs(yawDifference2) < Math.abs(yawDifference1))
-			diff = yawDifference2;
-		double yaw = MathHelper.wrapDegrees(this.rotationYaw + diff * percent);
-		
+			diff = yawDifference2;*/		
 		return new CamPoint(
 				this.x + (point.x - this.x) * percent,
 				this.y + (point.y - this.y) * percent,
 				this.z + (point.z - this.z) * percent,
-				yaw,
+				this.rotationYaw + (point.rotationYaw - this.rotationYaw) * percent,
 				this.rotationPitch + (point.rotationPitch - this.rotationPitch) * percent,
 				this.roll + (point.roll - this.roll) * percent,
 				this.zoom + (point.zoom - this.zoom) * percent);
@@ -105,7 +103,7 @@ public class CamPoint {
 	@Override
 	public String toString()
 	{
-		return "x:" + x + ",y:" + y + ",z:" + z + ",yaw:" + rotationYaw + ",pitch:" + rotationPitch + ",roll:" + roll + ",zoom" + zoom;
+		return "x:" + x + ",y:" + y + ",z:" + z + ",yaw:" + rotationYaw + ",pitch:" + rotationPitch + ",roll:" + roll + ",zoom:" + zoom;
 	}
 	
 }

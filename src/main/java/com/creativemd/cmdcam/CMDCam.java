@@ -52,6 +52,8 @@ public class CMDCam extends DummyModContainer {
 	
 	public static Path currentPath = null;
 	
+	public static boolean loop = false;
+	
 	public static long lastDuration = 10000;
 	public static String lastPath = "default";
 	public static String lastMovement = "cubic";

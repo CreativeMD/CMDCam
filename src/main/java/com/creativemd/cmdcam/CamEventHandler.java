@@ -65,7 +65,7 @@ public class CamEventHandler {
 					if(KeyHandler.pointKey.isPressed())
 					{
 						CMDCam.points.add(new CamPoint());
-						mc.thePlayer.addChatMessage(new TextComponentString("Registered " + CMDCam.points.size() + ". Point! fov=" + CMDCam.fov));
+						mc.thePlayer.addChatMessage(new TextComponentString("Registered " + CMDCam.points.size() + ". Point! " + CMDCam.points.get(CMDCam.points.size()-1)));
 					}
 					
 					
