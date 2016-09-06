@@ -1,6 +1,7 @@
 package com.creativemd.cmdcam.command;
 
 import com.creativemd.cmdcam.CMDCam;
+import com.creativemd.cmdcam.movement.Movement;
 import com.creativemd.cmdcam.utils.CamPoint;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
@@ -79,6 +80,7 @@ public class CamCommand extends CommandBase{
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam remove <index> " + ChatFormatting.RED + "removes the given point"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam target <none:self> " + ChatFormatting.RED + "set the camera target"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam mode <default:outside> " + ChatFormatting.RED + "set current mode"));
+			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String.join(":", Movement.getMovementNames()) + ">" + ChatFormatting.RED + "set the camera interpolation"));
 		}else{
 			String subCommand = args[0];
 			if(subCommand.equals("clear"))
@@ -193,6 +195,21 @@ public class CamCommand extends CommandBase{
 				}else
 					sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam target <none:self> " + ChatFormatting.RED + "set the camera target"));
 				
+			}
+			if(subCommand.equals("interpolation"))
+			{
+				if(args.length == 2)
+				{
+					String target = args[1];
+					Movement move = Movement.getMovementById(target);
+					if(move != null)
+					{
+						CMDCam.lastMovement = target;
+						sender.addChatMessage(new TextComponentString("Interpolation is set to '" + target + "'!"));
+					}else
+						sender.addChatMessage(new TextComponentString("Interpolation '" + target + "' not found!"));
+				}else
+					sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String.join(":", Movement.getMovementNames()) + ">" + ChatFormatting.RED + "set the camera interpolation"));
 			}
 		}
 	}
