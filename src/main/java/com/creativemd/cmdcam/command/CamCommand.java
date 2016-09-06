@@ -80,7 +80,7 @@ public class CamCommand extends CommandBase{
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam remove <index> " + ChatFormatting.RED + "removes the given point"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam target <none:self> " + ChatFormatting.RED + "set the camera target"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam mode <default:outside> " + ChatFormatting.RED + "set current mode"));
-			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String.join(":", Movement.getMovementNames()) + ">" + ChatFormatting.RED + "set the camera interpolation"));
+			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String.join(":", Movement.getMovementNames()) + "> " + ChatFormatting.RED + "set the camera interpolation"));
 		}else{
 			String subCommand = args[0];
 			if(subCommand.equals("clear"))
@@ -209,7 +209,7 @@ public class CamCommand extends CommandBase{
 					}else
 						sender.addChatMessage(new TextComponentString("Interpolation '" + target + "' not found!"));
 				}else
-					sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String.join(":", Movement.getMovementNames()) + ">" + ChatFormatting.RED + "set the camera interpolation"));
+					sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String.join(":", Movement.getMovementNames()) + "> " + ChatFormatting.RED + "set the camera interpolation"));
 			}
 		}
 	}
