@@ -20,6 +20,7 @@ import com.creativemd.cmdcam.CMDCam;
 import com.creativemd.cmdcam.CamEventHandler;
 import com.creativemd.creativecore.transformer.CreativeTransformer;
 import com.creativemd.creativecore.transformer.Transformer;
+import com.creativemd.creativecore.transformer.TransformerNames;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 

@@ -2,7 +2,6 @@ package com.creativemd.cmdcam.movement;
 
 import java.util.ArrayList;
 
-import org.apache.commons.math.ArgumentOutsideDomainException;
 import org.apache.commons.math.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math.analysis.polynomials.PolynomialSplineFunction;
 
@@ -35,7 +34,7 @@ public class CubicMovement extends Movement {
 			double zoom = 0;
 			try {
 				zoom = zoomSpline.value(wholeProgress);
-			} catch (ArgumentOutsideDomainException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			point.zoom = zoom;
@@ -46,7 +45,7 @@ public class CubicMovement extends Movement {
 			double roll = 0;
 			try {
 				roll = rollSpline.value(wholeProgress);
-			} catch (ArgumentOutsideDomainException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			point.roll = roll;
@@ -57,7 +56,7 @@ public class CubicMovement extends Movement {
 			double yaw = 0;
 			try {
 				yaw = yawSpline.value(wholeProgress);
-			} catch (ArgumentOutsideDomainException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			point.rotationYaw = yaw;
@@ -68,7 +67,7 @@ public class CubicMovement extends Movement {
 			double pitch = 0;
 			try {
 				pitch = pitchSpline.value(wholeProgress);
-			} catch (ArgumentOutsideDomainException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			point.rotationPitch = pitch;
