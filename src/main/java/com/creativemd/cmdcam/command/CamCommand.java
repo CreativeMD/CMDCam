@@ -1,6 +1,7 @@
 package com.creativemd.cmdcam.command;
 
 import com.creativemd.cmdcam.CMDCam;
+import com.creativemd.cmdcam.CamEventHandler;
 import com.creativemd.cmdcam.movement.Movement;
 import com.creativemd.cmdcam.utils.CamPoint;
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -192,8 +193,10 @@ public class CamCommand extends CommandBase{
 						sender.addChatMessage(new TextComponentString("Removed target!"));
 					}else
 						sender.addChatMessage(new TextComponentString("Target '" + target + "' not found!"));
-				}else
-					sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam target <none:self> " + ChatFormatting.RED + "set the camera target"));
+				}else{
+					CamEventHandler.selectEntityMode = true;
+					sender.addChatMessage(new TextComponentString("Please select a target either a entity or a block!"));
+				}
 				
 			}
 			if(subCommand.equals("interpolation"))

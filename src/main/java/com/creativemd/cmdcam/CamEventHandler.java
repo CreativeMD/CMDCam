@@ -11,6 +11,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -21,6 +24,29 @@ public class CamEventHandler {
 	public static float defaultfov = 70.0F;
 	public static final float amountZoom = 0.1F;
 	public static final float amountroll = 0.5F;
+	
+	public static boolean selectEntityMode = false;
+	
+	@SubscribeEvent
+	public void onPlayerInteract(PlayerInteractEvent event)
+	{
+		if(!selectEntityMode)
+			return ;
+		
+		if(event instanceof EntityInteract)
+		{
+			CMDCam.target = ((EntityInteract) event).getTarget();
+			event.getEntityPlayer().addChatMessage(new TextComponentString("Target is set to " + ((EntityInteract) event).getTarget().getCachedUniqueIdString() + "."));
+			selectEntityMode = false;
+		}
+		
+		if(event instanceof RightClickBlock)
+		{
+			CMDCam.target = event.getPos();
+			event.getEntityPlayer().addChatMessage(new TextComponentString("Target is set to " +  event.getPos() + "."));
+			selectEntityMode = false;
+		}
+	}
 	
 	@SubscribeEvent
 	public void onRenderTick(RenderTickEvent event)
