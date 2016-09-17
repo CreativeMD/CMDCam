@@ -56,7 +56,7 @@ public class CMDCam extends DummyModContainer {
 	
 	public static long lastDuration = 10000;
 	public static String lastPath = "default";
-	public static String lastMovement = "cubic";
+	public static String lastMovement = "hermite";
 	public static Object target = null;
 	public static ArrayList<CamPoint> points = new ArrayList<>();
 	

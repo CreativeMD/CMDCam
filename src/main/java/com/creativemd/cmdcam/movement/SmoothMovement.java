@@ -4,19 +4,16 @@ import java.util.ArrayList;
 
 import com.creativemd.cmdcam.utils.CamPoint;
 import com.creativemd.cmdcam.utils.interpolation.CosineInterpolation;
-import com.creativemd.cmdcam.utils.interpolation.CubicInterpolation;
-import com.creativemd.cmdcam.utils.interpolation.HermiteInterpolation;
-import com.creativemd.cmdcam.utils.interpolation.HermiteInterpolation.Tension;
 import com.creativemd.cmdcam.utils.interpolation.Vec1;
 import com.creativemd.cmdcam.utils.interpolation.Vec3;
 
-public class CubicMovement extends Movement {
+public class SmoothMovement extends Movement {
 	
-	public CubicInterpolation<Vec1> rollSpline;
-	public CubicInterpolation<Vec1> zoomSpline;
-	public CubicInterpolation<Vec1> pitchSpline;
-	public CubicInterpolation<Vec1> yawSpline;
-	public CubicInterpolation<Vec3> positionSpline;
+	public CosineInterpolation<Vec1> rollSpline;
+	public CosineInterpolation<Vec1> zoomSpline;
+	public CosineInterpolation<Vec1> pitchSpline;
+	public CosineInterpolation<Vec1> yawSpline;
+	public CosineInterpolation<Vec3> positionSpline;
 
 	@Override
 	public void initMovement(ArrayList<CamPoint> points) {
@@ -35,11 +32,11 @@ public class CubicMovement extends Movement {
 			
 			positionPoints[i] = new Vec3(points.get(i).x, points.get(i).y, points.get(i).z);
 		}
-		rollSpline = new CubicInterpolation<>(rollPoints);
-		zoomSpline = new CubicInterpolation<>(zoomPoints);
-		pitchSpline = new CubicInterpolation<>(pitchPoints);
-		yawSpline = new CubicInterpolation<>(yawPoints);
-		positionSpline = new CubicInterpolation<>(positionPoints);
+		rollSpline = new CosineInterpolation<>(rollPoints);
+		zoomSpline = new CosineInterpolation<>(zoomPoints);
+		pitchSpline = new CosineInterpolation<>(pitchPoints);
+		yawSpline = new CosineInterpolation<>(yawPoints);
+		positionSpline = new CosineInterpolation<>(positionPoints);
 	}
 
 	@Override

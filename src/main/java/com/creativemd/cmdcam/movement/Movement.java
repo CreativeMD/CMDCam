@@ -32,6 +32,8 @@ public abstract class Movement {
 	{
 		registerMovement("linear", new LinearMovement());
 		registerMovement("cubic", new CubicMovement());
+		registerMovement("hermite", new HermiteMovement());
+		registerMovement("cosine", new SmoothMovement());
 	}
 	
 	public static String[] getMovementNames()
