@@ -62,7 +62,7 @@ public class CamPoint {
 				this.zoom + (point.zoom - this.zoom) * percent);
 	}
 	
-	public void faceEntity(Vec3d pos, float maxYaw, float maxPitch, double ticks)
+	public void faceEntity(Vec3d pos, float minYaw, float minPitch, double ticks)
     {
         double d0 = pos.xCoord - this.x;
         double d2 = pos.zCoord - this.z;
@@ -71,18 +71,23 @@ public class CamPoint {
         double d3 = MathHelper.sqrt_double(d0 * d0 + d2 * d2);
         double f2 = (Math.atan2(d2, d0) * 180.0D / Math.PI) - 90.0D;
         double f3 = (-(Math.atan2(d1, d3) * 180.0D / Math.PI));
-        this.rotationPitch = updateRotation(this.rotationPitch, f3, Math.max(maxPitch, Math.abs(f3/ticks)));
-        this.rotationYaw = updateRotation(this.rotationYaw, f2, Math.max(maxYaw, Math.abs(f2/ticks)));
+        this.rotationPitch = updateRotation(this.rotationPitch, f3, minPitch, ticks);
+        this.rotationYaw = updateRotation(this.rotationYaw, f2, minYaw, ticks);
     }
 
     /**
      * Arguments: current rotation, intended rotation, max increment.
      */
-    private double updateRotation(double rotation, double intended, double max)
+    private double updateRotation(double rotation, double intended, double min, double ticks)
     {
-        double f3 = MathHelper.wrapDegrees(intended - rotation);
-
-        if (f3 > max)
+    	double f3 = MathHelper.wrapDegrees(intended - rotation);
+        
+        if(f3 > 0)
+        	f3 = Math.min(Math.max(min, Math.abs(f3/ticks)), f3);
+    	else
+    		f3 = Math.max(-Math.max(min, Math.abs(f3/ticks)), f3);
+        //System.out.println("f3=" + f3);
+        /*if (f3 > max)
         {
             f3 = max;
         }
@@ -90,7 +95,7 @@ public class CamPoint {
         if (f3 < -max)
         {
             f3 = -max;
-        }
+        }*/
 
         return rotation + f3;
     }
