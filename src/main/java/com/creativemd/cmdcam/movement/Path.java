@@ -89,7 +89,8 @@ public abstract class Path {
 				pos = new Vec3d((BlockPos) target);
 			if(pos != null)
 			{
-				newPoint.faceEntity(pos, 0.00000001F, 0.00000001F, 200);
+				long timeSinceLastRenderFrame = System.nanoTime() - CamEventHandler.lastRenderTime;
+				newPoint.faceEntity(pos, 0.0001F, 0.0001F, timeSinceLastRenderFrame/600000000D);
 			}
 			lastPitch = newPoint.rotationPitch;
 			lastYaw = newPoint.rotationYaw;

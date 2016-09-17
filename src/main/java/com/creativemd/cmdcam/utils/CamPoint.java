@@ -83,9 +83,9 @@ public class CamPoint {
     	double f3 = MathHelper.wrapDegrees(intended - rotation);
         
         if(f3 > 0)
-        	f3 = Math.min(Math.max(min, Math.abs(f3/ticks)), f3);
+        	f3 = Math.min(Math.max(min, Math.abs(f3*ticks)), f3);
     	else
-    		f3 = Math.max(-Math.max(min, Math.abs(f3/ticks)), f3);
+    		f3 = Math.max(-Math.max(min, Math.abs(f3*ticks)), f3);
         //System.out.println("f3=" + f3);
         /*if (f3 > max)
         {

@@ -27,6 +27,8 @@ public class CamEventHandler {
 	
 	public static boolean selectEntityMode = false;
 	
+	public static long lastRenderTime;
+	
 	@SubscribeEvent
 	public void onPlayerInteract(PlayerInteractEvent event)
 	{
@@ -114,6 +116,7 @@ public class CamEventHandler {
 				//mc.gameSettings.fovSetting = defaultfov;
 			//}
 		}
+		lastRenderTime = System.nanoTime();
 	}
 	
 	public static boolean shouldPlayerTakeInput()
