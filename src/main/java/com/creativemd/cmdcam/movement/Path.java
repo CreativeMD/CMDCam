@@ -75,36 +75,25 @@ public abstract class Path {
 			Vec3d pos = null;
 			if(target instanceof Entity)
 			{
-				//double y;
 				pos = ((Entity) target).getPositionEyes(renderTickTime);
 				if (target instanceof EntityLivingBase)
 		        {
 					pos = ((EntityLivingBase) target).getPositionEyes(renderTickTime).subtract(new Vec3d(0,((EntityLivingBase) target).getEyeHeight(),0));
-					
-					//if(target instanceof EntityPlayer)
-						//pos.yCoord -= ((Entity) target).yOffset/2;
-		            //EntityLivingBase entitylivingbase = (EntityLivingBase)target;
-		            //pos.yCoord = ((EntityLivingBase) target).posY + (double)((EntityLivingBase) target).getEyeHeight();
 		        }
 		        else
 		        {
 		        	pos = ((Entity) target).getPositionEyes(renderTickTime);
-		            //pos = new Vec3d(((Entity) target).posX, (((Entity) target).getEntityBoundingBox().minY + ((Entity) target).getEntityBoundingBox().maxY) / 2.0D, ((Entity) target).posZ);
 		        }
-				
-				
-				//System.out.println(pos);
 			}
 			if(target instanceof BlockPos)
 				pos = new Vec3d((BlockPos) target);
 			if(pos != null)
 			{
-				newPoint.faceEntity(pos, 0.01F, 0.01F, 100);
+				newPoint.faceEntity(pos, 0.00000001F, 0.00000001F, 200);
 			}
 			lastPitch = newPoint.rotationPitch;
 			lastYaw = newPoint.rotationYaw;
 		}
-		//newPoint.rotationPitch = Math.cos(Math.toRadians(System.nanoTime()/1000000))*20;
 		return newPoint;
 	}
 	

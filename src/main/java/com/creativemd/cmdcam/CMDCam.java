@@ -83,9 +83,9 @@ public class CMDCam extends DummyModContainer {
 	
 	public static void createPath()
 	{
-		if(points.size() < 2)
+		if(points.size() < 1)
 		{
-			mc.thePlayer.addChatMessage(new TextComponentString("You have to register at least 2 points!"));
+			mc.thePlayer.addChatMessage(new TextComponentString("You have to register at least 1 point!"));
 			return ;
 		}
 		Movement movement = Movement.getMovementById(lastMovement);
@@ -95,7 +95,10 @@ public class CMDCam extends DummyModContainer {
 		{
 			target = mc.thePlayer;
 		}
-		currentPath = parser.createPath(points, lastDuration, movement, target);
-		currentPath.movement.initMovement(points);
+		ArrayList<CamPoint> newPoints = new ArrayList<>(points);
+		if(newPoints.size() == 1)
+			newPoints.add(newPoints.get(0));
+		currentPath = parser.createPath(newPoints, lastDuration, movement, target);
+		currentPath.movement.initMovement(newPoints);
 	}
 }
