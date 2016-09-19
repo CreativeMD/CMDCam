@@ -4,12 +4,13 @@ import java.io.File;
 import java.util.Map;
 
 import com.creativemd.cmdcam.CMDCam;
+import com.creativemd.creativecore.transformer.TransformerNames;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 public class CamPatchingLoader implements IFMLLoadingPlugin {
 
-public static File location;
+	public static File location;
 
 	
 	@Override
@@ -30,6 +31,7 @@ public static File location;
 	@Override
 	public void injectData(Map<String, Object> data) {
 		location = (File) data.get("coremodLocation");
+		TransformerNames.obfuscated = (boolean) data.get("runtimeDeobfuscationEnabled");
 	}
 
 	@Override
