@@ -90,7 +90,7 @@ public abstract class Path {
 			if(pos != null)
 			{
 				long timeSinceLastRenderFrame = System.nanoTime() - CamEventHandler.lastRenderTime;
-				newPoint.faceEntity(pos, 0.0001F, 0.0001F, timeSinceLastRenderFrame/600000000D);
+				newPoint.faceEntity(pos, 0.0001F, 0.0001F, timeSinceLastRenderFrame/600000000D*CMDCam.cameraFollowSpeed);
 			}
 			lastPitch = newPoint.rotationPitch;
 			lastYaw = newPoint.rotationYaw;

@@ -82,6 +82,7 @@ public class CamCommand extends CommandBase{
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam target <none:self> " + ChatFormatting.RED + "set the camera target"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam mode <default:outside> " + ChatFormatting.RED + "set current mode"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String.join(":", Movement.getMovementNames()) + "> " + ChatFormatting.RED + "set the camera interpolation"));
+			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam follow-speed <number> " + ChatFormatting.RED + "default is 1.0"));
 		}else{
 			String subCommand = args[0];
 			if(subCommand.equals("clear"))
@@ -214,7 +215,20 @@ public class CamCommand extends CommandBase{
 				}else
 					sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String.join(":", Movement.getMovementNames()) + "> " + ChatFormatting.RED + "set the camera interpolation"));
 			}
+			if(subCommand.equals("follow-speed"))
+			{
+				if(args.length == 2)
+				{
+					try{
+						double followspeed = Double.parseDouble(args[1]);
+						CMDCam.cameraFollowSpeed = followspeed;
+						sender.addChatMessage(new TextComponentString("Camera follow speed is set to  '" + followspeed + "'. Default is 1.0!"));
+					}catch(NumberFormatException e){
+						sender.addChatMessage(new TextComponentString("'" + args[1] + "' is an invalid number!"));
+					}
+				}else
+					sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam follow-speed <number> " + ChatFormatting.RED + "default is 1.0"));
+			}
 		}
 	}
-
 }

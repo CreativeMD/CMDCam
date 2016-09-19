@@ -59,6 +59,8 @@ public class CMDCam extends DummyModContainer {
 	public static String lastMovement = "hermite";
 	public static Object target = null;
 	public static ArrayList<CamPoint> points = new ArrayList<>();
+
+	public static double cameraFollowSpeed = 1D;
 	
 	@Override
 	public boolean registerBus(EventBus bus, LoadController controller) {
