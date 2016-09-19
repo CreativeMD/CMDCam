@@ -1,2 +1,2 @@
 # CMDCam
-Requires "Apache Commons Math 2.2" can be downloaded here: http://commons.apache.org/proper/commons-math/download_math.cgi
+http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2741563-cmdcam-be-camera-actor-at-the-same-time-smooth
