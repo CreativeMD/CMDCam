@@ -74,6 +74,7 @@ public class CamCommand extends CommandBase{
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if(args.length == 0)
 		{
+			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam add [number] " + ChatFormatting.RED + "register a point at the current position."));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam clear " + ChatFormatting.RED + "delete all registered points"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam start <time|ms|s|m|h|d> " + ChatFormatting.RED + "starts the animation"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam goto <index> " + ChatFormatting.RED + "tp to the given point"));
@@ -83,12 +84,36 @@ public class CamCommand extends CommandBase{
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam mode <default:outside> " + ChatFormatting.RED + "set current mode"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String.join(":", Movement.getMovementNames()) + "> " + ChatFormatting.RED + "set the camera interpolation"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam follow-speed <number> " + ChatFormatting.RED + "default is 1.0"));
+			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam show <all:" + String.join(":", Movement.getMovementNames()) + "> " + ChatFormatting.RED + "shows the path using the given interpolation"));
+			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam hide <all:" + String.join(":", Movement.getMovementNames()) + "> " + ChatFormatting.RED + "hides the path using the given interpolation"));
 		}else{
 			String subCommand = args[0];
 			if(subCommand.equals("clear"))
 			{
 				sender.addChatMessage(new TextComponentString("Cleared all registered points!"));
 				CMDCam.points.clear();
+			}
+			if(subCommand.equals("add"))
+			{
+				if(args.length == 1)
+				{
+					CMDCam.points.add(new CamPoint());
+					sender.addChatMessage(new TextComponentString("Registered " + CMDCam.points.size() + ". Point!"));
+				}else if(args.length == 2){
+					try{
+						Integer index = Integer.parseInt(args[1])-1;
+						if(index >= 0 && index < CMDCam.points.size())
+						{
+							CMDCam.points.add(index, new CamPoint());
+							sender.addChatMessage(new TextComponentString("Inserted " + index + ". Point!"));
+						}else
+							sender.addChatMessage(new TextComponentString("The given index '" + args[1] + "' is too high/low!"));
+					}catch(Exception e){
+						sender.addChatMessage(new TextComponentString("Invalid index '" + args[1] + "'!"));
+					}
+					
+				}else
+					sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam add [number] " + ChatFormatting.RED + "register a point at the current position."));
 			}
 			if(subCommand.equals("start"))
 			{
@@ -228,6 +253,46 @@ public class CamCommand extends CommandBase{
 					}
 				}else
 					sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam follow-speed <number> " + ChatFormatting.RED + "default is 1.0"));
+			}
+			if(subCommand.equals("show"))
+			{
+				if(args.length == 2)
+				{
+					String target = args[1];
+					Movement move = Movement.getMovementById(target);
+					if(move != null)
+					{
+						move.isRenderingEnabled = true;
+						sender.addChatMessage(new TextComponentString("Showing '" + target + "' interpolation path!"));
+					}else if(target.equals("all")){
+						for (Movement movement : Movement.movements.values()) {
+							movement.isRenderingEnabled = true;
+						}
+						sender.addChatMessage(new TextComponentString("Showing all interpolation paths!"));
+					}else 
+						sender.addChatMessage(new TextComponentString("Interpolation '" + target + "' not found!"));
+				}else
+					sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam show <all:" + String.join(":", Movement.getMovementNames()) + "> " + ChatFormatting.RED + "shows the path using the given interpolation"));
+			}
+			if(subCommand.equals("hide"))
+			{
+				if(args.length == 2)
+				{
+					String target = args[1];
+					Movement move = Movement.getMovementById(target);
+					if(move != null)
+					{
+						move.isRenderingEnabled = false;
+						sender.addChatMessage(new TextComponentString("Hiding '" + target + "' interpolation path!"));
+					}else if(target.equals("all")){
+						for (Movement movement : Movement.movements.values()) {
+							movement.isRenderingEnabled = false;
+						}
+						sender.addChatMessage(new TextComponentString("Hiding all interpolation paths!"));
+					}else 
+						sender.addChatMessage(new TextComponentString("Interpolation '" + target + "' not found!"));
+				}else
+					sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam hide <all:" + String.join(":", Movement.getMovementNames()) + "> " + ChatFormatting.RED + "hides the path using the given interpolation"));
 			}
 		}
 	}
