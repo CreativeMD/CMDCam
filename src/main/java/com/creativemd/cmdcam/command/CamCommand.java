@@ -74,7 +74,7 @@ public class CamCommand extends CommandBase{
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if(args.length == 0)
 		{
-			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam add [number] " + ChatFormatting.RED + "register a point at the current position."));
+			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam add [number] " + ChatFormatting.RED + "register a point at the current position"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam clear " + ChatFormatting.RED + "delete all registered points"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam start <time|ms|s|m|h|d> " + ChatFormatting.RED + "starts the animation"));
 			sender.addChatMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam goto <index> " + ChatFormatting.RED + "tp to the given point"));
@@ -221,7 +221,7 @@ public class CamCommand extends CommandBase{
 						sender.addChatMessage(new TextComponentString("Target '" + target + "' not found!"));
 				}else{
 					CamEventHandler.selectEntityMode = true;
-					sender.addChatMessage(new TextComponentString("Please select a target either a entity or a block!"));
+					sender.addChatMessage(new TextComponentString("Please select a target either an entity or a block!"));
 				}
 				
 			}
