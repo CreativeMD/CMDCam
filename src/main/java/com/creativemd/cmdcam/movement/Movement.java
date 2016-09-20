@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.creativemd.cmdcam.utils.CamPoint;
+import com.creativemd.cmdcam.utils.interpolation.CosineInterpolation;
 
 public abstract class Movement {
 	
 	public static HashMap<String, Movement> movements = new HashMap<>();
 	
 	public static Movement getMovementById(String lastMovement) {
-		Movement movement = movements.get(lastMovement);
+		/*Movement movement = movements.get(lastMovement);
 		if(movement != null)
 		{
 			try {
@@ -20,7 +21,8 @@ public abstract class Movement {
 				
 			}
 		}
-		return null;
+		return null;*/
+		return movements.get(lastMovement);
 	}
 	
 	public static void registerMovement(String name, Movement movement)
@@ -28,12 +30,17 @@ public abstract class Movement {
 		movements.put(name, movement);
 	}
 	
+	public static LinearMovement linear = new LinearMovement();
+	public static SmoothMovement cosine = new SmoothMovement();
+	public static CubicMovement cubic = new CubicMovement();
+	public static HermiteMovement hermite = new HermiteMovement();
+	
 	public static void initMovements()
 	{
-		registerMovement("linear", new LinearMovement());
-		registerMovement("cubic", new CubicMovement());
-		registerMovement("hermite", new HermiteMovement());
-		registerMovement("cosine", new SmoothMovement());
+		registerMovement("linear", linear);
+		registerMovement("cubic", cubic);
+		registerMovement("hermite", hermite);
+		registerMovement("cosine", cosine);
 	}
 	
 	public static String[] getMovementNames()
@@ -46,6 +53,8 @@ public abstract class Movement {
 		}
 		return names;
 	}
+	
+	public boolean isRenderingEnabled = false;
 	
 	public abstract void initMovement(ArrayList<CamPoint> points);
 	

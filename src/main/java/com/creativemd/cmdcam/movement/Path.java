@@ -89,8 +89,11 @@ public abstract class Path {
 				pos = new Vec3d((BlockPos) target);
 			if(pos != null)
 			{
+				//newPoint.rotationPitch = getCamera().rotationPitch;
+				//newPoint.rotationYaw = getCamera().rotationYaw;
 				long timeSinceLastRenderFrame = System.nanoTime() - CamEventHandler.lastRenderTime;
-				newPoint.faceEntity(pos, 0.0001F, 0.0001F, timeSinceLastRenderFrame/600000000D*CMDCam.cameraFollowSpeed);
+				newPoint.faceEntity(pos, 0.00000001F, 0.00000001F, timeSinceLastRenderFrame/600000000D*CMDCam.cameraFollowSpeed);
+				//System.out.println("time between:" + timeSinceLastRenderFrame);
 			}
 			lastPitch = newPoint.rotationPitch;
 			lastYaw = newPoint.rotationYaw;
@@ -101,6 +104,11 @@ public abstract class Path {
 	public void onPathStart()
 	{
 		
+	}
+	
+	public EntityLivingBase getCamera()
+	{
+		return mc.thePlayer;
 	}
 	
 	public void tick(float renderTickTime)
@@ -144,22 +152,6 @@ public abstract class Path {
 	{
 		mc.gameSettings.hideGUI = true;
 		CMDCam.roll = (float) point.roll;
-		/*System.out.println("fov=" + point.zoom + " from fov=" + mc.gameSettings.fovSetting);
-		try{
-			Class clientPlayerAPI = Class.forName("api.player.client.ClientPlayerAPI");
-			Class IClientPlayerAPI = Class.forName("api.player.client.IClientPlayerAPI");
-			List list = (List) ReflectionHelper.findMethod(clientPlayerAPI, null, new String[]{"getAllInstancesList"}).invoke(null);
-			for(Object instance : list)
-			{
-				if(clientPlayerAPI != null)
-				{
-					Object playerAPI = ReflectionHelper.findMethod(IClientPlayerAPI, instance, new String[]{"getClientPlayerAPI"}).invoke(instance);
-					clientPlayerAPI.getField("isGetFOVMultiplierModded").set(playerAPI, false);
-				}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}*/
 		mc.gameSettings.fovSetting = (float) point.zoom;
 	}
 	

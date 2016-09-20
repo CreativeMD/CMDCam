@@ -39,8 +39,13 @@ public class DefaultPath extends Path{
 	    Mouse.setGrabbed(true);
 		
 		mc.thePlayer.capabilities.isFlying = true;
+		
 		mc.thePlayer.setPositionAndRotation(point.x, point.y, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
+		mc.thePlayer.prevRotationYaw = (float) point.rotationYaw;
+		mc.thePlayer.prevRotationPitch = (float) point.rotationPitch;
 		mc.thePlayer.setLocationAndAngles(point.x, point.y/*-mc.thePlayer.getEyeHeight()*/, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
+		//mc.thePlayer.setPositionAndRotation(point.x, point.y, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
+		
 	}
 
 }

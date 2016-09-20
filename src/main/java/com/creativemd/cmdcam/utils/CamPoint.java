@@ -68,9 +68,10 @@ public class CamPoint {
         double d2 = pos.zCoord - this.z;
         double d1 = pos.yCoord - this.y;
 
-        double d3 = MathHelper.sqrt_double(d0 * d0 + d2 * d2);
+        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
         double f2 = (Math.atan2(d2, d0) * 180.0D / Math.PI) - 90.0D;
         double f3 = (-(Math.atan2(d1, d3) * 180.0D / Math.PI));
+        //System.out.println("ticks=" + ticks);
         this.rotationPitch = updateRotation(this.rotationPitch, f3, minPitch, ticks);
         this.rotationYaw = updateRotation(this.rotationYaw, f2, minYaw, ticks);
     }
@@ -83,9 +84,9 @@ public class CamPoint {
     	double f3 = MathHelper.wrapDegrees(intended - rotation);
         
         if(f3 > 0)
-        	f3 = Math.min(Math.max(min, Math.abs(f3*ticks)), f3);
+        	f3 = Math.min(Math.abs(f3*ticks), f3);//Math.min(Math.max(min, Math.abs(f3*ticks)), f3);
     	else
-    		f3 = Math.max(-Math.max(min, Math.abs(f3*ticks)), f3);
+    		f3 = Math.max(-Math.abs(f3*ticks), f3);//Math.max(-Math.max(min, Math.abs(f3*ticks)), f3);
         //System.out.println("f3=" + f3);
         /*if (f3 > max)
         {

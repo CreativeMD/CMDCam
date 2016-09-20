@@ -38,6 +38,12 @@ public class OutsidePath extends Path{
 	}
 	
 	@Override
+	public EntityLivingBase getCamera()
+	{
+		return camPlayer;
+	}
+	
+	@Override
 	public void processPoint(CamPoint point)
 	{
 		super.processPoint(point);
