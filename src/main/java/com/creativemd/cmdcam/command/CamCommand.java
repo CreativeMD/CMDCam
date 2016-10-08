@@ -25,6 +25,12 @@ public class CamCommand extends CommandBase{
 		return "used to control the camera";
 	}
 	
+	@Override
+	public int getRequiredPermissionLevel()
+    {
+        return 0;
+    }
+	
 	public static long StringToDuration(String input)
 	{
 		String replacement = null;
