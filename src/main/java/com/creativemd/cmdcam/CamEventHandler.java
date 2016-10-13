@@ -157,7 +157,7 @@ public class CamEventHandler {
 				points[i] = new Vec3(CMDCam.points.get(i).x, CMDCam.points.get(i).y, CMDCam.points.get(i).z);
 				GlStateManager.pushMatrix();
 				GlStateManager.translate(-TileEntityRendererDispatcher.staticPlayerX, -TileEntityRendererDispatcher.staticPlayerY+mc.thePlayer.getEyeHeight()-0.1, -TileEntityRendererDispatcher.staticPlayerZ);
-				RenderHelper3D.renderBlock(points[i].x, points[i].y, points[i].z, 0.1, 0.1, 0.1, 0, 0, 0, 1, 1, 1, 1);
+				renderBlock(points[i].x, points[i].y, points[i].z, 0.1, 0.1, 0.1, 0, 0, 0, 1, 1, 1, 1);
 				float f = TileEntityRendererDispatcher.instance.entityYaw;
 	            float f1 = TileEntityRendererDispatcher.instance.entityPitch;
 	            boolean flag = false;
@@ -187,6 +187,75 @@ public class CamEventHandler {
             
 			
 		}
+	}
+	
+	public static void renderBlock(double x, double y, double z, double width, double height, double length, double rotateX, double rotateY, double rotateZ, double red, double green, double blue, double alpha)
+	{
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(x, y, z);
+		GlStateManager.enableRescaleNormal();
+		GlStateManager.rotate((float)rotateX, 1, 0, 0);
+		GlStateManager.rotate((float)rotateY, 0, 1, 0);
+		GlStateManager.rotate((float)rotateZ, 0, 0, 1);
+		GlStateManager.scale(width, height, length);
+		GlStateManager.color((float)red, (float)green, (float)blue, (float)alpha);
+		
+		GlStateManager.glBegin(GL11.GL_POLYGON);
+		GlStateManager.glNormal3f(0.0f, 1.0f, 0.0f);
+		GlStateManager.glVertex3f(-0.5f, 0.5f, 0.5f);
+		GlStateManager.glVertex3f(-0.5f, 0.5f, 0.5f);
+		GlStateManager.glVertex3f(0.5f, 0.5f, 0.5f);
+		GlStateManager.glVertex3f(0.5f, 0.5f, -0.5f);
+		GlStateManager.glVertex3f(-0.5f, 0.5f, -0.5f);
+		GlStateManager.glEnd();
+		
+		GL11.glBegin(GL11.GL_POLYGON);
+		//GL11.glColor4d(red, green, blue, alpha);
+		GlStateManager.glNormal3f(0.0f, 0.0f, 1.0f);
+		GlStateManager.glVertex3f(0.5f, -0.5f, 0.5f);
+		GlStateManager.glVertex3f(0.5f, 0.5f, 0.5f);
+		GlStateManager.glVertex3f(-0.5f, 0.5f, 0.5f);
+		GlStateManager.glVertex3f(-0.5f, -0.5f, 0.5f);
+		GlStateManager.glEnd();
+	 
+		GL11.glBegin(GL11.GL_POLYGON);
+		//GL11.glColor4d(red, green, blue, alpha);
+		GlStateManager.glNormal3f(1.0f, 0.0f, 0.0f);
+		GlStateManager.glVertex3f(0.5f, 0.5f, -0.5f);
+		GlStateManager.glVertex3f(0.5f, 0.5f, 0.5f);
+		GlStateManager.glVertex3f(0.5f, -0.5f, 0.5f);
+		GlStateManager.glVertex3f(0.5f, -0.5f, -0.5f);
+		GlStateManager.glEnd();
+	 
+		GL11.glBegin(GL11.GL_POLYGON);
+		//GL11.glColor4d(red, green, blue, alpha);
+		GlStateManager.glNormal3f(-1.0f, 0.0f, 0.0f);
+		GlStateManager.glVertex3f(-0.5f, -0.5f, 0.5f);
+		GlStateManager.glVertex3f(-0.5f, 0.5f, 0.5f);
+		GlStateManager.glVertex3f(-0.5f, 0.5f, -0.5f);
+		GlStateManager.glVertex3f(-0.5f, -0.5f, -0.5f);
+		GlStateManager.glEnd();
+	 
+		GL11.glBegin(GL11.GL_POLYGON);
+		//GL11.glColor4d(red, green, blue, alpha);
+		GlStateManager.glNormal3f(0.0f, -1.0f, 0.0f);
+		GlStateManager.glVertex3f(0.5f, -0.5f, 0.5f);
+		GlStateManager.glVertex3f(-0.5f, -0.5f, 0.5f);
+		GlStateManager.glVertex3f(-0.5f, -0.5f, -0.5f);
+		GlStateManager.glVertex3f(0.5f, -0.5f, -0.5f);
+		GlStateManager.glEnd();
+	 
+		GL11.glBegin(GL11.GL_POLYGON);
+		//GL11.glColor4d(red, green, blue, alpha);
+		GlStateManager.glNormal3f(0.0f, 0.0f, -1.0f);
+		GlStateManager.glVertex3f(0.5f, 0.5f, -0.5f);
+		GlStateManager.glVertex3f(0.5f, -0.5f, -0.5f);
+		GlStateManager.glVertex3f(-0.5f, -0.5f, -0.5f);
+		GlStateManager.glVertex3f(-0.5f, 0.5f, -0.5f);
+		GlStateManager.glEnd();
+		
+		
+        GlStateManager.popMatrix();
 	}
 	
 	public void renderInterpolation(Interpolation<Vec3> interpolation, Vec3 color)
