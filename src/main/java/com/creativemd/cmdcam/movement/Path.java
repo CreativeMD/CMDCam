@@ -11,8 +11,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.Vec3;
 
 public abstract class Path {
 	
@@ -72,21 +72,20 @@ public abstract class Path {
 		{
 			newPoint.rotationPitch = lastPitch;
 			newPoint.rotationYaw = lastYaw;
-			Vec3d pos = null;
-			if(target instanceof Entity)
-			{
-				pos = ((Entity) target).getPositionEyes(renderTickTime);
-				if (target instanceof EntityLivingBase)
-		        {
-					pos = ((EntityLivingBase) target).getPositionEyes(renderTickTime).subtract(new Vec3d(0,((EntityLivingBase) target).getEyeHeight(),0));
-		        }
-		        else
-		        {
-		        	pos = ((Entity) target).getPositionEyes(renderTickTime);
-		        }
-			}
-			if(target instanceof BlockPos)
-				pos = new Vec3d((BlockPos) target);
+			Vec3 pos = null;
+			if (target instanceof EntityLivingBase)
+	        {
+				pos = ((EntityLivingBase) target).getPosition(renderTickTime);
+				
+				if(target instanceof EntityPlayer)
+					pos.yCoord -= ((Entity) target).yOffset/2;
+	        }
+	        else if(target instanceof Entity)
+	        {
+	            pos = Vec3.createVectorHelper(((Entity) target).posX, (((Entity) target).boundingBox.minY + ((Entity) target).boundingBox.maxY) / 2.0D, ((Entity) target).posZ);
+	        }else if(target instanceof ChunkCoordinates)
+				pos = Vec3.createVectorHelper(((ChunkCoordinates) target).posX, ((ChunkCoordinates) target).posY, ((ChunkCoordinates) target).posZ);
+			
 			if(pos != null)
 			{
 				//newPoint.rotationPitch = getCamera().rotationPitch;

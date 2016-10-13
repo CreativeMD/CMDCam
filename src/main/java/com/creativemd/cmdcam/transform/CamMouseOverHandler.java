@@ -11,14 +11,14 @@ public class CamMouseOverHandler {
 	
 	public static Minecraft mc = Minecraft.getMinecraft();
 	
-	public static Entity camera = null;
+	public static EntityLivingBase camera = null;
 	
 	public static void setupMouseHandlerBefore()
 	{
 		if(CMDCam.currentPath instanceof OutsidePath)
 		{
-			camera = mc.getRenderViewEntity();
-			mc.setRenderViewEntity(mc.thePlayer);
+			camera = mc.renderViewEntity;
+			mc.renderViewEntity = mc.thePlayer;
 		}
 	}
 	
@@ -26,7 +26,7 @@ public class CamMouseOverHandler {
 	{
 		if(CMDCam.currentPath instanceof OutsidePath)
 		{
-			mc.setRenderViewEntity(camera);
+			mc.renderViewEntity = camera;
 			//camera = null;
 		}
 	}

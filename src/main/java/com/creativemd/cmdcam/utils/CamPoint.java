@@ -3,8 +3,8 @@ package com.creativemd.cmdcam.utils;
 import com.creativemd.cmdcam.CMDCam;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 
 public class CamPoint {
 	
@@ -62,7 +62,7 @@ public class CamPoint {
 				this.zoom + (point.zoom - this.zoom) * percent);
 	}
 	
-	public void faceEntity(Vec3d pos, float minYaw, float minPitch, double ticks)
+	public void faceEntity(Vec3 pos, float minYaw, float minPitch, double ticks)
     {
         double d0 = pos.xCoord - this.x;
         double d2 = pos.zCoord - this.z;
@@ -81,7 +81,7 @@ public class CamPoint {
      */
     private double updateRotation(double rotation, double intended, double min, double ticks)
     {
-    	double f3 = MathHelper.wrapDegrees(intended - rotation);
+    	double f3 = MathHelper.wrapAngleTo180_double(intended - rotation);
         
         if(f3 > 0)
         	f3 = Math.min(Math.abs(f3*ticks), f3);//Math.min(Math.max(min, Math.abs(f3*ticks)), f3);

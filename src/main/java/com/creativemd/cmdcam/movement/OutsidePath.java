@@ -34,7 +34,7 @@ public class OutsidePath extends Path{
 	public void onPathFinished()
 	{
 		super.onPathFinished();
-		mc.setRenderViewEntity(mc.thePlayer);
+		mc.renderViewEntity = mc.thePlayer;
 	}
 	
 	@Override
@@ -48,7 +48,7 @@ public class OutsidePath extends Path{
 	{
 		super.processPoint(point);
 		
-		mc.setRenderViewEntity(camPlayer);
+		mc.renderViewEntity = camPlayer;
 		if(camPlayer instanceof EntityPlayer)
 			((EntityPlayer)camPlayer).capabilities.isFlying = true;
 		camPlayer.setPositionAndRotation(point.x, point.y, point.z, (float)point.rotationYaw, (float)point.rotationPitch);

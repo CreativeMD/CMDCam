@@ -11,16 +11,15 @@ import com.creativemd.cmdcam.utils.CamPoint;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import cpw.mods.fml.common.DummyModContainer;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.LoadController;
+import cpw.mods.fml.common.ModMetadata;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.DummyModContainer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.LoadController;
-import net.minecraftforge.fml.common.ModMetadata;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
 //@Mod(modid = CMDCam.modid, version = CMDCam.version, name = "CMDCam")
 public class CMDCam extends DummyModContainer {
@@ -77,6 +76,7 @@ public class CMDCam extends DummyModContainer {
 			KeyHandler.initKeys();
 			
 			MinecraftForge.EVENT_BUS.register(new CamEventHandler());
+			FMLCommonHandler.instance().bus().register(new CamEventHandler());
 			
 			Path.initPaths();
 			Movement.initMovements();
@@ -87,7 +87,7 @@ public class CMDCam extends DummyModContainer {
 	{
 		if(points.size() < 1)
 		{
-			mc.thePlayer.addChatMessage(new TextComponentString("You have to register at least 1 point!"));
+			mc.thePlayer.addChatMessage(new ChatComponentText("You have to register at least 1 point!"));
 			return ;
 		}
 		Movement movement = Movement.getMovementById(lastMovement);

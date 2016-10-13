@@ -16,58 +16,70 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-import com.creativemd.cmdcam.CMDCam;
-import com.creativemd.cmdcam.CamEventHandler;
-import com.creativemd.creativecore.transformer.CreativeTransformer;
-import com.creativemd.creativecore.transformer.Transformer;
-import com.creativemd.creativecore.transformer.TransformerNames;
-
 import net.minecraft.launchwrapper.IClassTransformer;
 
-public class CamTransformer extends CreativeTransformer implements IClassTransformer {
+public class CamTransformer implements IClassTransformer {
 	
-	public CamTransformer() {
-		super(CMDCam.modid);
+	public static final String[] names = new String[]{".", "net.minecraft.client.renderer.EntityRenderer", "getMouseOver"};
+	public static final String[] namesOb = new String[]{"/", "blt", "a"};
+	
+	public static String patch(String input)
+	{
+		for(int zahl = 0; zahl < names.length; zahl++)
+			input = input.replace(names[zahl], namesOb[zahl]);
+		return input;
 	}
-
+	
 	@Override
-	protected void initTransformers() {
-		addTransformer(new Transformer("net.minecraft.client.renderer.EntityRenderer") {
+	public byte[] transform(String arg0, String arg1, byte[] arg2) {
+		if (arg0.equals("blt") || arg0.contains("net.minecraft.client.renderer.EntityRenderer")) {
+			String targetMethodName = "getMouseOver";
+			String targetDESC = "(F)V";
 			
-			@Override
-			public void transform(ClassNode node) {
-				MethodNode m = findMethod(node, "getMouseOver", "(F)V");
-				m.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/creativemd/cmdcam/transform/CamMouseOverHandler", "setupMouseHandlerBefore", "()V", false));
-				
-				AbstractInsnNode currentNode = null;
-				
-				@SuppressWarnings("unchecked")
-				Iterator<AbstractInsnNode> iter = m.instructions.iterator();
-				
-				while (iter.hasNext())
+			if(arg0.equals("blt"))
+			{
+				targetMethodName = patch(targetMethodName);
+				targetDESC = patch(targetDESC);
+			}
+			
+			ClassNode classNode = new ClassNode();
+			ClassReader classReader = new ClassReader(arg2);
+			classReader.accept(classNode, 0);
+			
+			Iterator<MethodNode> methods = classNode.methods.iterator();
+			while(methods.hasNext())
+			{
+				MethodNode m = methods.next();
+				if ((m.name.equals(targetMethodName) && m.desc.equals(targetDESC)))
 				{
-					currentNode = iter.next();
-					if (currentNode instanceof InsnNode && ((InsnNode)currentNode).getOpcode() == RETURN)
+					m.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/creativemd/cmdcam/transform/CamMouseOverHandler", "setupMouseHandlerBefore", "()V", false));
+					
+					
+					AbstractInsnNode currentNode = null;
+					
+					@SuppressWarnings("unchecked")
+					Iterator<AbstractInsnNode> iter = m.instructions.iterator();
+					
+					while (iter.hasNext())
 					{
-						m.instructions.insertBefore(currentNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "com/creativemd/cmdcam/transform/CamMouseOverHandler", "setupMouseHandlerAfter", "()V", false));
+						currentNode = iter.next();
+						if (currentNode instanceof InsnNode && ((InsnNode)currentNode).getOpcode() == RETURN)
+						{
+							m.instructions.insertBefore(currentNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "com/creativemd/cmdcam/transform/CamMouseOverHandler", "setupMouseHandlerAfter", "()V", false));
+						}
 					}
+					
+					
+					System.out.println("[CMDCam] Patched getMouseOver");
+					break;
 				}
-				
 			}
-		});
-		
-		addTransformer(new Transformer("net.minecraft.client.entity.EntityPlayerSP") {
 			
-			@Override
-			public void transform(ClassNode node) {
-				MethodNode m = findMethod(node, "isCurrentViewEntity", "()Z");
-				m.instructions.clear();
-				
-				m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/creativemd/cmdcam/CamEventHandler", "shouldPlayerTakeInput", "()Z", false));
-				m.instructions.add(new InsnNode(Opcodes.IRETURN));
-				
-			}
-		});
-		
+			ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+			classNode.accept(writer);
+			return writer.toByteArray();
+			
+		}
+		return arg2;
 	}
 }
