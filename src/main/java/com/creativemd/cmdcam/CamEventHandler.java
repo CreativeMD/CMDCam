@@ -49,6 +49,9 @@ public class CamEventHandler {
 	@SubscribeEvent
 	public void onPlayerEntityInteract(EntityInteractEvent event)
 	{
+		if(!selectEntityMode)
+			return ;
+		
 		CMDCam.target = event.target;
 		event.entityPlayer.addChatMessage(new ChatComponentText("Target is set to " + event.target.getUniqueID() + "."));
 		selectEntityMode = false;

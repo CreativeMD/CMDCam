@@ -34,7 +34,7 @@ public class DefaultPath extends Path{
 	{
 		super.processPoint(point);
 		
-		//Mouse.setGrabbed(false);
+		Mouse.setGrabbed(false);
 		Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2);
 	    Mouse.setGrabbed(true);
 		
