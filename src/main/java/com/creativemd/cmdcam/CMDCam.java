@@ -21,8 +21,11 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 //@Mod(modid = CMDCam.modid, version = CMDCam.version, name = "CMDCam")
+@SideOnly(Side.CLIENT)
 public class CMDCam extends DummyModContainer {
 	
 	public static final String modid = "cmdcam";
@@ -71,16 +74,13 @@ public class CMDCam extends DummyModContainer {
 	@Subscribe
     public void Init(FMLInitializationEvent event)
     {
-		if(FMLCommonHandler.instance().getEffectiveSide().isClient())
-		{
-			ClientCommandHandler.instance.registerCommand(new CamCommand());
-			KeyHandler.initKeys();
-			
-			MinecraftForge.EVENT_BUS.register(new CamEventHandler());
-			
-			Path.initPaths();
-			Movement.initMovements();
-		}
+		ClientCommandHandler.instance.registerCommand(new CamCommand());
+		KeyHandler.initKeys();
+		
+		MinecraftForge.EVENT_BUS.register(new CamEventHandler());
+		
+		Path.initPaths();
+		Movement.initMovements();
     }
 	
 	public static void createPath()
