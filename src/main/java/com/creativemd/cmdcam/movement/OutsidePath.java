@@ -17,7 +17,7 @@ public class OutsidePath extends Path{
 		super(points, duration, movement, target);
 		if(points != null)
 			//this.camPlayer = mc.playerController.func_147493_a(mc.theWorld, new StatFileWriter());
-			this.camPlayer = new EntityZombie(mc.theWorld);
+			this.camPlayer = new EntityZombie(mc.world);
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class OutsidePath extends Path{
 	public void onPathFinished()
 	{
 		super.onPathFinished();
-		mc.setRenderViewEntity(mc.thePlayer);
+		mc.setRenderViewEntity(mc.player);
 	}
 	
 	@Override

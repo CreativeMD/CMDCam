@@ -12,8 +12,6 @@ import com.creativemd.cmdcam.utils.interpolation.HermiteInterpolation;
 import com.creativemd.cmdcam.utils.interpolation.Interpolation;
 import com.creativemd.cmdcam.utils.interpolation.LinearInterpolation;
 import com.creativemd.cmdcam.utils.interpolation.Vec3;
-import com.creativemd.creativecore.client.rendering.RenderHelper3D;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -55,14 +53,14 @@ public class CamEventHandler {
 		if(event instanceof EntityInteract)
 		{
 			CMDCam.target = ((EntityInteract) event).getTarget();
-			event.getEntityPlayer().addChatMessage(new TextComponentString("Target is set to " + ((EntityInteract) event).getTarget().getCachedUniqueIdString() + "."));
+			event.getEntityPlayer().sendMessage(new TextComponentString("Target is set to " + ((EntityInteract) event).getTarget().getCachedUniqueIdString() + "."));
 			selectEntityMode = false;
 		}
 		
 		if(event instanceof RightClickBlock)
 		{
 			CMDCam.target = event.getPos();
-			event.getEntityPlayer().addChatMessage(new TextComponentString("Target is set to " +  event.getPos() + "."));
+			event.getEntityPlayer().sendMessage(new TextComponentString("Target is set to " +  event.getPos() + "."));
 			selectEntityMode = false;
 		}
 	}
@@ -70,7 +68,7 @@ public class CamEventHandler {
 	@SubscribeEvent
 	public void onRenderTick(RenderTickEvent event)
 	{
-		if(mc.thePlayer != null && mc.theWorld != null)
+		if(mc.player != null && mc.world != null)
 		{
 			if(mc.inGameHasFocus) //&& event.phase == Phase.START)
 			{
@@ -78,7 +76,7 @@ public class CamEventHandler {
 				{
 					if(mc.gameSettings.isKeyDown(KeyHandler.zoomIn))
 					{
-						if(mc.thePlayer.isSneaking())
+						if(mc.player.isSneaking())
 							mc.gameSettings.fovSetting -= amountZoom*10;
 						else
 							mc.gameSettings.fovSetting -= amountZoom;
@@ -86,7 +84,7 @@ public class CamEventHandler {
 					
 					if(mc.gameSettings.isKeyDown(KeyHandler.zoomOut))
 					{
-						if(mc.thePlayer.isSneaking())
+						if(mc.player.isSneaking())
 							mc.gameSettings.fovSetting += amountZoom*10;
 						else
 							mc.gameSettings.fovSetting += amountZoom;
@@ -110,7 +108,7 @@ public class CamEventHandler {
 					if(KeyHandler.pointKey.isPressed())
 					{
 						CMDCam.points.add(new CamPoint());
-						mc.thePlayer.addChatMessage(new TextComponentString("Registered " + CMDCam.points.size() + ". Point!"));
+						mc.player.sendMessage(new TextComponentString("Registered " + CMDCam.points.size() + ". Point!"));
 					}
 					
 					
@@ -156,12 +154,12 @@ public class CamEventHandler {
 			for (int i = 0; i < points.length; i++) {
 				points[i] = new Vec3(CMDCam.points.get(i).x, CMDCam.points.get(i).y, CMDCam.points.get(i).z);
 				GlStateManager.pushMatrix();
-				GlStateManager.translate(-TileEntityRendererDispatcher.staticPlayerX, -TileEntityRendererDispatcher.staticPlayerY+mc.thePlayer.getEyeHeight()-0.1, -TileEntityRendererDispatcher.staticPlayerZ);
+				GlStateManager.translate(-TileEntityRendererDispatcher.staticPlayerX, -TileEntityRendererDispatcher.staticPlayerY+mc.player.getEyeHeight()-0.1, -TileEntityRendererDispatcher.staticPlayerZ);
 				renderBlock(points[i].x, points[i].y, points[i].z, 0.1, 0.1, 0.1, 0, 0, 0, 1, 1, 1, 1);
 				float f = TileEntityRendererDispatcher.instance.entityYaw;
 	            float f1 = TileEntityRendererDispatcher.instance.entityPitch;
 	            boolean flag = false;
-	            EntityRenderer.func_189692_a(mc.fontRendererObj, (i+1) + "", (float)points[i].x, (float)points[i].y + 0.4F, (float)points[i].z, 0, f, f1, false, false);
+	            EntityRenderer.drawNameplate(mc.fontRendererObj, (i+1) + "", (float)points[i].x, (float)points[i].y + 0.4F, (float)points[i].z, 0, f, f1, false, false);
 	            GL11.glDepthMask(false);
 	            GlStateManager.disableLighting();
 	            GlStateManager.disableTexture2D();
@@ -264,7 +262,7 @@ public class CamEventHandler {
         
 		GlStateManager.pushMatrix();
 		GL11.glColor3d(color.x, color.y, color.z);
-		GlStateManager.translate(-TileEntityRendererDispatcher.staticPlayerX, -TileEntityRendererDispatcher.staticPlayerY+mc.thePlayer.getEyeHeight()-0.1, -TileEntityRendererDispatcher.staticPlayerZ);
+		GlStateManager.translate(-TileEntityRendererDispatcher.staticPlayerX, -TileEntityRendererDispatcher.staticPlayerY+mc.player.getEyeHeight()-0.1, -TileEntityRendererDispatcher.staticPlayerZ);
 		GlStateManager.glLineWidth(1.0F);
 		GlStateManager.glBegin(GL11.GL_LINE_STRIP);
 		for (int i = 0; i < steps; i++) {
@@ -293,7 +291,7 @@ public class CamEventHandler {
 		{
 			renderEntity = mc.getRenderManager().renderViewEntity;
 			
-			mc.getRenderManager().renderViewEntity = mc.thePlayer;
+			mc.getRenderManager().renderViewEntity = mc.player;
 		}
 	}
 	

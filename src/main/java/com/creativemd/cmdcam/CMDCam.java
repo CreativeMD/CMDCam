@@ -30,7 +30,7 @@ public class CMDCam extends DummyModContainer {
 	
 	public static final String modid = "cmdcam";
 	
-	public static final String version = "0.2";
+	public static final String version = "1.1.3";
 	
 	public CMDCam() {
 
@@ -87,7 +87,7 @@ public class CMDCam extends DummyModContainer {
 	{
 		if(points.size() < 1)
 		{
-			mc.thePlayer.addChatMessage(new TextComponentString("You have to register at least 1 point!"));
+			mc.player.sendMessage(new TextComponentString("You have to register at least 1 point!"));
 			return ;
 		}
 		Movement movement = Movement.getMovementById(lastMovement);
@@ -95,7 +95,7 @@ public class CMDCam extends DummyModContainer {
 		Object target = CMDCam.target;
 		if(target != null && target.equals("self"))
 		{
-			target = mc.thePlayer;
+			target = mc.player;
 		}
 		ArrayList<CamPoint> newPoints = new ArrayList<>(points);
 		if(newPoints.size() == 1)

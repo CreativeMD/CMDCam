@@ -33,12 +33,12 @@ public class CamPoint {
 	
 	public CamPoint()
 	{
-		this.x = mc.thePlayer.posX;
-		this.y = mc.thePlayer.posY;
-		this.z = mc.thePlayer.posZ;
+		this.x = mc.player.posX;
+		this.y = mc.player.posY;
+		this.z = mc.player.posZ;
 		
-		this.rotationYaw = mc.thePlayer.rotationYawHead;//MathHelper.wrapDegrees(mc.thePlayer.rotationYawHead);
-		this.rotationPitch = mc.thePlayer.rotationPitch;
+		this.rotationYaw = mc.player.rotationYawHead;//MathHelper.wrapDegrees(mc.thePlayer.rotationYawHead);
+		this.rotationPitch = mc.player.rotationPitch;
 		
 		this.roll = CMDCam.roll;
 		this.zoom = CMDCam.fov;

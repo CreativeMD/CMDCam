@@ -108,7 +108,7 @@ public abstract class Path {
 	
 	public EntityLivingBase getCamera()
 	{
-		return mc.thePlayer;
+		return mc.player;
 	}
 	
 	public void tick(float renderTickTime)

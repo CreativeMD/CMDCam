@@ -15,7 +15,7 @@ public class DefaultPath extends Path{
 	public DefaultPath(ArrayList<CamPoint> points, long duration, Movement movement, Object target)
 	{		
 		super(points, duration, movement, target);
-		if(target != null && mc != null && target.equals(mc.thePlayer))
+		if(target != null && mc != null && target.equals(mc.player))
 			this.target = null;
 	}
 	
@@ -38,12 +38,12 @@ public class DefaultPath extends Path{
 		Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2);
 	    Mouse.setGrabbed(true);
 		
-		mc.thePlayer.capabilities.isFlying = true;
+		mc.player.capabilities.isFlying = true;
 		
-		mc.thePlayer.setPositionAndRotation(point.x, point.y, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
-		mc.thePlayer.prevRotationYaw = (float) point.rotationYaw;
-		mc.thePlayer.prevRotationPitch = (float) point.rotationPitch;
-		mc.thePlayer.setLocationAndAngles(point.x, point.y/*-mc.thePlayer.getEyeHeight()*/, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
+		mc.player.setPositionAndRotation(point.x, point.y, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
+		mc.player.prevRotationYaw = (float) point.rotationYaw;
+		mc.player.prevRotationPitch = (float) point.rotationPitch;
+		mc.player.setLocationAndAngles(point.x, point.y/*-mc.thePlayer.getEyeHeight()*/, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
 		//mc.thePlayer.setPositionAndRotation(point.x, point.y, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
 		
 	}

@@ -18,7 +18,7 @@ public class CamMouseOverHandler {
 		if(CMDCam.currentPath instanceof OutsidePath)
 		{
 			camera = mc.getRenderViewEntity();
-			mc.setRenderViewEntity(mc.thePlayer);
+			mc.setRenderViewEntity(mc.player);
 		}
 	}
 	
