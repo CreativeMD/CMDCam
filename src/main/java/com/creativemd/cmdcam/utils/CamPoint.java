@@ -64,9 +64,9 @@ public class CamPoint {
 	
 	public void faceEntity(Vec3d pos, float minYaw, float minPitch, double ticks)
     {
-        double d0 = pos.xCoord - this.x;
-        double d2 = pos.zCoord - this.z;
-        double d1 = pos.yCoord - this.y;
+        double d0 = pos.x - this.x;
+        double d2 = pos.y - this.z;
+        double d1 = pos.z - this.y;
 
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
         double f2 = (Math.atan2(d2, d0) * 180.0D / Math.PI) - 90.0D;

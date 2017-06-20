@@ -159,7 +159,7 @@ public class CamEventHandler {
 				float f = TileEntityRendererDispatcher.instance.entityYaw;
 	            float f1 = TileEntityRendererDispatcher.instance.entityPitch;
 	            boolean flag = false;
-	            EntityRenderer.drawNameplate(mc.fontRendererObj, (i+1) + "", (float)points[i].x, (float)points[i].y + 0.4F, (float)points[i].z, 0, f, f1, false, false);
+	            EntityRenderer.drawNameplate(mc.fontRenderer, (i+1) + "", (float)points[i].x, (float)points[i].y + 0.4F, (float)points[i].z, 0, f, f1, false, false);
 	            GL11.glDepthMask(false);
 	            GlStateManager.disableLighting();
 	            GlStateManager.disableTexture2D();
