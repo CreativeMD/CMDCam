@@ -20,7 +20,7 @@ public class CamPatchingLoader implements IFMLLoadingPlugin {
 
 	@Override
 	public String getModContainerClass() {
-		return CMDCam.class.getName();
+		return null;
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package com.creativemd.cmdcam;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import com.creativemd.cmdcam.command.CamCommand;
 import com.creativemd.cmdcam.key.KeyHandler;
@@ -14,39 +13,18 @@ import com.google.common.eventbus.Subscribe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.DummyModContainer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.LoadController;
-import net.minecraftforge.fml.common.ModMetadata;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-//@Mod(modid = CMDCam.modid, version = CMDCam.version, name = "CMDCam")
-@SideOnly(Side.CLIENT)
-public class CMDCam extends DummyModContainer {
+@Mod(modid = CMDCam.modid, version = CMDCam.version, name = "CMDCam")
+public class CMDCam {
 	
 	public static final String modid = "cmdcam";
 	
-	public static final String version = "1.1.3";
-	
-	public CMDCam() {
-
-		super(new ModMetadata());
-		ModMetadata meta = getMetadata();
-		meta.modId = modid;
-		meta.name = "CMDCam";
-		meta.version = version; //String.format("%d.%d.%d.%d", majorVersion, minorVersion, revisionVersion, buildVersion);
-		meta.credits = "CreativeMD";
-		meta.authorList = Arrays.asList("CreativeMD");
-		meta.description = "";
-		meta.url = "";
-		meta.updateUrl = "";
-		meta.screenshots = new String[0];
-		meta.logoFile = "";
-	}
+	public static final String version = "1.1.7";
 	
 	public static Minecraft mc = Minecraft.getMinecraft();
 	
@@ -65,13 +43,7 @@ public class CMDCam extends DummyModContainer {
 
 	public static double cameraFollowSpeed = 1D;
 	
-	@Override
-	public boolean registerBus(EventBus bus, LoadController controller) {
-		bus.register(this);
-		return true;
-	}
-	
-	@Subscribe
+	@EventHandler
     public void Init(FMLInitializationEvent event)
     {
 		ClientCommandHandler.instance.registerCommand(new CamCommand());
