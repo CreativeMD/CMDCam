@@ -3,6 +3,7 @@ package com.creativemd.cmdcam.utils;
 import com.creativemd.cmdcam.CMDCam;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -65,12 +66,13 @@ public class CamPoint {
 	public void faceEntity(Vec3d pos, float minYaw, float minPitch, double ticks)
     {
         double d0 = pos.x - this.x;
-        double d2 = pos.y - this.z;
-        double d1 = pos.z - this.y;
+        double d2 = pos.z - this.z;
+        double d1 = pos.y - this.y;
 
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
         double f2 = (Math.atan2(d2, d0) * 180.0D / Math.PI) - 90.0D;
         double f3 = (-(Math.atan2(d1, d3) * 180.0D / Math.PI));
+        //EntityLivingBase
         //System.out.println("ticks=" + ticks);
         this.rotationPitch = updateRotation(this.rotationPitch, f3, minPitch, ticks);
         this.rotationYaw = updateRotation(this.rotationYaw, f2, minYaw, ticks);
