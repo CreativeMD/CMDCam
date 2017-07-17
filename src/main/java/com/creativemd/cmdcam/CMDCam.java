@@ -33,7 +33,7 @@ public class CMDCam {
 	
 	public static Path currentPath = null;
 	
-	public static boolean loop = false;
+	public static int lastLoop = 0;
 	
 	public static long lastDuration = 10000;
 	public static String lastPath = "default";
@@ -72,7 +72,7 @@ public class CMDCam {
 		ArrayList<CamPoint> newPoints = new ArrayList<>(points);
 		if(newPoints.size() == 1)
 			newPoints.add(newPoints.get(0));
-		currentPath = parser.createPath(newPoints, lastDuration, movement, target);
-		currentPath.movement.initMovement(newPoints);
+		currentPath = parser.createPath(newPoints, lastDuration, lastLoop, movement, target);
+		currentPath.movement.initMovement(newPoints, lastLoop);
 	}
 }

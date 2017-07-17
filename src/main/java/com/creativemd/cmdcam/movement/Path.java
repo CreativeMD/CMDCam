@@ -30,8 +30,8 @@ public abstract class Path {
 	
 	public static void initPaths()
 	{
-		registerPath("default", new DefaultPath(null, 0, null, null));
-		registerPath("outside", new OutsidePath(null, 0, null, null));		
+		registerPath("default", new DefaultPath(null, 0, 0, null, null));
+		registerPath("outside", new OutsidePath(null, 0, 0, null, null));		
 	}
 	
 	public long started = System.currentTimeMillis();
@@ -48,27 +48,38 @@ public abstract class Path {
 	
 	public boolean isFirst = true;
 	
-	public ArrayList<CamPoint> points = new ArrayList<>();
+	/**
+	 * zero loops will mean only one iteration (number of iterations = loops + 1). Negative will mean endless loops.
+	 */
+	public int loops;
+	public int currentLoop;
 	
-	public Path(ArrayList<CamPoint> points, long duration, Movement movement, Object target)
+	public ArrayList<CamPoint> points = null;
+	
+	public Path(ArrayList<CamPoint> points, long duration, int loops, Movement movement, Object target)
 	{
-		this.points = points;
 		this.duration = duration;
 		this.movement = movement;
 		if(points != null)
 		{
+			this.points = new ArrayList<>(points);
 			this.hideGui = mc.gameSettings.hideGUI;
 			lastPitch = points.get(0).rotationPitch;
 			lastYaw = points.get(0).rotationYaw;
 		}
 		this.target = target;
+		this.loops = loops;
+		this.currentLoop = 0;
+		
+		if(this.loops != 0)
+			this.points.add(this.points.get(this.points.size()-1).copy());
 	}
 	
-	public abstract Path createPath(ArrayList<CamPoint> points, long duration, Movement movement, Object target);
+	public abstract Path createPath(ArrayList<CamPoint> points, long duration, int loops, Movement movement, Object target);
 	
-	public CamPoint getCamPoint(CamPoint point1, CamPoint point2, double percent, double wholeProgress, float renderTickTime)
+	public CamPoint getCamPoint(CamPoint point1, CamPoint point2, double percent, double wholeProgress, float renderTickTime, boolean isFirstLoop, boolean isLastLoop)
 	{
-		CamPoint newPoint = movement.getPointInBetween(point1, point2, percent, wholeProgress);
+		CamPoint newPoint = movement.getPointInBetween(point1, point2, percent, wholeProgress, isFirstLoop, isLastLoop);
 		if(target != null)
 		{
 			newPoint.rotationPitch = lastPitch;
@@ -122,14 +133,14 @@ public abstract class Path {
 		long time = System.currentTimeMillis() - started;
 		if(time >= duration)
 		{
-			CMDCam.currentPath = null;
-			onPathFinished();
-			try {
-				finalize();
-			} catch (Throwable e) {
-				e.printStackTrace();
+			if(currentLoop < loops || loops < 0)
+			{
+				started = System.currentTimeMillis();
+				currentLoop++;
+			}else{
+				CMDCam.currentPath = null;
+				onPathFinished();
 			}
-			System.out.println("Finished Path");
 		}else{
 			long durationOfPoint = duration / (points.size()-1);
 			int currentPoint = Math.min((int) (time / durationOfPoint), points.size()-2);
@@ -137,7 +148,7 @@ public abstract class Path {
 			CamPoint point2 = points.get(currentPoint+1);
 			double percent = (time % durationOfPoint) / (double)durationOfPoint;
 			//System.out.println(percent);
-			CamPoint newPoint = getCamPoint(point1, point2, percent, (double)time/duration, renderTickTime);
+			CamPoint newPoint = getCamPoint(point1, point2, percent, (double)time/duration, renderTickTime, currentLoop == 0, currentLoop == loops);
 			if(newPoint != null)
 			{
 				processPoint(newPoint);
