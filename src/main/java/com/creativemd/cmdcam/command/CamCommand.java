@@ -72,7 +72,7 @@ public class CamCommand extends CommandBase{
 		{
 			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam add [number] " + ChatFormatting.RED + "register a point at the current position"));
 			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam clear " + ChatFormatting.RED + "delete all registered points"));
-			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam start <time|ms|s|m|h|d> " + ChatFormatting.RED + "starts the animation"));
+			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam start [time|ms|s|m|h|d] [loops (-1 -> endless)] " + ChatFormatting.RED + "starts the animation"));
 			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam goto <index> " + ChatFormatting.RED + "tp to the given point"));
 			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam set <index> " + ChatFormatting.RED + "updates point to current location"));
 			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam remove <index> " + ChatFormatting.RED + "removes the given point"));
@@ -122,6 +122,11 @@ public class CamCommand extends CommandBase{
 					{
 						sender.sendMessage(new TextComponentString("Invalid time '" + args[1] + "'!"));
 						return ;
+					}
+					
+					if(args.length >= 3)
+					{
+						CMDCam.lastLoop = Integer.parseInt(args[2]);
 					}
 				}
 				CMDCam.createPath();

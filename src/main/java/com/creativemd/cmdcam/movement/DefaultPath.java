@@ -12,16 +12,16 @@ import net.minecraft.util.MouseHelper;
 
 public class DefaultPath extends Path{
 	
-	public DefaultPath(ArrayList<CamPoint> points, long duration, Movement movement, Object target)
+	public DefaultPath(ArrayList<CamPoint> points, long duration, int loops, Movement movement, Object target)
 	{		
-		super(points, duration, movement, target);
+		super(points, duration, loops, movement, target);
 		if(target != null && mc != null && target.equals(mc.player))
 			this.target = null;
 	}
 	
 	@Override
-	public Path createPath(ArrayList<CamPoint> points, long duration, Movement movement, Object target) {
-		return new DefaultPath(points, duration, movement, target);
+	public Path createPath(ArrayList<CamPoint> points, long duration, int loops, Movement movement, Object target) {
+		return new DefaultPath(points, duration, loops, movement, target);
 	}
 
 	@Override

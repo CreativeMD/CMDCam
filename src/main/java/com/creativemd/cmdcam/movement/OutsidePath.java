@@ -13,16 +13,16 @@ public class OutsidePath extends Path{
 	
 	public EntityLivingBase camPlayer;
 	
-	public OutsidePath(ArrayList<CamPoint> points, long duration, Movement movement, Object target) {
-		super(points, duration, movement, target);
+	public OutsidePath(ArrayList<CamPoint> points, long duration, int loops, Movement movement, Object target) {
+		super(points, duration, loops, movement, target);
 		if(points != null)
 			//this.camPlayer = mc.playerController.func_147493_a(mc.theWorld, new StatFileWriter());
 			this.camPlayer = new EntityZombie(mc.world);
 	}
 
 	@Override
-	public Path createPath(ArrayList<CamPoint> points, long duration, Movement movement, Object target) {
-		return new OutsidePath(points, duration, movement, target);
+	public Path createPath(ArrayList<CamPoint> points, long duration, int loops, Movement movement, Object target) {
+		return new OutsidePath(points, duration, loops, movement, target);
 	}
 
 	@Override

@@ -56,8 +56,8 @@ public abstract class Movement {
 	
 	public boolean isRenderingEnabled = false;
 	
-	public abstract void initMovement(ArrayList<CamPoint> points);
+	public abstract void initMovement(ArrayList<CamPoint> points, int loops);
 	
-	public abstract CamPoint getPointInBetween(CamPoint point1, CamPoint point2, double percent, double wholeProgress);
+	public abstract CamPoint getPointInBetween(CamPoint point1, CamPoint point2, double percent, double wholeProgress, boolean isFirstLoop, boolean isLastLoop);
 	
 }
