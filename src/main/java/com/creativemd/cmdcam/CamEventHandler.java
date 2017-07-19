@@ -1,10 +1,16 @@
 package com.creativemd.cmdcam;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+
 import org.lwjgl.opengl.GL11;
 
 import com.creativemd.cmdcam.key.KeyHandler;
 import com.creativemd.cmdcam.movement.Movement;
+import com.creativemd.cmdcam.movement.Movement.MovementParseException;
 import com.creativemd.cmdcam.movement.OutsidePath;
+import com.creativemd.cmdcam.movement.Path;
 import com.creativemd.cmdcam.utils.CamPoint;
 import com.creativemd.cmdcam.utils.interpolation.CosineInterpolation;
 import com.creativemd.cmdcam.utils.interpolation.CubicInterpolation;
@@ -21,6 +27,7 @@ import net.minecraft.client.renderer.entity.RenderEntity;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -143,7 +150,7 @@ public class CamEventHandler {
 				break;
 			}
 		}
-		if(CMDCam.currentPath == null && shouldRender && CMDCam.points.size() > 2)
+		if(CMDCam.currentPath == null && shouldRender && CMDCam.points.size() > 0)
 		{
 			GlStateManager.enableBlend();
 	        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
@@ -166,17 +173,11 @@ public class CamEventHandler {
 	            GlStateManager.popMatrix();
 			}
 	        
-			if(Movement.hermite.isRenderingEnabled)
-		        renderInterpolation(new HermiteInterpolation<>(points), new Vec3(1,1,1));
-	        
-			if(Movement.cubic.isRenderingEnabled)
-		        renderInterpolation(new CubicInterpolation<>(points), new Vec3(1,0,0));
-			
-			if(Movement.cosine.isRenderingEnabled)
-		        renderInterpolation(new CosineInterpolation<>(points), new Vec3(0,1,0));
-			
-			if(Movement.linear.isRenderingEnabled)
-		        renderInterpolation(new LinearInterpolation<>(points), new Vec3(0,0,1));
+			for (Iterator<Movement> iterator = Movement.movements.values().iterator(); iterator.hasNext();) {
+				Movement movement = iterator.next();
+				if(movement.isRenderingEnabled)
+					renderMovement(movement, new ArrayList<>(CMDCam.points));
+			}
 	        
 			GL11.glDepthMask(true);
             GlStateManager.enableTexture2D();
@@ -256,23 +257,27 @@ public class CamEventHandler {
         GlStateManager.popMatrix();
 	}
 	
-	public void renderInterpolation(Interpolation<Vec3> interpolation, Vec3 color)
+	public void renderMovement(Movement movement, ArrayList<CamPoint> points)
 	{
-		double steps = 20*(interpolation.points.size()-1);
+		try {
+			movement.initMovement(points, 0, CMDCam.target);
+		} catch (MovementParseException e) {
+			return ;
+		}
+		
+		double steps = 20*(points.size()-1);
         
 		GlStateManager.pushMatrix();
+		Vec3 color = movement.getColor();
 		GL11.glColor3d(color.x, color.y, color.z);
 		GlStateManager.translate(-TileEntityRendererDispatcher.staticPlayerX, -TileEntityRendererDispatcher.staticPlayerY+mc.player.getEyeHeight()-0.1, -TileEntityRendererDispatcher.staticPlayerZ);
 		GlStateManager.glLineWidth(1.0F);
 		GlStateManager.glBegin(GL11.GL_LINE_STRIP);
 		for (int i = 0; i < steps; i++) {
-			double t = i/(double)steps;
-			//System.out.println("t=" + t);
-			Vec3 pos = interpolation.valueAt(t);
+			CamPoint pos = Path.getPoint(movement, points, i/(double)steps, 0, 0);
 			GL11.glVertex3d(pos.x, pos.y, pos.z);
 		}
-		Vec3 last = interpolation.points.get(interpolation.points.size()-1);
-		GL11.glVertex3d(last.x, last.y, last.z);
+		GL11.glVertex3d(points.get(points.size()-1).x, points.get(points.size()-1).y, points.get(points.size()-1).z);
 		GlStateManager.glEnd();
 		GlStateManager.popMatrix();
 	}

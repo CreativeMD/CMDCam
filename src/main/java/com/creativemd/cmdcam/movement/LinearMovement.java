@@ -2,7 +2,9 @@ package com.creativemd.cmdcam.movement;
 
 import java.util.ArrayList;
 
+import com.creativemd.cmdcam.movement.Movement.MovementParseException;
 import com.creativemd.cmdcam.utils.CamPoint;
+import com.creativemd.cmdcam.utils.interpolation.Vec3;
 
 public class LinearMovement extends Movement {
 
@@ -12,8 +14,12 @@ public class LinearMovement extends Movement {
 	}
 
 	@Override
-	public void initMovement(ArrayList<CamPoint> points, int loops) {
+	public void initMovement(ArrayList<CamPoint> points, int loops, Object target) throws MovementParseException {
 		
 	}
 
+	@Override
+	public Vec3 getColor() {
+		return new Vec3(0,0,1);
+	}
 }

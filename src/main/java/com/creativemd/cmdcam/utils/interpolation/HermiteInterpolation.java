@@ -5,6 +5,20 @@ public class HermiteInterpolation<T extends Vec> extends CubicInterpolation<T> {
 	public Tension tension;
 	public double bias;
 	
+	public HermiteInterpolation(Double[] times, T[] points, double bias, Tension tension) {
+		super(times, points);
+		this.bias = bias;
+		this.tension = tension;
+	}
+	
+	public HermiteInterpolation(Double[] times, T[] points, Tension tension) {
+		this(times, points, 0, tension);
+	}
+	
+	public HermiteInterpolation(Double[] times, T[] points) {
+		this(times, points, Tension.Normal);
+	}
+	
 	public HermiteInterpolation(double bias, Tension tension, T... points) {
 		super(points);
 		this.bias = bias;

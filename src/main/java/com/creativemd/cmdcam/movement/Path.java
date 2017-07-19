@@ -74,6 +74,21 @@ public abstract class Path {
 			this.points.add(this.points.get(this.points.size()-1).copy());
 	}
 	
+	public static Vec3d getVecOfTarget(Object target)
+	{
+		if(target instanceof Entity)
+		{
+			if (target instanceof EntityLivingBase)
+				return ((EntityLivingBase) target).getPositionEyes(mc.getRenderPartialTicks()).subtract(new Vec3d(0,((EntityLivingBase) target).getEyeHeight(),0));
+	        else
+	        	return ((Entity) target).getPositionEyes(mc.getRenderPartialTicks());
+		}
+		if(target instanceof BlockPos)
+			return new Vec3d(((BlockPos) target).getX()+0.5, ((BlockPos) target).getY()+0.5, ((BlockPos) target).getZ()+0.5);
+		
+		return null;
+	}
+	
 	public abstract Path createPath(ArrayList<CamPoint> points, long duration, int loops, Movement movement, Object target);
 	
 	public CamPoint getCamPoint(CamPoint point1, CamPoint point2, double percent, double wholeProgress, float renderTickTime, boolean isFirstLoop, boolean isLastLoop)
@@ -83,21 +98,9 @@ public abstract class Path {
 		{
 			newPoint.rotationPitch = lastPitch;
 			newPoint.rotationYaw = lastYaw;
-			Vec3d pos = null;
-			if(target instanceof Entity)
-			{
-				pos = ((Entity) target).getPositionEyes(renderTickTime);
-				if (target instanceof EntityLivingBase)
-		        {
-					pos = ((EntityLivingBase) target).getPositionEyes(renderTickTime).subtract(new Vec3d(0,((EntityLivingBase) target).getEyeHeight(),0));
-		        }
-		        else
-		        {
-		        	pos = ((Entity) target).getPositionEyes(renderTickTime);
-		        }
-			}
-			if(target instanceof BlockPos)
-				pos = new Vec3d((BlockPos) target);
+			
+			Vec3d pos = getVecOfTarget(target);
+			
 			if(pos != null)
 			{
 				//newPoint.rotationPitch = getCamera().rotationPitch;
@@ -120,6 +123,17 @@ public abstract class Path {
 	public EntityLivingBase getCamera()
 	{
 		return mc.player;
+	}
+	
+	public static CamPoint getPoint(Movement movement, ArrayList<CamPoint> points, double percent, int currentLoop, int loops)
+	{
+		double lengthOfPoint = 1 / (points.size()-1);
+		int currentPoint = Math.min((int) (percent / lengthOfPoint), points.size()-2);
+		CamPoint point1 = points.get(currentPoint);
+		CamPoint point2 = points.get(currentPoint+1);
+		double percentOfPoint = (percent % lengthOfPoint);
+		//System.out.println(percent);
+		return movement.getPointInBetween(point1, point2, percent, (double)percent, currentLoop == 0, currentLoop == loops);
 	}
 	
 	public void tick(float renderTickTime)
