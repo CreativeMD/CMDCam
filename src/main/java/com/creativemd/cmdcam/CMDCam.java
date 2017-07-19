@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.creativemd.cmdcam.command.CamCommand;
 import com.creativemd.cmdcam.key.KeyHandler;
 import com.creativemd.cmdcam.movement.Movement;
+import com.creativemd.cmdcam.movement.Movement.MovementParseException;
 import com.creativemd.cmdcam.movement.Path;
 import com.creativemd.cmdcam.utils.CamPoint;
 import com.google.common.eventbus.EventBus;
@@ -72,7 +73,13 @@ public class CMDCam {
 		ArrayList<CamPoint> newPoints = new ArrayList<>(points);
 		if(newPoints.size() == 1)
 			newPoints.add(newPoints.get(0));
-		currentPath = parser.createPath(newPoints, lastDuration, lastLoop, movement, target);
-		currentPath.movement.initMovement(newPoints, lastLoop);
+		
+		try {
+			currentPath = parser.createPath(newPoints, lastDuration, lastLoop, movement, target);
+			currentPath.movement.initMovement(newPoints, lastLoop, target);
+		} catch (MovementParseException e) {
+			currentPath = null;
+			mc.player.sendMessage(new TextComponentString(e.getMessage()));
+		}
 	}
 }

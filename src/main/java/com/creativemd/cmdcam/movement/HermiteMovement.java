@@ -2,6 +2,7 @@ package com.creativemd.cmdcam.movement;
 
 import java.util.ArrayList;
 
+import com.creativemd.cmdcam.movement.Movement.MovementParseException;
 import com.creativemd.cmdcam.utils.CamPoint;
 import com.creativemd.cmdcam.utils.interpolation.CosineInterpolation;
 import com.creativemd.cmdcam.utils.interpolation.HermiteInterpolation;
@@ -20,19 +21,40 @@ public class HermiteMovement extends Movement {
 	public double sizeOfIteration;
 
 	@Override
-	public void initMovement(ArrayList<CamPoint> points, int loops) {
+	public void initMovement(ArrayList<CamPoint> points, int loops, Object target) throws MovementParseException {
+		initMovement(null, points, loops, target);
+	}
+	
+	public void initMovement(Double[] times, ArrayList<CamPoint> points, int loops, Object target) throws MovementParseException {
+		if(points.size() == 1)
+			throw new MovementParseException("At least two points are required");
+		
 		int iterations = loops == 0 ? 1 : loops == 1 ? 2 : 3;
 		
 		sizeOfIteration = 1D/iterations;
 		
-		Vec1[] rollPoints = new Vec1[points.size()*iterations+1];
-		Vec1[] zoomPoints = new Vec1[points.size()*iterations+1];
-		Vec1[] yawPoints = new Vec1[points.size()*iterations+1];
-		Vec1[] pitchPoints = new Vec1[points.size()*iterations+1];
+		int size = points.size()*iterations;
+		if(iterations > 1)
+			size++;
 		
-		Vec3[] positionPoints = new Vec3[points.size()*iterations+1];
+		Vec1[] rollPoints = new Vec1[size];
+		Vec1[] zoomPoints = new Vec1[size];
+		Vec1[] yawPoints = new Vec1[size];
+		Vec1[] pitchPoints = new Vec1[size];
+		
+		Vec3[] positionPoints = new Vec3[size];
+		
+		Double[] newTimes = new Double[size];
 		
 		for (int j = 0; j < iterations; j++) {
+			if(times != null)
+			{
+				for (int i = 0; i < times.length; i++) {
+					int index = i+points.size()*j;
+					if(index < size)
+						newTimes[index] = times[i]*sizeOfIteration + sizeOfIteration*j;
+				}
+			}
 			for (int i = 0; i < points.size(); i++) {
 				rollPoints[i+j*points.size()] = new Vec1(points.get(i).roll);
 				zoomPoints[i+j*points.size()] = new Vec1(points.get(i).zoom);
@@ -43,17 +65,30 @@ public class HermiteMovement extends Movement {
 			}
 		}
 		
-		rollPoints[points.size()*iterations] = new Vec1(points.get(0).roll);
-		zoomPoints[points.size()*iterations] = new Vec1(points.get(0).zoom);
-		yawPoints[points.size()*iterations] = new Vec1(points.get(0).rotationYaw);
-		pitchPoints[points.size()*iterations] = new Vec1(points.get(0).rotationPitch);
-		positionPoints[points.size()*iterations] = new Vec3(points.get(0).x, points.get(0).y, points.get(0).z);
+		if(iterations > 1)
+		{
+			rollPoints[points.size()*iterations] = new Vec1(points.get(0).roll);
+			zoomPoints[points.size()*iterations] = new Vec1(points.get(0).zoom);
+			yawPoints[points.size()*iterations] = new Vec1(points.get(0).rotationYaw);
+			pitchPoints[points.size()*iterations] = new Vec1(points.get(0).rotationPitch);
+			positionPoints[points.size()*iterations] = new Vec3(points.get(0).x, points.get(0).y, points.get(0).z);
+		}
 		
-		rollSpline = new HermiteInterpolation<>(rollPoints);
-		zoomSpline = new HermiteInterpolation<>(zoomPoints);
-		pitchSpline = new HermiteInterpolation<>(pitchPoints);
-		yawSpline = new HermiteInterpolation<>(yawPoints);
-		positionSpline = new HermiteInterpolation<>(Tension.Normal, positionPoints);
+		if(times == null)
+		{
+			rollSpline = new HermiteInterpolation<>(rollPoints);
+			zoomSpline = new HermiteInterpolation<>(zoomPoints);
+			pitchSpline = new HermiteInterpolation<>(pitchPoints);
+			yawSpline = new HermiteInterpolation<>(yawPoints);
+			positionSpline = new HermiteInterpolation<>(Tension.Normal, positionPoints);
+		}else{
+			rollSpline = new HermiteInterpolation<>(newTimes, rollPoints);
+			zoomSpline = new HermiteInterpolation<>(newTimes, zoomPoints);
+			pitchSpline = new HermiteInterpolation<>(newTimes, pitchPoints);
+			yawSpline = new HermiteInterpolation<>(newTimes, yawPoints);
+			positionSpline = new HermiteInterpolation<>(Tension.Normal, positionPoints);
+		}
+		
 	}
 
 	@Override
@@ -82,6 +117,11 @@ public class HermiteMovement extends Movement {
 			point.z = position.z;
 		}
 		return point;
+	}
+	
+	@Override
+	public Vec3 getColor() {
+		return new Vec3(1,1,1);
 	}
 
 }

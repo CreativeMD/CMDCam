@@ -7,6 +7,12 @@ public class CubicInterpolation<T extends Vec> extends Interpolation<T> {
 	public T beginVec;
 	public T endVec;
 	
+	public CubicInterpolation(Double[] times, T[] points) {
+		super(times, points);
+		beginVec = (T) points[0].add(points[0].sub(points[1]));
+		endVec = (T) points[points.length-1].add(points[points.length-1].sub(points[points.length-2]));
+	}
+	
 	public CubicInterpolation(T... points) {
 		super(points);
 		beginVec = (T) points[0].add(points[0].sub(points[1]));
@@ -20,7 +26,7 @@ public class CubicInterpolation<T extends Vec> extends Interpolation<T> {
 			return beginVec.getValueByDim(dim);
 		if(index >= points.size())
 			return endVec.getValueByDim(dim);
-		return points.get(index).getValueByDim(dim);
+		return pointVecs.get(index).getValueByDim(dim);
 	}
 
 	@Override

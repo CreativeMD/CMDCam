@@ -1,11 +1,15 @@
 package com.creativemd.cmdcam.movement;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.creativemd.cmdcam.utils.CamPoint;
 import com.creativemd.cmdcam.utils.interpolation.CosineInterpolation;
+import com.creativemd.cmdcam.utils.interpolation.Vec3;
+
+import net.minecraft.util.math.Vec3d;
 
 public abstract class Movement {
 	
@@ -34,6 +38,7 @@ public abstract class Movement {
 	public static SmoothMovement cosine = new SmoothMovement();
 	public static CubicMovement cubic = new CubicMovement();
 	public static HermiteMovement hermite = new HermiteMovement();
+	public static CircularMovement circular = new CircularMovement();
 	
 	public static void initMovements()
 	{
@@ -41,6 +46,7 @@ public abstract class Movement {
 		registerMovement("cubic", cubic);
 		registerMovement("hermite", hermite);
 		registerMovement("cosine", cosine);
+		registerMovement("circular", circular);
 	}
 	
 	public static String[] getMovementNames()
@@ -56,8 +62,18 @@ public abstract class Movement {
 	
 	public boolean isRenderingEnabled = false;
 	
-	public abstract void initMovement(ArrayList<CamPoint> points, int loops);
+	public abstract Vec3 getColor();
+	
+	public abstract void initMovement(ArrayList<CamPoint> points, int loops, Object target) throws MovementParseException;
 	
 	public abstract CamPoint getPointInBetween(CamPoint point1, CamPoint point2, double percent, double wholeProgress, boolean isFirstLoop, boolean isLastLoop);
+	
+	public static class MovementParseException extends Exception {
+		
+		public MovementParseException(String msg) {
+			super(msg);
+		}
+		
+	}
 	
 }
