@@ -34,7 +34,7 @@ public class CircularMovement extends HermiteMovement {
 			
 			this.target = target;
 			Vector3d firstPoint = new Vector3d(points.get(0).x, points.get(0).y, points.get(0).z);
-			Vector3d centerPoint = new Vector3d(center.x, center.y, center.z);
+			Vector3d centerPoint = new Vector3d(center.xCoord, center.yCoord, center.zCoord);
 			this.sphereOrigin = new Vector3d(firstPoint);
 			sphereOrigin.sub(centerPoint);
 			
@@ -99,7 +99,7 @@ public class CircularMovement extends HermiteMovement {
 		Vec3d center = Path.getVecOfTarget(target);
 		if(center != null)
 		{
-			Vector3d centerPoint = new Vector3d(center.x, center.y, center.z);
+			Vector3d centerPoint = new Vector3d(center.xCoord, center.yCoord, center.zCoord);
 			
 			Vector3d newPoint = new Vector3d(sphereOrigin);
 			newPoint.y = 0;
@@ -107,7 +107,7 @@ public class CircularMovement extends HermiteMovement {
 			matrix.rotY(Math.toRadians(angle));
 			matrix.transform(newPoint);
 			
-			newPoint.y = yAxis.valueAt(wholeProgress).x - center.y;
+			newPoint.y = yAxis.valueAt(wholeProgress).x - center.yCoord;
 			newPoint.normalize();
 			newPoint.scale(radius);
 			
