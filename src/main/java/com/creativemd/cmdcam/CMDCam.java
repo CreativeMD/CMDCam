@@ -1,12 +1,14 @@
 package com.creativemd.cmdcam;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.creativemd.cmdcam.command.CamCommand;
 import com.creativemd.cmdcam.key.KeyHandler;
 import com.creativemd.cmdcam.movement.Movement;
 import com.creativemd.cmdcam.movement.Movement.MovementParseException;
 import com.creativemd.cmdcam.movement.Path;
+import com.creativemd.cmdcam.utils.CMDPath;
 import com.creativemd.cmdcam.utils.CamPoint;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -43,6 +45,8 @@ public class CMDCam {
 	public static ArrayList<CamPoint> points = new ArrayList<>();
 
 	public static double cameraFollowSpeed = 1D;
+	
+	public static HashMap<String, CMDPath> savedPaths = new HashMap<>();
 	
 	@EventHandler
     public void Init(FMLInitializationEvent event)
