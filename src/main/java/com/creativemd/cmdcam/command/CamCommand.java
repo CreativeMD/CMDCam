@@ -3,6 +3,7 @@ package com.creativemd.cmdcam.command;
 import com.creativemd.cmdcam.CMDCam;
 import com.creativemd.cmdcam.CamEventHandler;
 import com.creativemd.cmdcam.movement.Movement;
+import com.creativemd.cmdcam.utils.CMDPath;
 import com.creativemd.cmdcam.utils.CamPoint;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
@@ -83,6 +84,9 @@ public class CamCommand extends CommandBase{
 			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam follow-speed <number> " + ChatFormatting.RED + "default is 1.0"));
 			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam show <all:" + String.join(":", Movement.getMovementNames()) + "> " + ChatFormatting.RED + "shows the path using the given interpolation"));
 			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam hide <all:" + String.join(":", Movement.getMovementNames()) + "> " + ChatFormatting.RED + "hides the path using the given interpolation"));
+			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam save <name> " + ChatFormatting.RED + "saves the current path (including settings) with the given name"));
+			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam load <name> " + ChatFormatting.RED + "tries to load the saved path with the given name"));
+			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam list " + ChatFormatting.RED + "lists all saved paths"));
 		}else{
 			String subCommand = args[0];
 			if(subCommand.equals("clear"))
@@ -145,7 +149,7 @@ public class CamCommand extends CommandBase{
 						Integer index = Integer.parseInt(args[1])-1;
 						if(index >= 0 && index < CMDCam.points.size())
 						{
-							CMDCam.points.remove(index);
+							CMDCam.points.remove((int) index);
 							sender.sendMessage(new TextComponentString("Removed " + (index+1) + ". point!"));
 						}else
 							sender.sendMessage(new TextComponentString("The given index '" + args[1] + "' is too high/low!"));
@@ -300,6 +304,37 @@ public class CamCommand extends CommandBase{
 						sender.sendMessage(new TextComponentString("Interpolation '" + target + "' not found!"));
 				}else
 					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam hide <all:" + String.join(":", Movement.getMovementNames()) + "> " + ChatFormatting.RED + "hides the path using the given interpolation"));
+			}
+			if(subCommand.equals("save"))
+			{
+				if(args.length == 2)
+				{
+					CMDCam.savedPaths.put(args[1], new CMDPath());
+					sender.sendMessage(new TextComponentString("Saved path '" + args[1] + "' successfully!"));
+				}else
+					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam save <name> " + ChatFormatting.RED + "saves the current path (including settings) with the given name"));
+			}
+			if(subCommand.equals("load"))
+			{
+				if(args.length == 2)
+				{
+					CMDPath path = CMDCam.savedPaths.get(args[1]);
+					if(path != null)
+					{
+						path.load();
+						sender.sendMessage(new TextComponentString("Loaded path '" + args[1] + "' successfully!"));
+					}else
+						sender.sendMessage(new TextComponentString("Could not find path '" + args[1] + "'!"));
+				}else
+					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam load <name> " + ChatFormatting.RED + "tries to load the saved path with the given name"));
+			}
+			if(subCommand.equals("list"))
+			{
+				String output = "There are " + CMDCam.savedPaths.size() + " path(s) in total. ";
+				for (String key : CMDCam.savedPaths.keySet()) {
+					output += key + ", ";
+				}
+				sender.sendMessage(new TextComponentString(output));
 			}
 		}
 	}

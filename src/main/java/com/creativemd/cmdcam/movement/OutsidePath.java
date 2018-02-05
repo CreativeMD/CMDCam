@@ -53,6 +53,7 @@ public class OutsidePath extends Path{
 			((EntityPlayer)camPlayer).capabilities.isFlying = true;
 		camPlayer.setPositionAndRotation(point.x, point.y, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
 		camPlayer.setLocationAndAngles(point.x, point.y/*-mc.thePlayer.getEyeHeight()*/, point.z, (float)point.rotationYaw, (float)point.rotationPitch);
+		camPlayer.setRotationYawHead((float) 0);
 	}
 
 }
