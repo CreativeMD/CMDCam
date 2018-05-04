@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
-@Mod(modid = CMDCam.modid, version = CMDCam.version, name = "CMDCam")
+@Mod(modid = CMDCam.modid, version = CMDCam.version, name = "CMDCam", clientSideOnly = true)
 public class CMDCam {
 	
 	public static final String modid = "cmdcam";
