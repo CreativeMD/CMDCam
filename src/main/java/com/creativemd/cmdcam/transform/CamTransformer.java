@@ -17,7 +17,7 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 import com.creativemd.cmdcam.CMDCam;
-import com.creativemd.cmdcam.CamEventHandler;
+import com.creativemd.cmdcam.server.CamEventHandler;
 import com.creativemd.creativecore.transformer.CreativeTransformer;
 import com.creativemd.creativecore.transformer.Transformer;
 import com.creativemd.creativecore.transformer.TransformerNames;
@@ -41,7 +41,6 @@ public class CamTransformer extends CreativeTransformer implements IClassTransfo
 				
 				AbstractInsnNode currentNode = null;
 				
-				@SuppressWarnings("unchecked")
 				Iterator<AbstractInsnNode> iter = m.instructions.iterator();
 				
 				while (iter.hasNext())
@@ -63,7 +62,7 @@ public class CamTransformer extends CreativeTransformer implements IClassTransfo
 				MethodNode m = findMethod(node, "isCurrentViewEntity", "()Z");
 				m.instructions.clear();
 				
-				m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/creativemd/cmdcam/CamEventHandler", "shouldPlayerTakeInput", "()Z", false));
+				m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/creativemd/cmdcam/client/CamEventHandlerClient", "shouldPlayerTakeInput", "()Z", false));
 				m.instructions.add(new InsnNode(Opcodes.IRETURN));
 				
 			}
