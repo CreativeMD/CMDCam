@@ -17,7 +17,7 @@ public class OutsideMode extends CamMode{
 	
 	public OutsideMode(CamPath path) {
 		super(path);
-		if(path != null && path.target != null)
+		if(path != null)
 			this.camPlayer = new EntityZombie(mc.world);
 	}
 
