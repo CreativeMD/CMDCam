@@ -1,6 +1,5 @@
 package com.creativemd.cmdcam.common.utils;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
@@ -17,22 +16,18 @@ public abstract class CamTarget {
 	private static HashMap<String, Class<? extends CamTarget>> targetTypes = new HashMap<>();
 	private static HashMap<Class<? extends CamTarget>, String> targetTypesInverted = new HashMap<>();
 	
-	public static void registerTargetType(Class<? extends CamTarget> targetClass, String id)
-	{
+	public static void registerTargetType(Class<? extends CamTarget> targetClass, String id) {
 		targetTypes.put(id, targetClass);
 		targetTypesInverted.put(targetClass, id);
 	}
 	
-	public static Class<? extends CamTarget> getClassByID(String id)
-	{
+	public static Class<? extends CamTarget> getClassByID(String id) {
 		return targetTypes.get(id);
 	}
 	
-	public static CamTarget readFromNBT(NBTTagCompound nbt)
-	{
+	public static CamTarget readFromNBT(NBTTagCompound nbt) {
 		Class<? extends CamTarget> targetClass = getClassByID(nbt.getString("id"));
-		if(targetClass != null)
-		{
+		if (targetClass != null) {
 			try {
 				return targetClass.getConstructor().newInstance();
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -42,8 +37,7 @@ public abstract class CamTarget {
 		return null;
 	}
 	
-	static
-	{
+	static {
 		registerTargetType(BlockTarget.class, "block");
 		registerTargetType(EntityTarget.class, "entity");
 		registerTargetType(SelfTarget.class, "self");
@@ -55,8 +49,7 @@ public abstract class CamTarget {
 	
 	protected abstract void read(NBTTagCompound nbt);
 	
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt)
-	{
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		nbt.setString("id", targetTypesInverted.get(this.getClass()));
 		write(nbt);
 		return nbt;
@@ -64,8 +57,7 @@ public abstract class CamTarget {
 	
 	public static class BlockTarget extends CamTarget {
 		
-		public BlockTarget()
-		{
+		public BlockTarget() {
 			
 		}
 		
@@ -74,21 +66,21 @@ public abstract class CamTarget {
 		}
 		
 		public BlockPos pos;
-
+		
 		@Override
 		public Vec3d getTargetVec(World world, float partialTicks) {
-			return new Vec3d(pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5);
+			return new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
 		}
-
+		
 		@Override
 		protected void write(NBTTagCompound nbt) {
-			nbt.setIntArray("data", new int[] {pos.getX(), pos.getY(), pos.getZ()});
+			nbt.setIntArray("data", new int[] { pos.getX(), pos.getY(), pos.getZ() });
 		}
-
+		
 		@Override
 		protected void read(NBTTagCompound nbt) {
 			int[] array = nbt.getIntArray("data");
-			if(array == null || array.length != 3)
+			if (array == null || array.length != 3)
 				throw new IllegalArgumentException("Invalid block target data=" + array);
 			pos = new BlockPos(array[0], array[1], array[2]);
 		}
@@ -96,7 +88,7 @@ public abstract class CamTarget {
 	}
 	
 	public static class EntityTarget extends CamTarget {
-
+		
 		public Entity cachedEntity;
 		public String uuid;
 		
@@ -112,12 +104,9 @@ public abstract class CamTarget {
 		@Override
 		public Vec3d getTargetVec(World world, float partialTicks) {
 			
-			if(cachedEntity == null)
-			{
-				for(Entity entity : world.getLoadedEntityList())
-				{
-					if(entity.getCachedUniqueIdString().equals(uuid))
-					{
+			if (cachedEntity == null) {
+				for (Entity entity : world.getLoadedEntityList()) {
+					if (entity.getCachedUniqueIdString().equals(uuid)) {
 						cachedEntity = entity;
 						break;
 					}
@@ -125,18 +114,18 @@ public abstract class CamTarget {
 			}
 			
 			if (cachedEntity instanceof EntityLivingBase)
-				return ((EntityLivingBase) cachedEntity).getPositionEyes(partialTicks).subtract(new Vec3d(0,((EntityLivingBase) cachedEntity).getEyeHeight(),0));
-	        else if(cachedEntity != null)
-	        	return ((Entity) cachedEntity).getPositionEyes(partialTicks);
+				return ((EntityLivingBase) cachedEntity).getPositionEyes(partialTicks).subtract(new Vec3d(0, ((EntityLivingBase) cachedEntity).getEyeHeight(), 0));
+			else if (cachedEntity != null)
+				return ((Entity) cachedEntity).getPositionEyes(partialTicks);
 			
 			return null;
 		}
-
+		
 		@Override
 		protected void write(NBTTagCompound nbt) {
 			nbt.setString("uuid", uuid);
 		}
-
+		
 		@Override
 		protected void read(NBTTagCompound nbt) {
 			uuid = nbt.getString("uuid");
@@ -154,7 +143,7 @@ public abstract class CamTarget {
 		protected void write(NBTTagCompound nbt) {
 			
 		}
-
+		
 		@Override
 		protected void read(NBTTagCompound nbt) {
 			
@@ -166,13 +155,13 @@ public abstract class CamTarget {
 			Entity cachedEntity = Minecraft.getMinecraft().player;
 			
 			if (cachedEntity instanceof EntityLivingBase)
-				return ((EntityLivingBase) cachedEntity).getPositionEyes(partialTicks).subtract(new Vec3d(0,((EntityLivingBase) cachedEntity).getEyeHeight(),0));
-	        else if(cachedEntity != null)
-	        	return ((Entity) cachedEntity).getPositionEyes(partialTicks);
+				return ((EntityLivingBase) cachedEntity).getPositionEyes(partialTicks).subtract(new Vec3d(0, ((EntityLivingBase) cachedEntity).getEyeHeight(), 0));
+			else if (cachedEntity != null)
+				return ((Entity) cachedEntity).getPositionEyes(partialTicks);
 			
 			return null;
 		}
-
+		
 	}
 	
 }

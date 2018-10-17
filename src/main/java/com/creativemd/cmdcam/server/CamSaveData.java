@@ -20,46 +20,39 @@ public class CamSaveData extends WorldSavedData {
 		super(DATA_NAME);
 	}
 	
-	public CamSaveData(String name)
-	{
+	public CamSaveData(String name) {
 		super(name);
 	}
 	
-	public CamPath get(String key)
-	{
+	public CamPath get(String key) {
 		return paths.get(key);
 	}
 	
-	public void set(String key, CamPath path)
-	{
+	public void set(String key, CamPath path) {
 		paths.put(key, path);
 		markDirty();
 	}
 	
-	public boolean remove(String key)
-	{
+	public boolean remove(String key) {
 		return paths.remove(key) != null;
 	}
 	
-	public Collection<String> names()
-	{
+	public Collection<String> names() {
 		return paths.keySet();
 	}
 	
-	public void clear()
-	{
+	public void clear() {
 		paths.clear();
 		markDirty();
 	}
-
+	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
-		for(String key : nbt.getKeySet())
-		{
+		for (String key : nbt.getKeySet()) {
 			paths.put(key, new CamPath(nbt.getCompoundTag(key)));
 		}
 	}
-
+	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		for (Entry<String, CamPath> entry : paths.entrySet()) {
@@ -68,6 +61,4 @@ public class CamSaveData extends WorldSavedData {
 		return nbt;
 	}
 	
-	
-
 }

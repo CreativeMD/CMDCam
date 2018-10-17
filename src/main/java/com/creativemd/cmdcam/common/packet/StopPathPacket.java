@@ -11,26 +11,26 @@ public class StopPathPacket extends CreativeCorePacket {
 	public StopPathPacket() {
 		
 	}
-
+	
 	@Override
 	public void writeBytes(ByteBuf buf) {
 		
 	}
-
+	
 	@Override
 	public void readBytes(ByteBuf buf) {
 		
 	}
-
+	
 	@Override
 	public void executeClient(EntityPlayer player) {
-		if(CMDCamClient.getCurrentPath() != null && CMDCamClient.getCurrentPath().serverPath)
+		if (CMDCamClient.getCurrentPath() != null && CMDCamClient.getCurrentPath().serverPath)
 			CMDCamClient.stopPath();
 	}
-
+	
 	@Override
 	public void executeServer(EntityPlayer player) {
 		
 	}
-
+	
 }

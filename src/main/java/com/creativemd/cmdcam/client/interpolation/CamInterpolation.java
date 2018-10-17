@@ -20,8 +20,7 @@ public abstract class CamInterpolation {
 		return interpolationTypes.get(interpolation);
 	}
 	
-	public static void registerInterpolation(String name, CamInterpolation interpolation)
-	{
+	public static void registerInterpolation(String name, CamInterpolation interpolation) {
 		interpolationTypes.put(name, interpolation);
 	}
 	
@@ -31,8 +30,7 @@ public abstract class CamInterpolation {
 	public static HermiteMovement hermite = new HermiteMovement();
 	public static CircularMovement circular = new CircularMovement();
 	
-	static
-	{
+	static {
 		registerInterpolation("linear", linear);
 		registerInterpolation("cubic", cubic);
 		registerInterpolation("hermite", hermite);
@@ -40,8 +38,7 @@ public abstract class CamInterpolation {
 		registerInterpolation("circular", circular);
 	}
 	
-	public static String[] getMovementNames()
-	{
+	public static String[] getMovementNames() {
 		String[] names = new String[interpolationTypes.size()];
 		int i = 0;
 		for (String name : interpolationTypes.keySet()) {

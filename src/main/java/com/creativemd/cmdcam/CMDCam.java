@@ -27,8 +27,7 @@ public class CMDCam {
 	public static CMDCamProxy proxy;
 	
 	@EventHandler
-    public void Init(FMLInitializationEvent event)
-    {
+	public void Init(FMLInitializationEvent event) {
 		CreativeCorePacket.registerPacket(ConnectPacket.class, "cmdconnect");
 		CreativeCorePacket.registerPacket(StartPathPacket.class, "cmdstart");
 		CreativeCorePacket.registerPacket(StopPathPacket.class, "cmdstop");
@@ -38,11 +37,10 @@ public class CMDCam {
 		MinecraftForge.EVENT_BUS.register(new CamEventHandler());
 		
 		proxy.init(event);
-    }
+	}
 	
 	@EventHandler
-	public void serverStarting(FMLServerStartingEvent event)
-	{
+	public void serverStarting(FMLServerStartingEvent event) {
 		proxy.serverStarting(event);
 		
 		event.registerServerCommand(new CamCommandServer());

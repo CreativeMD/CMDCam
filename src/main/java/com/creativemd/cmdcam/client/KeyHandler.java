@@ -21,8 +21,7 @@ public class KeyHandler {
 	public static KeyBinding pointKey = new KeyBinding("key.point", Keyboard.KEY_P, "key.categories.cmdcam");
 	public static KeyBinding startStop = new KeyBinding("key.startStop", Keyboard.KEY_U, "key.categories.cmdcam");
 	
-	public static void initKeys()
-	{
+	public static void initKeys() {
 		ClientRegistry.registerKeyBinding(zoomIn);
 		ClientRegistry.registerKeyBinding(zoomCenter);
 		ClientRegistry.registerKeyBinding(zoomOut);

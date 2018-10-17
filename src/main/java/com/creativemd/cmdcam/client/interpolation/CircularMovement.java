@@ -1,16 +1,12 @@
 package com.creativemd.cmdcam.client.interpolation;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Vector3d;
 
-import com.creativemd.cmdcam.CMDCam;
 import com.creativemd.cmdcam.client.PathParseException;
-import com.creativemd.cmdcam.client.mode.CamMode;
 import com.creativemd.cmdcam.common.utils.CamPoint;
 import com.creativemd.cmdcam.common.utils.CamTarget;
 import com.creativemd.cmdcam.common.utils.math.HermiteInterpolation;
@@ -30,13 +26,12 @@ public class CircularMovement extends HermiteMovement {
 	public HermiteInterpolation<Vec1> yAxis;
 	
 	@Override
-	public void initMovement(List<CamPoint> points, int loops, CamTarget target) throws PathParseException {		
-		if(target == null)
-			throw new PathParseException("No target found");		
+	public void initMovement(List<CamPoint> points, int loops, CamTarget target) throws PathParseException {
+		if (target == null)
+			throw new PathParseException("No target found");
 		
 		Vec3d center = target.getTargetVec(mc.world, mc.getRenderPartialTicks());
-		if(center != null)
-		{
+		if (center != null) {
 			points.add(points.get(0));
 			
 			this.target = target;
@@ -56,22 +51,21 @@ public class CircularMovement extends HermiteMovement {
 			ArrayList<CamPoint> newPointsSorted = new ArrayList<>();
 			newPointsSorted.add(points.get(0));
 			
-			for (int i = 1; i < points.size()-1; i++) {
+			for (int i = 1; i < points.size() - 1; i++) {
 				
-				Vector3d point = new Vector3d(points.get(i).x, firstPoint.y, points.get(i).z); 
+				Vector3d point = new Vector3d(points.get(i).x, firstPoint.y, points.get(i).z);
 				point.sub(centerPoint);
 				
 				double dot = point.dot(sphereOrigin);
-				double det = ((point.x*sphereOrigin.z) - (point.z*sphereOrigin.x));
+				double det = ((point.x * sphereOrigin.z) - (point.z * sphereOrigin.x));
 				double angle = Math.toDegrees(Math.atan2(det, dot));
 				
-				if(angle < 0)
+				if (angle < 0)
 					angle += 360;
 				
-				double time = angle/360;
+				double time = angle / 360;
 				for (int j = 0; j < times.size(); j++) {
-					if(times.get(j) > time)
-					{
+					if (times.get(j) > time) {
 						times.add(j, time);
 						vecs.add(j, new Vec1(points.get(i).y));
 						newPointsSorted.add(j, points.get(i));
@@ -83,7 +77,7 @@ public class CircularMovement extends HermiteMovement {
 				vecs.add(new Vec1(points.get(i).y));
 			}
 			
-			if(loops == 0)
+			if (loops == 0)
 				newPointsSorted.add(newPointsSorted.get(0).copy());
 			
 			times.add(1D);
@@ -92,20 +86,18 @@ public class CircularMovement extends HermiteMovement {
 			this.yAxis = new HermiteInterpolation<>(times.toArray(new Double[0]), vecs.toArray(new Vec1[0]));
 			
 			super.initMovement(times.toArray(new Double[0]), newPointsSorted, loops, target);
-		}else
+		} else
 			throw new PathParseException("Invalid target");
 	}
-
+	
 	@Override
-	public CamPoint getPointInBetween(CamPoint point1, CamPoint point2, double percent, double wholeProgress,
-			boolean isFirstLoop, boolean isLastLoop) {
+	public CamPoint getPointInBetween(CamPoint point1, CamPoint point2, double percent, double wholeProgress, boolean isFirstLoop, boolean isLastLoop) {
 		CamPoint newCamPoint = super.getPointInBetween(point1, point2, percent, wholeProgress, isFirstLoop, isLastLoop);
 		
-		double angle = wholeProgress*360;
+		double angle = wholeProgress * 360;
 		
 		Vec3d center = target.getTargetVec(mc.world, mc.getRenderPartialTicks());
-		if(center != null)
-		{
+		if (center != null) {
 			Vector3d centerPoint = new Vector3d(center.x, center.y, center.z);
 			
 			Vector3d newPoint = new Vector3d(sphereOrigin);
@@ -124,13 +116,12 @@ public class CircularMovement extends HermiteMovement {
 			newCamPoint.z = newPoint.z;
 		}
 		
-		
 		return newCamPoint;
 	}
 	
 	@Override
 	public Vec3 getColor() {
-		return new Vec3(1,1,0);
+		return new Vec3(1, 1, 0);
 	}
-
+	
 }
