@@ -10,7 +10,7 @@ import com.creativemd.cmdcam.client.mode.CamMode;
 import com.creativemd.cmdcam.client.mode.OutsideMode;
 import com.creativemd.cmdcam.common.utils.CamPoint;
 import com.creativemd.cmdcam.common.utils.CamTarget;
-import com.creativemd.cmdcam.common.utils.math.Vec3;
+import com.creativemd.creativecore.common.utils.math.vec.Vec3;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;

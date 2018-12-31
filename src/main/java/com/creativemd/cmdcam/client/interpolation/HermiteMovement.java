@@ -5,10 +5,10 @@ import java.util.List;
 import com.creativemd.cmdcam.client.PathParseException;
 import com.creativemd.cmdcam.common.utils.CamPoint;
 import com.creativemd.cmdcam.common.utils.CamTarget;
-import com.creativemd.cmdcam.common.utils.math.HermiteInterpolation;
-import com.creativemd.cmdcam.common.utils.math.HermiteInterpolation.Tension;
-import com.creativemd.cmdcam.common.utils.math.Vec1;
-import com.creativemd.cmdcam.common.utils.math.Vec3;
+import com.creativemd.creativecore.common.utils.math.interpolation.HermiteInterpolation;
+import com.creativemd.creativecore.common.utils.math.interpolation.HermiteInterpolation.Tension;
+import com.creativemd.creativecore.common.utils.math.vec.Vec1;
+import com.creativemd.creativecore.common.utils.math.vec.Vec3;
 
 public class HermiteMovement extends CamInterpolation {
 	

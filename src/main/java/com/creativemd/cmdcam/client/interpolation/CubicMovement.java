@@ -5,9 +5,9 @@ import java.util.List;
 import com.creativemd.cmdcam.client.PathParseException;
 import com.creativemd.cmdcam.common.utils.CamPoint;
 import com.creativemd.cmdcam.common.utils.CamTarget;
-import com.creativemd.cmdcam.common.utils.math.CubicInterpolation;
-import com.creativemd.cmdcam.common.utils.math.Vec1;
-import com.creativemd.cmdcam.common.utils.math.Vec3;
+import com.creativemd.creativecore.common.utils.math.interpolation.CubicInterpolation;
+import com.creativemd.creativecore.common.utils.math.vec.Vec1;
+import com.creativemd.creativecore.common.utils.math.vec.Vec3;
 
 public class CubicMovement extends CamInterpolation {
 	
