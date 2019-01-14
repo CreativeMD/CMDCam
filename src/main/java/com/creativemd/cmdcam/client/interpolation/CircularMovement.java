@@ -6,6 +6,8 @@ import java.util.List;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Vector3d;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.creativemd.cmdcam.client.PathParseException;
 import com.creativemd.cmdcam.common.utils.CamPoint;
 import com.creativemd.cmdcam.common.utils.CamTarget;
@@ -83,7 +85,7 @@ public class CircularMovement extends HermiteMovement {
 			times.add(1D);
 			vecs.add(new Vec1(firstPoint.y));
 			
-			this.yAxis = new HermiteInterpolation<>(times.toArray(new Double[0]), vecs.toArray(new Vec1[0]));
+			this.yAxis = new HermiteInterpolation<>(ArrayUtils.toPrimitive(times.toArray(new Double[0])), vecs.toArray(new Vec1[0]));
 			
 			super.initMovement(times.toArray(new Double[0]), newPointsSorted, loops, target);
 		} else

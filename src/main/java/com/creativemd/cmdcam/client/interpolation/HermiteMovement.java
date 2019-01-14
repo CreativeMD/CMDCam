@@ -44,7 +44,7 @@ public class HermiteMovement extends CamInterpolation {
 		
 		Vec3[] positionPoints = new Vec3[size];
 		
-		Double[] newTimes = new Double[size];
+		double[] newTimes = new double[size];
 		
 		for (int j = 0; j < iterations; j++) {
 			if (times != null) {

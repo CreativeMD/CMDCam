@@ -7,7 +7,7 @@ import com.creativemd.cmdcam.common.packet.StartPathPacket;
 import com.creativemd.cmdcam.common.packet.StopPathPacket;
 import com.creativemd.cmdcam.common.utils.CamPath;
 import com.creativemd.creativecore.common.packet.PacketHandler;
-import com.mojang.realmsclient.gui.ChatFormatting;
+import com.creativemd.creativecore.common.utils.mc.ChatFormatting;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
