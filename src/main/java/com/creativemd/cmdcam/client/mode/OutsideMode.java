@@ -46,7 +46,9 @@ public class OutsideMode extends CamMode {
 		if (camPlayer instanceof EntityPlayer)
 			((EntityPlayer) camPlayer).capabilities.isFlying = true;
 		camPlayer.setPositionAndRotation(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
-		camPlayer.setLocationAndAngles(point.x, point.y/*-mc.thePlayer.getEyeHeight()*/, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
+		double playerEyeHeight = mc.player.getEyeHeight();
+		double camEyeHeight = camPlayer.getEyeHeight();
+		camPlayer.setLocationAndAngles(point.x, point.y - camPlayer.getEyeHeight() + mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
 		camPlayer.setRotationYawHead((float) 0);
 	}
 	
