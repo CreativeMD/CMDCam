@@ -32,7 +32,7 @@ public class CamEventHandlerClient {
 	
 	public static Minecraft mc = Minecraft.getMinecraft();
 	public static float defaultfov = 70.0F;
-	public static float lastFOV;
+	public static float lastFOV = 0;
 	public static final float amountZoom = 0.1F;
 	public static final float amountroll = 0.5F;
 	
@@ -44,7 +44,7 @@ public class CamEventHandlerClient {
 		if (mc.world == null)
 			CMDCamClient.isInstalledOnSever = false;
 		
-		if (lastFOV != mc.gameSettings.fovSetting)
+		if (lastFOV != 0 && lastFOV != mc.gameSettings.fovSetting)
 			defaultfov = mc.gameSettings.fovSetting;
 		
 		if (mc.player != null && mc.world != null) {

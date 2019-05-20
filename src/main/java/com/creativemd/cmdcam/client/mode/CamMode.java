@@ -73,7 +73,6 @@ public abstract class CamMode {
 	}
 	
 	public void onPathFinish() {
-		CamEventHandlerClient.fov = CamEventHandlerClient.defaultfov;
 		mc.gameSettings.fovSetting = CamEventHandlerClient.defaultfov;
 		CamEventHandlerClient.roll = 0;
 	}
