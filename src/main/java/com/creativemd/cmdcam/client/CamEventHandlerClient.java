@@ -32,6 +32,7 @@ public class CamEventHandlerClient {
 	
 	public static Minecraft mc = Minecraft.getMinecraft();
 	public static float defaultfov = 70.0F;
+	public static float lastFOV;
 	public static final float amountZoom = 0.1F;
 	public static final float amountroll = 0.5F;
 	
@@ -42,6 +43,9 @@ public class CamEventHandlerClient {
 	public void onRenderTick(RenderTickEvent event) {
 		if (mc.world == null)
 			CMDCamClient.isInstalledOnSever = false;
+		
+		if (lastFOV != mc.gameSettings.fovSetting)
+			defaultfov = mc.gameSettings.fovSetting;
 		
 		if (mc.player != null && mc.world != null) {
 			if (mc.inGameHasFocus) {
@@ -95,6 +99,7 @@ public class CamEventHandlerClient {
 				}
 			}
 		}
+		lastFOV = mc.gameSettings.fovSetting;
 		lastRenderTime = System.nanoTime();
 	}
 	
