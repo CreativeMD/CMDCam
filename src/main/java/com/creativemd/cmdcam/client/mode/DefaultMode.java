@@ -41,4 +41,12 @@ public class DefaultMode extends CamMode {
 		
 	}
 	
+	@Override
+	public void onPathFinish() {
+		super.onPathFinish();
+		if (!mc.player.isCreative() && !mc.player.isSpectator()) {
+			mc.player.capabilities.isFlying = false;
+		}
+	}
+	
 }
