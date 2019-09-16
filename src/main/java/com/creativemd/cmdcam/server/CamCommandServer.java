@@ -3,6 +3,7 @@ package com.creativemd.cmdcam.server;
 import java.util.Collection;
 import java.util.List;
 
+import com.creativemd.cmdcam.client.interpolation.CamInterpolation;
 import com.creativemd.cmdcam.common.packet.StartPathPacket;
 import com.creativemd.cmdcam.common.packet.StopPathPacket;
 import com.creativemd.cmdcam.common.utils.CamPath;
@@ -63,7 +64,7 @@ public class CamCommandServer extends CommandBase {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length == 0) {
-			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server start <player> <path> [time|ms|s|m|h|d] [loops (-1 -> endless)] " + ChatFormatting.RED + "starts the animation"));
+			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server start <player> <path> <" + String.join(":", CamInterpolation.getMovementNames()) + "> [time|ms|s|m|h|d] [loops (-1 -> endless)] " + ChatFormatting.RED + "starts the animation"));
 			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server stop <player> " + ChatFormatting.RED + "stops the animation"));
 			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server list " + ChatFormatting.RED + "lists all saved paths"));
 			sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server remove <name> " + ChatFormatting.RED + "removes the given path"));
@@ -71,21 +72,22 @@ public class CamCommandServer extends CommandBase {
 		} else {
 			String subCommand = args[0];
 			if (subCommand.equals("start")) {
-				if (args.length >= 3) {
+				if (args.length >= 4) {
 					List<EntityPlayerMP> players = getPlayers(server, sender, args[1]);
 					CamPath path = CMDCamServer.getPath(sender.getEntityWorld(), args[2]);
 					if (path != null) {
-						if (args.length >= 4) {
+						path.mode = args[3];
+						if (args.length >= 5) {
 							path = path.copy();
-							long duration = CamCommandServer.StringToDuration(args[1]);
+							long duration = CamCommandServer.StringToDuration(args[4]);
 							if (duration > 0)
 								path.duration = duration;
 							else {
-								sender.sendMessage(new TextComponentString("Invalid time '" + args[1] + "'!"));
+								sender.sendMessage(new TextComponentString("Invalid time '" + args[4] + "'!"));
 								return;
 							}
-							if (args.length >= 5)
-								path.currentLoop = Integer.parseInt(args[2]);
+							if (args.length >= 6)
+								path.currentLoop = Integer.parseInt(args[5]);
 						}
 						
 						PacketHandler.sendPacketToPlayers(new StartPathPacket(path), players);
@@ -93,7 +95,7 @@ public class CamCommandServer extends CommandBase {
 						sender.sendMessage(new TextComponentString("Path '" + args[2] + "' could not be found!"));
 					
 				} else
-					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server start <player> <path> [time|ms|s|m|h|d] [loops (-1 -> endless)] " + ChatFormatting.RED + "starts the animation"));
+					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server start <player> <path> <" + String.join(":", CamInterpolation.getMovementNames()) + "> [time|ms|s|m|h|d] [loops (-1 -> endless)] " + ChatFormatting.RED + "starts the animation"));
 			}
 			if (subCommand.equals("stop")) {
 				if (args.length >= 2)
