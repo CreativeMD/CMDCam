@@ -8,9 +8,9 @@ import de.creativemd.cmdcam.client.PathParseException;
 import de.creativemd.cmdcam.client.interpolation.CamInterpolation;
 import de.creativemd.cmdcam.client.mode.CamMode;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.INBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -26,17 +26,17 @@ public class CamPath {
 	public double cameraFollowSpeed;
 	public boolean serverPath = false;
 	
-	public CamPath(NBTTagCompound nbt) {
+	public CamPath(CompoundNBT nbt) {
 		this.loop = nbt.getInt("loop");
 		this.duration = nbt.getLong("duration");
 		this.mode = nbt.getString("mode");
 		this.interpolation = nbt.getString("interpolation");
-		if (nbt.hasKey("target"))
+		if (nbt.contains("target"))
 			this.target = CamTarget.readFromNBT(nbt.getCompound("target"));
-		NBTTagList list = nbt.getList("points", 10);
+		ListNBT list = nbt.getList("points", 10);
 		this.points = new ArrayList<>();
-		for (INBTBase point : list) {
-			points.add(new CamPoint((NBTTagCompound) point));
+		for (INBT point : list) {
+			points.add(new CamPoint((CompoundNBT) point));
 		}
 		this.cameraFollowSpeed = nbt.getDouble("cameraFollowSpeed");
 	}
@@ -51,19 +51,19 @@ public class CamPath {
 		this.cameraFollowSpeed = cameraFollowSpeed;
 	}
 	
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		nbt.setInt("loop", loop);
-		nbt.setLong("duration", duration);
-		nbt.setString("mode", mode);
-		nbt.setString("interpolation", interpolation);
+	public CompoundNBT writeToNBT(CompoundNBT nbt) {
+		nbt.putInt("loop", loop);
+		nbt.putLong("duration", duration);
+		nbt.putString("mode", mode);
+		nbt.putString("interpolation", interpolation);
 		if (target != null)
-			nbt.setTag("target", target.writeToNBT(new NBTTagCompound()));
-		NBTTagList list = new NBTTagList();
+			nbt.put("target", target.writeToNBT(new CompoundNBT()));
+		ListNBT list = new ListNBT();
 		for (CamPoint point : points) {
-			list.add(point.writeToNBT(new NBTTagCompound()));
+			list.add(point.writeToNBT(new CompoundNBT()));
 		}
-		nbt.setTag("points", list);
-		nbt.setDouble("cameraFollowSpeed", cameraFollowSpeed);
+		nbt.put("points", list);
+		nbt.putDouble("cameraFollowSpeed", cameraFollowSpeed);
 		return nbt;
 	}
 	

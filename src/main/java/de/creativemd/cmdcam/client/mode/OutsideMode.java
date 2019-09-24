@@ -2,18 +2,18 @@ package de.creativemd.cmdcam.client.mode;
 
 import de.creativemd.cmdcam.common.utils.CamPath;
 import de.creativemd.cmdcam.common.utils.CamPoint;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.monster.ZombieEntity;
+import net.minecraft.entity.player.PlayerEntity;
 
 public class OutsideMode extends CamMode {
 	
-	public EntityLivingBase camPlayer;
+	public LivingEntity camPlayer;
 	
 	public OutsideMode(CamPath path) {
 		super(path);
 		if (path != null)
-			this.camPlayer = new EntityZombie(mc.world);
+			this.camPlayer = new ZombieEntity(mc.world);
 	}
 	
 	@Override
@@ -33,7 +33,7 @@ public class OutsideMode extends CamMode {
 	}
 	
 	@Override
-	public EntityLivingBase getCamera() {
+	public LivingEntity getCamera() {
 		return camPlayer;
 	}
 	
@@ -42,8 +42,8 @@ public class OutsideMode extends CamMode {
 		super.processPoint(point);
 		
 		mc.setRenderViewEntity(camPlayer);
-		if (camPlayer instanceof EntityPlayer)
-			((EntityPlayer) camPlayer).abilities.isFlying = true;
+		if (camPlayer instanceof PlayerEntity)
+			((PlayerEntity) camPlayer).abilities.isFlying = true;
 		camPlayer.setPositionAndRotation(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
 		camPlayer.setLocationAndAngles(point.x, point.y - camPlayer.getEyeHeight() + mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
 		camPlayer.setRotationYawHead(0);

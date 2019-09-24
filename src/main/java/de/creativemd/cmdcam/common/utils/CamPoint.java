@@ -2,7 +2,7 @@ package de.creativemd.cmdcam.common.utils;
 
 import de.creativemd.cmdcam.client.CamEventHandlerClient;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.api.distmarker.Dist;
@@ -30,7 +30,7 @@ public class CamPoint {
 		this.zoom = zoom;
 	}
 	
-	public CamPoint(NBTTagCompound nbt) {
+	public CamPoint(CompoundNBT nbt) {
 		this.x = nbt.getDouble("x");
 		this.y = nbt.getDouble("y");
 		this.z = nbt.getDouble("z");
@@ -94,14 +94,14 @@ public class CamPoint {
 		return "x:" + x + ",y:" + y + ",z:" + z + ",yaw:" + rotationYaw + ",pitch:" + rotationPitch + ",roll:" + roll + ",zoom:" + zoom;
 	}
 	
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		nbt.setDouble("x", x);
-		nbt.setDouble("y", y);
-		nbt.setDouble("z", z);
-		nbt.setDouble("rotationYaw", rotationYaw);
-		nbt.setDouble("rotationPitch", rotationPitch);
-		nbt.setDouble("roll", roll);
-		nbt.setDouble("zoom", zoom);
+	public CompoundNBT writeToNBT(CompoundNBT nbt) {
+		nbt.putDouble("x", x);
+		nbt.putDouble("y", y);
+		nbt.putDouble("z", z);
+		nbt.putDouble("rotationYaw", rotationYaw);
+		nbt.putDouble("rotationPitch", rotationPitch);
+		nbt.putDouble("roll", roll);
+		nbt.putDouble("zoom", zoom);
 		return nbt;
 	}
 	

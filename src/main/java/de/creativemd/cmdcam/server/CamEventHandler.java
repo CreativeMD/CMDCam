@@ -2,8 +2,8 @@ package de.creativemd.cmdcam.server;
 
 import de.creativemd.cmdcam.CMDCam;
 import de.creativemd.cmdcam.common.packet.ConnectPacket;
+import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 public class CamEventHandler {
 	

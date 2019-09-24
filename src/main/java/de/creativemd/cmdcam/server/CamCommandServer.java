@@ -10,13 +10,12 @@ import de.creativemd.cmdcam.common.packet.StartPathPacket;
 import de.creativemd.cmdcam.common.packet.StopPathPacket;
 import de.creativemd.cmdcam.common.utils.CamPath;
 import net.minecraft.command.CommandException;
-import net.minecraft.command.FunctionObject.CommandEntry;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 
-public class CamCommandServer extends CommandEntry {
+public class CamCommandServer extends C {
 	
 	@Override
 	public String getName() {

@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 
 import de.creativemd.cmdcam.CMDCam;
 import de.creativemd.cmdcam.common.utils.CamPath;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.storage.WorldSavedData;
 
 public class CamSaveData extends WorldSavedData {
@@ -46,16 +46,16 @@ public class CamSaveData extends WorldSavedData {
 	}
 	
 	@Override
-	public void read(NBTTagCompound nbt) {
+	public void read(CompoundNBT nbt) {
 		for (String key : nbt.keySet()) {
 			paths.put(key, new CamPath(nbt.getCompound(key)));
 		}
 	}
 	
 	@Override
-	public NBTTagCompound write(NBTTagCompound nbt) {
+	public CompoundNBT write(CompoundNBT nbt) {
 		for (Entry<String, CamPath> entry : paths.entrySet()) {
-			nbt.setTag(entry.getKey(), entry.getValue().writeToNBT(new NBTTagCompound()));
+			nbt.put(entry.getKey(), entry.getValue().writeToNBT(new CompoundNBT()));
 		}
 		return nbt;
 	}

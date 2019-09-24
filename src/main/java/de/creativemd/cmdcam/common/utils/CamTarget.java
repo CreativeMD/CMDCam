@@ -5,8 +5,9 @@ import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -25,7 +26,7 @@ public abstract class CamTarget {
 		return targetTypes.get(id);
 	}
 	
-	public static CamTarget readFromNBT(NBTTagCompound nbt) {
+	public static CamTarget readFromNBT(CompoundNBT nbt) {
 		Class<? extends CamTarget> targetClass = getClassByID(nbt.getString("id"));
 		if (targetClass != null) {
 			try {
@@ -45,12 +46,12 @@ public abstract class CamTarget {
 	
 	public abstract Vec3d getTargetVec(World world, float partialTicks);
 	
-	protected abstract void write(NBTTagCompound nbt);
+	protected abstract void write(CompoundNBT nbt);
 	
-	protected abstract void read(NBTTagCompound nbt);
+	protected abstract void read(CompoundNBT nbt);
 	
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		nbt.setString("id", targetTypesInverted.get(this.getClass()));
+	public CompoundNBT writeToNBT(CompoundNBT nbt) {
+		nbt.putString("id", targetTypesInverted.get(this.getClass()));
 		write(nbt);
 		return nbt;
 	}
@@ -73,12 +74,12 @@ public abstract class CamTarget {
 		}
 		
 		@Override
-		protected void write(NBTTagCompound nbt) {
-			nbt.setIntArray("data", new int[] { pos.getX(), pos.getY(), pos.getZ() });
+		protected void write(CompoundNBT nbt) {
+			nbt.putIntArray("data", new int[] { pos.getX(), pos.getY(), pos.getZ() });
 		}
 		
 		@Override
-		protected void read(NBTTagCompound nbt) {
+		protected void read(CompoundNBT nbt) {
 			int[] array = nbt.getIntArray("data");
 			if (array == null || array.length != 3)
 				throw new IllegalArgumentException("Invalid block target data=" + array);
@@ -105,7 +106,7 @@ public abstract class CamTarget {
 		public Vec3d getTargetVec(World world, float partialTicks) {
 			
 			if (cachedEntity == null) {
-				for (Entity entity : world.loadedEntityList) {
+				for (Entity entity : world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY))) {
 					if (entity.getCachedUniqueIdString().equals(uuid)) {
 						cachedEntity = entity;
 						break;
@@ -113,8 +114,8 @@ public abstract class CamTarget {
 				}
 			}
 			
-			if (cachedEntity instanceof EntityLivingBase)
-				return ((EntityLivingBase) cachedEntity).getEyePosition(partialTicks).subtract(new Vec3d(0, ((EntityLivingBase) cachedEntity).getEyeHeight(), 0));
+			if (cachedEntity instanceof LivingEntity)
+				return ((LivingEntity) cachedEntity).getEyePosition(partialTicks).subtract(new Vec3d(0, ((LivingEntity) cachedEntity).getEyeHeight(), 0));
 			else if (cachedEntity != null)
 				return cachedEntity.getEyePosition(partialTicks);
 			
@@ -122,12 +123,12 @@ public abstract class CamTarget {
 		}
 		
 		@Override
-		protected void write(NBTTagCompound nbt) {
-			nbt.setString("uuid", uuid);
+		protected void write(CompoundNBT nbt) {
+			nbt.putString("uuid", uuid);
 		}
 		
 		@Override
-		protected void read(NBTTagCompound nbt) {
+		protected void read(CompoundNBT nbt) {
 			uuid = nbt.getString("uuid");
 		}
 		
@@ -140,12 +141,12 @@ public abstract class CamTarget {
 		}
 		
 		@Override
-		protected void write(NBTTagCompound nbt) {
+		protected void write(CompoundNBT nbt) {
 			
 		}
 		
 		@Override
-		protected void read(NBTTagCompound nbt) {
+		protected void read(CompoundNBT nbt) {
 			
 		}
 		
@@ -154,8 +155,8 @@ public abstract class CamTarget {
 			
 			Entity cachedEntity = Minecraft.getInstance().player;
 			
-			if (cachedEntity instanceof EntityLivingBase)
-				return ((EntityLivingBase) cachedEntity).getEyePosition(partialTicks).subtract(new Vec3d(0, ((EntityLivingBase) cachedEntity).getEyeHeight(), 0));
+			if (cachedEntity instanceof LivingEntity)
+				return ((LivingEntity) cachedEntity).getEyePosition(partialTicks).subtract(new Vec3d(0, ((LivingEntity) cachedEntity).getEyeHeight(), 0));
 			else if (cachedEntity != null)
 				return cachedEntity.getEyePosition(partialTicks);
 			

@@ -13,6 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import team.creative.creativecore.common.network.CreativeNetwork;
 
@@ -40,6 +41,9 @@ public class CMDCam {
 		NETWORK.registerType(SetPathPacket.class);
 		NETWORK.registerType(StartPathPacket.class);
 		NETWORK.registerType(StopPathPacket.class);
-		
+	}
+	
+	private void serverStart(FMLServerStartingEvent event) {
+		event.getCommandDispatcher().register(command)
 	}
 }

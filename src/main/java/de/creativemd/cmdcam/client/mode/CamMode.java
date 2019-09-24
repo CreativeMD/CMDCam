@@ -8,7 +8,7 @@ import de.creativemd.cmdcam.client.interpolation.CamInterpolation;
 import de.creativemd.cmdcam.common.utils.CamPath;
 import de.creativemd.cmdcam.common.utils.CamPoint;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -73,11 +73,11 @@ public abstract class CamMode {
 	
 	public void onPathFinish() {
 		CamEventHandlerClient.fov = CamEventHandlerClient.defaultfov;
-		mc.gameSettings.fovSetting = CamEventHandlerClient.defaultfov;
+		mc.gameSettings.fov = CamEventHandlerClient.defaultfov;
 		CamEventHandlerClient.roll = 0;
 	}
 	
-	public EntityLivingBase getCamera() {
+	public LivingEntity getCamera() {
 		return mc.player;
 	}
 	
@@ -85,7 +85,7 @@ public abstract class CamMode {
 	
 	public void processPoint(CamPoint point) {
 		CamEventHandlerClient.roll = (float) point.roll;
-		mc.gameSettings.fovSetting = (float) point.zoom;
+		mc.gameSettings.fov = (float) point.zoom;
 	}
 	
 	public static CamPoint getPoint(CamInterpolation movement, ArrayList<CamPoint> points, double percent, int currentLoop, int loops) {
