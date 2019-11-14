@@ -10,6 +10,4 @@ logoFile="cmdcam.png"
 	side="CLIENT"
 	displayURL="https://minecraft.curseforge.com/projects/cmdcam"
 	authors="CreativeMD"
-	description='''
-	Create camera paths.
-	'''
+	description='''Create camera paths.'''
