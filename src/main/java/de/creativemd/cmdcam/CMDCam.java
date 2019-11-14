@@ -10,6 +10,8 @@ import de.creativemd.cmdcam.common.packet.SetPathPacket;
 import de.creativemd.cmdcam.common.packet.StartPathPacket;
 import de.creativemd.cmdcam.common.packet.StopPathPacket;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -22,12 +24,12 @@ public class CMDCam {
 	
 	public static final String MODID = "cmdcam";
 	
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger(CMDCam.MODID);
 	public static CreativeNetwork NETWORK;
 	
 	public CMDCam() {
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client);
 	}
 	
 	private void client(final FMLClientSetupEvent event) {
