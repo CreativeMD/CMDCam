@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -25,7 +24,7 @@ public abstract class CamMode {
 	}
 	
 	public static CamMode getMode(String id) {
-		return modes.get(id);
+		return modes.get(id.toLowerCase());
 	}
 	
 	static {
@@ -77,10 +76,6 @@ public abstract class CamMode {
 		CamEventHandlerClient.roll = 0;
 	}
 	
-	public LivingEntity getCamera() {
-		return mc.player;
-	}
-	
 	public abstract String getDescription();
 	
 	public void processPoint(CamPoint point) {
@@ -89,11 +84,11 @@ public abstract class CamMode {
 	}
 	
 	public static CamPoint getPoint(CamInterpolation movement, ArrayList<CamPoint> points, double percent, int currentLoop, int loops) {
-		double lengthOfPoint = 1 / (points.size() - 1);
+		double lengthOfPoint = 1D / (points.size() - 1);
 		int currentPoint = Math.min((int) (percent / lengthOfPoint), points.size() - 2);
 		CamPoint point1 = points.get(currentPoint);
 		CamPoint point2 = points.get(currentPoint + 1);
-		return movement.getPointInBetween(point1, point2, percent, percent, currentLoop == 0, currentLoop == loops);
+		return movement.getPointInBetween(point1, point2, (percent - currentPoint * lengthOfPoint), percent, currentLoop == 0, currentLoop == loops);
 	}
 	
 }

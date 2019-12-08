@@ -1,19 +1,19 @@
 package team.creative.cmdcam.client.mode;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.monster.ZombieEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import team.creative.cmdcam.common.utils.CamPath;
 import team.creative.cmdcam.common.utils.CamPoint;
 
 public class OutsideMode extends CamMode {
 	
-	public LivingEntity camPlayer;
+	public Entity camPlayer;
 	
 	public OutsideMode(CamPath path) {
 		super(path);
 		if (path != null)
-			this.camPlayer = new ZombieEntity(mc.world);
+			this.camPlayer = new ItemEntity(mc.world, 0, 0, 0);
 	}
 	
 	@Override
@@ -23,30 +23,27 @@ public class OutsideMode extends CamMode {
 	
 	@Override
 	public String getDescription() {
-		return "the player isn't the camera, you can control him at every time";
+		return "the player isn't the camera, but you are still in control";
 	}
 	
 	@Override
 	public void onPathFinish() {
 		super.onPathFinish();
-		mc.setRenderViewEntity(mc.player);
-	}
-	
-	@Override
-	public LivingEntity getCamera() {
-		return camPlayer;
+		mc.renderViewEntity = mc.player;
 	}
 	
 	@Override
 	public void processPoint(CamPoint point) {
 		super.processPoint(point);
 		
-		mc.setRenderViewEntity(camPlayer);
+		mc.renderViewEntity = camPlayer;
 		if (camPlayer instanceof PlayerEntity)
 			((PlayerEntity) camPlayer).abilities.isFlying = true;
-		camPlayer.setPositionAndRotation(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
-		camPlayer.setLocationAndAngles(point.x, point.y - camPlayer.getEyeHeight() + mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
-		camPlayer.setRotationYawHead(0);
+		
+		camPlayer.setPositionAndRotation(point.x, point.y - camPlayer.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
+		camPlayer.prevRotationYaw = (float) point.rotationYaw;
+		camPlayer.prevRotationPitch = (float) point.rotationPitch;
+		camPlayer.setLocationAndAngles(point.x, point.y - camPlayer.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
 	}
 	
 }

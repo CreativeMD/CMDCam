@@ -17,7 +17,7 @@ public abstract class CamInterpolation {
 	}
 	
 	public static CamInterpolation getInterpolation(String interpolation) {
-		return interpolationTypes.get(interpolation);
+		return interpolationTypes.get(interpolation.toLowerCase());
 	}
 	
 	public static void registerInterpolation(String name, CamInterpolation interpolation) {

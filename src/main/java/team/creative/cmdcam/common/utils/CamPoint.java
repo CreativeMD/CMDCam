@@ -44,7 +44,7 @@ public class CamPoint {
 	public CamPoint() {
 		Minecraft mc = Minecraft.getInstance();
 		this.x = mc.player.posX;
-		this.y = mc.player.posY;
+		this.y = mc.player.posY + mc.player.getEyeHeight();
 		this.z = mc.player.posZ;
 		
 		this.rotationYaw = mc.player.rotationYawHead;
@@ -71,9 +71,7 @@ public class CamPoint {
 		this.rotationYaw = updateRotation(this.rotationYaw, f2, minYaw, ticks);
 	}
 	
-	/**
-	 * Arguments: current rotation, intended rotation, max increment.
-	 */
+	/** Arguments: current rotation, intended rotation, max increment. */
 	private double updateRotation(double rotation, double intended, double min, double ticks) {
 		double f3 = MathHelper.wrapDegrees(intended - rotation);
 		
