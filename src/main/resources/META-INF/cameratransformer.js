@@ -5,7 +5,7 @@ function initializeCoreMod() {
             'target': {
                 'type': 'METHOD',
 				'class': 'net.minecraft.client.renderer.GameRenderer',
-				'methodName': 'getMouseOver',
+				'methodName': 'func_78473_a',
 				'methodDesc': '(F)V'
             },
             'transformer': function(method) {
@@ -23,7 +23,7 @@ function initializeCoreMod() {
             'target': {
                 'type': 'METHOD',
 				'class': 'net.minecraft.client.entity.player.ClientPlayerEntity',
-				'methodName': 'isCurrentViewEntity',
+				'methodName': 'func_175160_A',
 				'methodDesc': '()Z'
             },
             'transformer': function(method) {
@@ -43,20 +43,17 @@ function initializeCoreMod() {
             'target': {
                 'type': 'METHOD',
 				'class': 'net.minecraft.client.renderer.entity.PlayerRenderer',
-				'methodName': 'doRender',
+				'methodName': 'func_76986_a',
 				'methodDesc': '(Lnet/minecraft/client/entity/player/AbstractClientPlayerEntity;DDDFF)V'
             },
             'transformer': function(method) {
 				var Opcodes = Java.type('org.objectweb.asm.Opcodes');
 				var asmapi = Java.type('net.minecraftforge.coremod.api.ASMAPI');
-				var JumpInsnNode = Java.type('org.objectweb.asm.tree.JumpInsnNode');
 				var before = asmapi.findFirstInstruction(method, Opcodes.IF_ACMPNE);
 				for(var i = 0; i < 6; i++){
 					before = before.getPrevious();
 					method.instructions.remove(before.getNext());
 				}
-				
-				//method.instructions.set(before, new JumpInsnNode(Opcodes.IF_ACMPEQ, before.label));
 
                 return method;
             }
