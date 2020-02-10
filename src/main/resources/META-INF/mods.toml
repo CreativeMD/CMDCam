@@ -1,6 +1,6 @@
 modLoader="javafml"
 loaderVersion="[24,)"
-#issueTrackerURL="https://github.com/CreativeMD/CMDCam/issues"
+issueTrackerURL="https://github.com/CreativeMD/CMDCam/issues"
 logoFile="cmdcam.png"
 
 [[mods]]
@@ -10,3 +10,10 @@ logoFile="cmdcam.png"
 	displayURL="https://minecraft.curseforge.com/projects/cmdcam"
 	authors="CreativeMD"
 	description='''Create camera paths.'''
+
+[[dependencies.cmdcam]]
+	modId="creativecore"
+	mandatory=true
+	ordering="NONE"
+	side="BOTH"
+	versionRange="[2.0.0,)"
