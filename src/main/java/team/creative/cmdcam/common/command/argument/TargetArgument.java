@@ -29,7 +29,7 @@ public class TargetArgument implements ArgumentType<String> {
 	public String parse(StringReader reader) throws CommandSyntaxException {
 		final int start = reader.getCursor();
 		final String result = reader.readString();
-		if (result.equalsIgnoreCase("none") || result.equalsIgnoreCase("self")) {
+		if (!result.equalsIgnoreCase("none") && !result.equalsIgnoreCase("self")) {
 			reader.setCursor(start);
 			throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid target")), new StringTextComponent("Invalid target!"));
 		}
