@@ -115,7 +115,7 @@ public abstract class CamTarget {
 			}
 			
 			if (cachedEntity instanceof LivingEntity)
-				return ((LivingEntity) cachedEntity).getEyePosition(partialTicks).subtract(new Vec3d(0, ((LivingEntity) cachedEntity).getEyeHeight(), 0));
+				return ((LivingEntity) cachedEntity).getEyePosition(partialTicks);
 			else if (cachedEntity != null)
 				return cachedEntity.getEyePosition(partialTicks);
 			
@@ -156,7 +156,7 @@ public abstract class CamTarget {
 			Entity cachedEntity = Minecraft.getInstance().player;
 			
 			if (cachedEntity instanceof LivingEntity)
-				return ((LivingEntity) cachedEntity).getEyePosition(partialTicks).subtract(new Vec3d(0, ((LivingEntity) cachedEntity).getEyeHeight(), 0));
+				return ((LivingEntity) cachedEntity).getEyePosition(partialTicks);
 			else if (cachedEntity != null)
 				return cachedEntity.getEyePosition(partialTicks);
 			
