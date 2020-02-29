@@ -26,11 +26,13 @@ public abstract class CamMode {
 	}
 	
 	public static CamMode getMode(String id) {
-		return modes.get(id);
+		return modes.getOrDefault(id, defaultMode);
 	}
 	
+	public static DefaultMode defaultMode = new DefaultMode(null);
+	
 	static {
-		registerPath("default", new DefaultMode(null));
+		registerPath("default", defaultMode);
 		registerPath("outside", new OutsideMode(null));
 	}
 	
@@ -94,7 +96,7 @@ public abstract class CamMode {
 		CamPoint point1 = points.get(currentPoint);
 		CamPoint point2 = points.get(currentPoint + 1);
 		double percentOfPoint = (percent % lengthOfPoint);
-		return movement.getPointInBetween(point1, point2, percent, (double) percent, currentLoop == 0, currentLoop == loops);
+		return movement.getPointInBetween(point1, point2, percent, percent, currentLoop == 0, currentLoop == loops);
 	}
 	
 }
