@@ -28,11 +28,11 @@ public class CMDCam {
 	
 	@EventHandler
 	public void Init(FMLInitializationEvent event) {
-		CreativeCorePacket.registerPacket(ConnectPacket.class, "cmdconnect");
-		CreativeCorePacket.registerPacket(StartPathPacket.class, "cmdstart");
-		CreativeCorePacket.registerPacket(StopPathPacket.class, "cmdstop");
-		CreativeCorePacket.registerPacket(GetPathPacket.class, "cmdget");
-		CreativeCorePacket.registerPacket(SetPathPacket.class, "cmdset");
+		CreativeCorePacket.registerPacket(ConnectPacket.class);
+		CreativeCorePacket.registerPacket(StartPathPacket.class);
+		CreativeCorePacket.registerPacket(StopPathPacket.class);
+		CreativeCorePacket.registerPacket(GetPathPacket.class);
+		CreativeCorePacket.registerPacket(SetPathPacket.class);
 		
 		MinecraftForge.EVENT_BUS.register(new CamEventHandler());
 		
