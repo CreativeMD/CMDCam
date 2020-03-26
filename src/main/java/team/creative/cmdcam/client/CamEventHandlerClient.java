@@ -201,6 +201,10 @@ public class CamEventHandlerClient {
 		return mc.getRenderViewEntity() == mc.player;
 	}
 	
+	public static boolean isPathActive() {
+		return CMDCamClient.getCurrentPath() != null;
+	}
+	
 	public static boolean selectEntityMode = false;
 	
 	@SubscribeEvent

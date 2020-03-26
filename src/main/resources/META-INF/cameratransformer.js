@@ -42,19 +42,29 @@ function initializeCoreMod() {
 		'renderPlayer': {
             'target': {
                 'type': 'METHOD',
-				'class': 'net.minecraft.client.renderer.entity.PlayerRenderer',
-				'methodName': 'func_76986_a',
-				'methodDesc': '(Lnet/minecraft/client/entity/player/AbstractClientPlayerEntity;DDDFF)V'
+				'class': 'net.minecraft.client.renderer.WorldRenderer',
+				'methodName': 'func_228426_a_',
+				'methodDesc': '(Lcom/mojang/blaze3d/matrix/MatrixStack;FJZLnet/minecraft/client/renderer/ActiveRenderInfo;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lnet/minecraft/client/renderer/Matrix4f;)V'
             },
             'transformer': function(method) {
 				var Opcodes = Java.type('org.objectweb.asm.Opcodes');
 				var asmapi = Java.type('net.minecraftforge.coremod.api.ASMAPI');
-				var before = asmapi.findFirstInstruction(method, Opcodes.IF_ACMPNE);
-				for(var i = 0; i < 6; i++){
-					before = before.getPrevious();
-					method.instructions.remove(before.getNext());
+				var JumpInsnNode = Java.type('org.objectweb.asm.tree.JumpInsnNode');
+				
+				var node = null;
+				var index = 0;
+				
+				while(node == null || node.desc !== 'net/minecraft/client/entity/player/ClientPlayerEntity') {
+					node = asmapi.findFirstInstructionAfter(method, Opcodes.INSTANCEOF, index);
+					index = method.instructions.indexOf(node) + 1;	
 				}
-
+				
+				var jump = node.getNext();
+				var before = node.getPrevious();
+				
+				method.instructions.insertBefore(before, asmapi.buildMethodCall("team/creative/cmdcam/client/CamEventHandlerClient", "isPathActive", "()Z", asmapi.MethodType.STATIC));
+				method.instructions.insertBefore(before, new JumpInsnNode(Opcodes.IFNE, jump.label));
+				
                 return method;
             }
 		}
