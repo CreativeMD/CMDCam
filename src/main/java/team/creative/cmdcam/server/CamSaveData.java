@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.storage.WorldSavedData;
 import team.creative.cmdcam.CMDCam;
-import team.creative.cmdcam.common.utils.CamPath;
+import team.creative.cmdcam.common.util.CamPath;
 
 public class CamSaveData extends WorldSavedData {
 	

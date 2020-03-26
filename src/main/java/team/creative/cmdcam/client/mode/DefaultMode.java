@@ -1,9 +1,9 @@
 package team.creative.cmdcam.client.mode;
 
 import net.minecraft.client.util.InputMappings;
-import team.creative.cmdcam.common.utils.CamPath;
-import team.creative.cmdcam.common.utils.CamPoint;
-import team.creative.cmdcam.common.utils.CamTarget.SelfTarget;
+import team.creative.cmdcam.common.util.CamPath;
+import team.creative.cmdcam.common.util.CamPoint;
+import team.creative.cmdcam.common.util.CamTarget.SelfTarget;
 
 public class DefaultMode extends CamMode {
 	
@@ -28,9 +28,9 @@ public class DefaultMode extends CamMode {
 		super.processPoint(point);
 		//mc.mouseHelper.grabMouse();
 		
-		double mouseX = mc.mainWindow.getWidth() / 2;
-		double mouseY = mc.mainWindow.getHeight() / 2;
-		InputMappings.func_216504_a(mc.mainWindow.getHandle(), 212995, mouseX, mouseY);
+		double mouseX = mc.getMainWindow().getWidth() / 2;
+		double mouseY = mc.getMainWindow().getHeight() / 2;
+		InputMappings.setCursorPosAndMode(mc.getMainWindow().getHandle(), 212995, mouseX, mouseY);
 		
 		mc.player.abilities.isFlying = true;
 		

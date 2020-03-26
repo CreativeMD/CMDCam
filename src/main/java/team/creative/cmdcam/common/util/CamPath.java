@@ -1,4 +1,4 @@
-package team.creative.cmdcam.common.utils;
+package team.creative.cmdcam.common.util;
 
 import java.util.ArrayList;
 import java.util.List;

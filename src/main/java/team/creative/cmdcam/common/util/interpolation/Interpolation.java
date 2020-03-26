@@ -1,13 +1,16 @@
-package team.creative.cmdcam.common.utils.interpolation;
+package team.creative.cmdcam.common.util.interpolation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import team.creative.cmdcam.common.utils.vec.Vec;
+import team.creative.creativecore.common.util.math.vec.Vector;
+import team.creative.creativecore.common.util.math.vec.Vector1;
+import team.creative.creativecore.common.util.math.vec.Vector2;
+import team.creative.creativecore.common.util.math.vec.Vector3;
 
-public abstract class Interpolation<T extends Vec> {
+public abstract class Interpolation<T extends Vector> {
 	
 	protected LinkedHashMap<Double, T> points = new LinkedHashMap<>();
 	protected ArrayList<T> pointVecs = new ArrayList<>();
@@ -42,7 +45,7 @@ public abstract class Interpolation<T extends Vec> {
 	}
 	
 	protected double getValue(int index, int dim) {
-		return pointVecs.get(index).getValueByDim(dim);
+		return pointVecs.get(index).get(dim);
 	}
 	
 	/** 1 <= t <= 1 **/
@@ -76,18 +79,27 @@ public abstract class Interpolation<T extends Vec> {
 			if (secondPoint == null)
 				return (T) firstPoint.getValue().copy();
 			
-			T vec = (T) Vec.copyVec(firstPoint.getValue());
+			T vec = (T) firstPoint.getValue().copy();
 			
 			double pointDistance = secondPoint.getKey() - firstPoint.getKey();
 			double mu = (t - firstPoint.getKey()) / pointDistance;
 			
-			for (int dim = 0; dim < vec.getDimensionCount(); dim++) {
-				vec.setValueByDim(dim, valueAt(mu, indexFirst, indexSecond, dim));
-			}
+			for (int dim = 0; dim < vec.dimensions(); dim++)
+				vec.set(dim, valueAt(mu, indexFirst, indexSecond, dim));
 			
 			return vec;
 		}
-		return (T) Vec.createEmptyVec(classOfT);
+		return createEmpty();
+	}
+	
+	public T createEmpty() {
+		if (classOfT == Vector1.class)
+			return (T) new Vector1();
+		else if (classOfT == Vector2.class)
+			return (T) new Vector2();
+		else if (classOfT == Vector3.class)
+			return (T) new Vector3();
+		return null;
 	}
 	
 	public abstract double valueAt(double mu, int pointIndex, int pointIndexNext, int dim);

@@ -26,9 +26,9 @@ import team.creative.cmdcam.common.command.argument.InterpolationArgument;
 import team.creative.cmdcam.common.command.argument.TargetArgument;
 import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
-import team.creative.cmdcam.common.utils.CamPath;
-import team.creative.cmdcam.common.utils.CamPoint;
-import team.creative.cmdcam.common.utils.CamTarget;
+import team.creative.cmdcam.common.util.CamPath;
+import team.creative.cmdcam.common.util.CamPoint;
+import team.creative.cmdcam.common.util.CamTarget;
 import team.creative.creativecore.client.command.ClientCommandRegistry;
 
 public class CMDCamClient {
@@ -191,7 +191,7 @@ public class CMDCamClient {
 			        CamInterpolation move = CamInterpolation.getInterpolation(interpolation);
 			        if (move != null) {
 				        move.isRenderingEnabled = true;
-				        mc.player.sendMessage(new StringTextComponent("Showing '" + target + "' interpolation path!"));
+				        mc.player.sendMessage(new StringTextComponent("Showing '" + interpolation + "' interpolation path!"));
 			        } else if (interpolation.equalsIgnoreCase("all")) {
 				        for (CamInterpolation movement : CamInterpolation.interpolationTypes.values())
 					        movement.isRenderingEnabled = true;
@@ -203,7 +203,7 @@ public class CMDCamClient {
 			        CamInterpolation move = CamInterpolation.getInterpolation(interpolation);
 			        if (move != null) {
 				        move.isRenderingEnabled = false;
-				        mc.player.sendMessage(new StringTextComponent("Hiding '" + target + "' interpolation path!"));
+				        mc.player.sendMessage(new StringTextComponent("Hiding '" + interpolation + "' interpolation path!"));
 			        } else if (interpolation.equalsIgnoreCase("all")) {
 				        for (CamInterpolation movement : CamInterpolation.interpolationTypes.values())
 					        movement.isRenderingEnabled = false;

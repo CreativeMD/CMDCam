@@ -3,20 +3,20 @@ package team.creative.cmdcam.client.interpolation;
 import java.util.List;
 
 import team.creative.cmdcam.client.PathParseException;
-import team.creative.cmdcam.common.utils.CamPoint;
-import team.creative.cmdcam.common.utils.CamTarget;
-import team.creative.cmdcam.common.utils.interpolation.HermiteInterpolation;
-import team.creative.cmdcam.common.utils.interpolation.HermiteInterpolation.Tension;
-import team.creative.cmdcam.common.utils.vec.Vec1;
-import team.creative.cmdcam.common.utils.vec.Vec3;
+import team.creative.cmdcam.common.util.CamPoint;
+import team.creative.cmdcam.common.util.CamTarget;
+import team.creative.cmdcam.common.util.interpolation.HermiteInterpolation;
+import team.creative.cmdcam.common.util.interpolation.HermiteInterpolation.Tension;
+import team.creative.creativecore.common.util.math.vec.Vector1;
+import team.creative.creativecore.common.util.math.vec.Vector3;
 
 public class HermiteMovement extends CamInterpolation {
 	
-	public HermiteInterpolation<Vec1> rollSpline;
-	public HermiteInterpolation<Vec1> zoomSpline;
-	public HermiteInterpolation<Vec1> pitchSpline;
-	public HermiteInterpolation<Vec1> yawSpline;
-	public HermiteInterpolation<Vec3> positionSpline;
+	public HermiteInterpolation<Vector1> rollSpline;
+	public HermiteInterpolation<Vector1> zoomSpline;
+	public HermiteInterpolation<Vector1> pitchSpline;
+	public HermiteInterpolation<Vector1> yawSpline;
+	public HermiteInterpolation<Vector3> positionSpline;
 	
 	public double sizeOfIteration;
 	
@@ -37,12 +37,12 @@ public class HermiteMovement extends CamInterpolation {
 		if (iterations > 1)
 			size++;
 		
-		Vec1[] rollPoints = new Vec1[size];
-		Vec1[] zoomPoints = new Vec1[size];
-		Vec1[] yawPoints = new Vec1[size];
-		Vec1[] pitchPoints = new Vec1[size];
+		Vector1[] rollPoints = new Vector1[size];
+		Vector1[] zoomPoints = new Vector1[size];
+		Vector1[] yawPoints = new Vector1[size];
+		Vector1[] pitchPoints = new Vector1[size];
 		
-		Vec3[] positionPoints = new Vec3[size];
+		Vector3[] positionPoints = new Vector3[size];
 		
 		double[] newTimes = new double[size];
 		
@@ -55,21 +55,21 @@ public class HermiteMovement extends CamInterpolation {
 				}
 			}
 			for (int i = 0; i < points.size(); i++) {
-				rollPoints[i + j * points.size()] = new Vec1(points.get(i).roll);
-				zoomPoints[i + j * points.size()] = new Vec1(points.get(i).zoom);
-				yawPoints[i + j * points.size()] = new Vec1(points.get(i).rotationYaw);
-				pitchPoints[i + j * points.size()] = new Vec1(points.get(i).rotationPitch);
+				rollPoints[i + j * points.size()] = new Vector1(points.get(i).roll);
+				zoomPoints[i + j * points.size()] = new Vector1(points.get(i).zoom);
+				yawPoints[i + j * points.size()] = new Vector1(points.get(i).rotationYaw);
+				pitchPoints[i + j * points.size()] = new Vector1(points.get(i).rotationPitch);
 				
-				positionPoints[i + j * points.size()] = new Vec3(points.get(i).x, points.get(i).y, points.get(i).z);
+				positionPoints[i + j * points.size()] = new Vector3(points.get(i).x, points.get(i).y, points.get(i).z);
 			}
 		}
 		
 		if (iterations > 1) {
-			rollPoints[points.size() * iterations] = new Vec1(points.get(0).roll);
-			zoomPoints[points.size() * iterations] = new Vec1(points.get(0).zoom);
-			yawPoints[points.size() * iterations] = new Vec1(points.get(0).rotationYaw);
-			pitchPoints[points.size() * iterations] = new Vec1(points.get(0).rotationPitch);
-			positionPoints[points.size() * iterations] = new Vec3(points.get(0).x, points.get(0).y, points.get(0).z);
+			rollPoints[points.size() * iterations] = new Vector1(points.get(0).roll);
+			zoomPoints[points.size() * iterations] = new Vector1(points.get(0).zoom);
+			yawPoints[points.size() * iterations] = new Vector1(points.get(0).rotationYaw);
+			pitchPoints[points.size() * iterations] = new Vector1(points.get(0).rotationPitch);
+			positionPoints[points.size() * iterations] = new Vector3(points.get(0).x, points.get(0).y, points.get(0).z);
 		}
 		
 		if (times == null) {
@@ -107,7 +107,7 @@ public class HermiteMovement extends CamInterpolation {
 		if (pitchSpline != null)
 			point.rotationPitch = pitchSpline.valueAt(wholeProgress).x;
 		if (positionSpline != null) {
-			Vec3 position = positionSpline.valueAt(wholeProgress);
+			Vector3 position = positionSpline.valueAt(wholeProgress);
 			point.x = position.x;
 			point.y = position.y;
 			point.z = position.z;
@@ -116,8 +116,8 @@ public class HermiteMovement extends CamInterpolation {
 	}
 	
 	@Override
-	public Vec3 getColor() {
-		return new Vec3(1, 1, 1);
+	public Vector3 getColor() {
+		return new Vector3(1, 1, 1);
 	}
 	
 }

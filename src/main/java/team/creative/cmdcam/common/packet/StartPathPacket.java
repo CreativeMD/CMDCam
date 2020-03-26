@@ -4,7 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import team.creative.cmdcam.client.CMDCamClient;
 import team.creative.cmdcam.client.PathParseException;
-import team.creative.cmdcam.common.utils.CamPath;
+import team.creative.cmdcam.common.util.CamPath;
 import team.creative.creativecore.common.network.CreativePacket;
 
 public class StartPathPacket extends CreativePacket {

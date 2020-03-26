@@ -1,4 +1,4 @@
-package team.creative.cmdcam.common.utils;
+package team.creative.cmdcam.common.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
@@ -43,9 +43,9 @@ public class CamPoint {
 	@OnlyIn(Dist.CLIENT)
 	public CamPoint() {
 		Minecraft mc = Minecraft.getInstance();
-		this.x = mc.player.posX;
-		this.y = mc.player.posY + mc.player.getEyeHeight();
-		this.z = mc.player.posZ;
+		this.x = mc.player.getPosX();
+		this.y = mc.player.getPosYEye();
+		this.z = mc.player.getPosZ();
 		
 		this.rotationYaw = mc.player.rotationYawHead;
 		this.rotationPitch = mc.player.rotationPitch;

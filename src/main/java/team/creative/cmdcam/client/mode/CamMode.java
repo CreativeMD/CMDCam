@@ -9,8 +9,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.cmdcam.client.CamEventHandlerClient;
 import team.creative.cmdcam.client.interpolation.CamInterpolation;
-import team.creative.cmdcam.common.utils.CamPath;
-import team.creative.cmdcam.common.utils.CamPoint;
+import team.creative.cmdcam.common.util.CamPath;
+import team.creative.cmdcam.common.util.CamPoint;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class CamMode {

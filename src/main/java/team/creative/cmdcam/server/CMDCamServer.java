@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import team.creative.cmdcam.common.utils.CamPath;
+import team.creative.cmdcam.common.util.CamPath;
 
 public class CMDCamServer {
 	

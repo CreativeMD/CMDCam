@@ -3,8 +3,8 @@ package team.creative.cmdcam.client.mode;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import team.creative.cmdcam.common.utils.CamPath;
-import team.creative.cmdcam.common.utils.CamPoint;
+import team.creative.cmdcam.common.util.CamPath;
+import team.creative.cmdcam.common.util.CamPoint;
 
 public class OutsideMode extends CamMode {
 	

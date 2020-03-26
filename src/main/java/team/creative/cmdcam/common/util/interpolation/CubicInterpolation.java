@@ -1,31 +1,39 @@
-package team.creative.cmdcam.common.utils.interpolation;
+package team.creative.cmdcam.common.util.interpolation;
 
-import team.creative.cmdcam.common.utils.vec.Vec;
+import team.creative.creativecore.common.util.math.vec.Vector;
 
-public class CubicInterpolation<T extends Vec> extends Interpolation<T> {
+public class CubicInterpolation<T extends Vector> extends Interpolation<T> {
 	
 	public T beginVec;
 	public T endVec;
 	
 	public CubicInterpolation(double[] times, T[] points) {
 		super(times, points);
-		beginVec = (T) points[0].add(points[0].sub(points[1]));
-		endVec = (T) points[points.length - 1].add(points[points.length - 1].sub(points[points.length - 2]));
+		beginVec = (T) points[0].copy();
+		beginVec.sub(points[1]);
+		beginVec.add(points[0]);
+		endVec = (T) points[points.length - 1].copy();
+		endVec.sub(points[points.length - 2]);
+		endVec.add(points[points.length - 1]);
 	}
 	
 	public CubicInterpolation(T... points) {
 		super(points);
-		beginVec = (T) points[0].add(points[0].sub(points[1]));
-		endVec = (T) points[points.length - 1].add(points[points.length - 1].sub(points[points.length - 2]));
+		beginVec = (T) points[0].copy();
+		beginVec.sub(points[1]);
+		beginVec.add(points[0]);
+		endVec = (T) points[points.length - 1].copy();
+		endVec.sub(points[points.length - 2]);
+		endVec.add(points[points.length - 1]);
 	}
 	
 	@Override
 	protected double getValue(int index, int dim) {
 		if (index < 0)
-			return beginVec.getValueByDim(dim);
+			return beginVec.get(dim);
 		if (index >= points.size())
-			return endVec.getValueByDim(dim);
-		return pointVecs.get(index).getValueByDim(dim);
+			return endVec.get(dim);
+		return pointVecs.get(index).get(dim);
 	}
 	
 	@Override

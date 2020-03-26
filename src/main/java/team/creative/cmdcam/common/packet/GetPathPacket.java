@@ -4,7 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
 import team.creative.cmdcam.CMDCam;
-import team.creative.cmdcam.common.utils.CamPath;
+import team.creative.cmdcam.common.util.CamPath;
 import team.creative.cmdcam.server.CMDCamServer;
 import team.creative.creativecore.common.network.CreativePacket;
 

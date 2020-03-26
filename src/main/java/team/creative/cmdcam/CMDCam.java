@@ -33,7 +33,7 @@ import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
 import team.creative.cmdcam.common.packet.StartPathPacket;
 import team.creative.cmdcam.common.packet.StopPathPacket;
-import team.creative.cmdcam.common.utils.CamPath;
+import team.creative.cmdcam.common.util.CamPath;
 import team.creative.cmdcam.server.CMDCamServer;
 import team.creative.creativecore.common.network.CreativeNetwork;
 import team.creative.creativecore.common.network.CreativePacket;

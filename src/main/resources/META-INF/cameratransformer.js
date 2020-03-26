@@ -23,7 +23,7 @@ function initializeCoreMod() {
             'target': {
                 'type': 'METHOD',
 				'class': 'net.minecraft.client.entity.player.ClientPlayerEntity',
-				'methodName': 'func_175160_A',
+				'methodName': 'isCurrentViewEntity',
 				'methodDesc': '()Z'
             },
             'transformer': function(method) {
@@ -33,7 +33,7 @@ function initializeCoreMod() {
 				
 				method.instructions.clear();
 				
-				method.instructions.add(asmapi.buildMethodCall("team/creative/cmdcam/client/CamEventHandlerClient", "shouldPlayerTakeInput", "()Z", asmapi.MethodType.STATIC));
+				method.instructions.add(asmapi.buildMethodCall("team/creative/cmdcam/client/CamEventHandlerClient", "isCurrentViewEntity", "()Z", asmapi.MethodType.STATIC));
 				method.instructions.add(new InsnNode(Opcodes.IRETURN));
 
                 return method;

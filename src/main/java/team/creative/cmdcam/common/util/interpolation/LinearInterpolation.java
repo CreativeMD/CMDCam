@@ -1,8 +1,8 @@
-package team.creative.cmdcam.common.utils.interpolation;
+package team.creative.cmdcam.common.util.interpolation;
 
-import team.creative.cmdcam.common.utils.vec.Vec;
+import team.creative.creativecore.common.util.math.vec.Vector;
 
-public class LinearInterpolation<T extends Vec> extends Interpolation<T> {
+public class LinearInterpolation<T extends Vector> extends Interpolation<T> {
 	
 	public LinearInterpolation(double[] times, T[] points) {
 		super(times, points);

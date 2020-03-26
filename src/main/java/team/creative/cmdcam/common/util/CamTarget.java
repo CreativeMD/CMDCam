@@ -1,4 +1,4 @@
-package team.creative.cmdcam.common.utils;
+package team.creative.cmdcam.common.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;

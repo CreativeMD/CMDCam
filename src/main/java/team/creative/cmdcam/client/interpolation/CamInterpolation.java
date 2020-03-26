@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import team.creative.cmdcam.client.PathParseException;
-import team.creative.cmdcam.common.utils.CamPoint;
-import team.creative.cmdcam.common.utils.CamTarget;
-import team.creative.cmdcam.common.utils.vec.Vec3;
+import team.creative.cmdcam.common.util.CamPoint;
+import team.creative.cmdcam.common.util.CamTarget;
+import team.creative.creativecore.common.util.math.vec.Vector3;
 
 public abstract class CamInterpolation {
 	
@@ -50,7 +50,7 @@ public abstract class CamInterpolation {
 	
 	public boolean isRenderingEnabled = false;
 	
-	public abstract Vec3 getColor();
+	public abstract Vector3 getColor();
 	
 	public abstract void initMovement(List<CamPoint> points, int loops, CamTarget target) throws PathParseException;
 	
