@@ -23,7 +23,7 @@ function initializeCoreMod() {
             'target': {
                 'type': 'METHOD',
 				'class': 'net.minecraft.client.entity.player.ClientPlayerEntity',
-				'methodName': 'isCurrentViewEntity',
+				'methodName': 'func_175160_A',
 				'methodDesc': '()Z'
             },
             'transformer': function(method) {
