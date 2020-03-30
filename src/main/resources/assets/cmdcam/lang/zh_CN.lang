@@ -1,0 +1,10 @@
+key.categories.cmdcam=CMDCam 设置
+
+key.point=添加点
+key.rollcenter=重置翻转视角
+key.rollleft=向左翻转视角
+key.rollright=向右翻转视角
+key.startStop=开始/停止
+key.zoomin=放大
+key.zoomout=缩小
+key.centerzoom=重置缩放
