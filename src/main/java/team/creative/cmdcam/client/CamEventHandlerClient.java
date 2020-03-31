@@ -196,7 +196,7 @@ public class CamEventHandlerClient {
 	public static long lastRenderTime;
 	
 	public static boolean isCurrentViewEntity() {
-		if (CMDCamClient.getCurrentPath() != null)
+		if (isPathActive())
 			return true;
 		return mc.getRenderViewEntity() == mc.player;
 	}

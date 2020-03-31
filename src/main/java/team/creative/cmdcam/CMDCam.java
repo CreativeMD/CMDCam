@@ -51,7 +51,7 @@ public class CMDCam {
 	public static final String MODID = "cmdcam";
 	
 	private static final Logger LOGGER = LogManager.getLogger(CMDCam.MODID);
-	public static CreativeNetwork NETWORK;
+	public static final CreativeNetwork NETWORK = new CreativeNetwork("1.0", LOGGER, new ResourceLocation(CMDCam.MODID, "main"));
 	
 	public CMDCam() {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
@@ -66,7 +66,6 @@ public class CMDCam {
 	}
 	
 	private void init(final FMLCommonSetupEvent event) {
-		NETWORK = new CreativeNetwork("1.0", LOGGER, new ResourceLocation(CMDCam.MODID, "main"));
 		NETWORK.registerType(ConnectPacket.class);
 		NETWORK.registerType(GetPathPacket.class);
 		NETWORK.registerType(SetPathPacket.class);
