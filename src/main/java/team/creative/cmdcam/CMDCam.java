@@ -42,6 +42,7 @@ import team.creative.cmdcam.common.packet.StartPathPacket;
 import team.creative.cmdcam.common.packet.StopPathPacket;
 import team.creative.cmdcam.common.util.CamPath;
 import team.creative.cmdcam.server.CMDCamServer;
+import team.creative.cmdcam.server.CamEventHandler;
 import team.creative.creativecore.common.network.CreativeNetwork;
 import team.creative.creativecore.common.network.CreativePacket;
 
@@ -77,6 +78,8 @@ public class CMDCam {
 		ArgumentTypes.register("cameratarget", TargetArgument.class, new ArgumentSerializer<>(() -> TargetArgument.target()));
 		ArgumentTypes.register("interpolation", InterpolationArgument.class, new ArgumentSerializer<>(() -> InterpolationArgument.interpolation()));
 		ArgumentTypes.register("allinterpolation", AllInterpolationArgument.class, new ArgumentSerializer<>(() -> InterpolationArgument.interpolationAll()));
+		
+		MinecraftForge.EVENT_BUS.register(new CamEventHandler());
 	}
 	
 	private void serverStarting(final FMLServerStartingEvent event) {
