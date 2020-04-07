@@ -267,8 +267,13 @@ public class CMDCamClient {
 	}
 	
 	public static void startPath(CamPath path) throws PathParseException {
-		currentPath = path;
-		currentPath.start(mc.world);
+		try {
+			currentPath = path;
+			currentPath.start(mc.world);
+		} catch (PathParseException e) {
+			currentPath = null;
+			throw e;
+		}
 	}
 	
 	public static void stopPath() {
