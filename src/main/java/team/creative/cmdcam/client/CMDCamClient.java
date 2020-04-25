@@ -153,9 +153,9 @@ public class CMDCamClient {
 				CamEventHandlerClient.roll = (float) point.roll;
 				mc.gameSettings.fov = (float) point.zoom;
 				mc.player.setPositionAndRotation(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
-				mc.player.setLocationAndAngles(point.x, point.y/*-mc.thePlayer.getEyeHeight()*/, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
+				mc.player.setLocationAndAngles(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
 			} else
-				mc.player.sendMessage(new StringTextComponent("The given index '" + index + "' is too high/low!"));
+				mc.player.sendMessage(new StringTextComponent("The given index '" + (index + 1) + "' is too high/low!"));
 			return 0;
 		}))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("mode").then(RequiredArgumentBuilder.<ISuggestionProvider, String>argument("mode", CamModeArgument.mode()).executes((x) -> {
 			String mode = StringArgumentType.getString(x, "mode");
