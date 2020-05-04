@@ -1,0 +1,11 @@
+{
+	"key.categories.cmdcam": "CMD摄影机设置",
+	"key.point": "增加路径点",
+	"key.rollcenter": "重置旋转",
+	"key.rollleft": "向左旋转",
+	"key.rollright": "向右旋转",
+	"key.startStop": "开始或停止",
+	"key.zoomin": "放大",
+	"key.zoomout": "缩小",
+	"key.centerzoom": "重置缩放"
+}
