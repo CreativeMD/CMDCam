@@ -40,4 +40,11 @@ public class DefaultMode extends CamMode {
 		mc.player.setLocationAndAngles(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
 	}
 	
+	@Override
+	public void onPathFinish() {
+		super.onPathFinish();
+		if (!mc.player.isCreative())
+			mc.player.abilities.isFlying = false;
+	}
+	
 }
