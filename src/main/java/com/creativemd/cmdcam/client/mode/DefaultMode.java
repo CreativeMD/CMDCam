@@ -7,6 +7,8 @@ import com.creativemd.cmdcam.common.utils.CamPath;
 import com.creativemd.cmdcam.common.utils.CamPoint;
 import com.creativemd.cmdcam.common.utils.CamTarget.SelfTarget;
 
+import net.minecraft.client.Minecraft;
+
 public class DefaultMode extends CamMode {
 	
 	public DefaultMode(CamPath path) {
@@ -44,8 +46,12 @@ public class DefaultMode extends CamMode {
 	@Override
 	public void onPathFinish() {
 		super.onPathFinish();
-		if (!mc.player.isCreative() && !mc.player.isSpectator()) {
+		if (!mc.player.isCreative() && !mc.player.isSpectator())
 			mc.player.capabilities.isFlying = false;
+		
+		if (Minecraft.IS_RUNNING_ON_MAC) {
+			Mouse.setGrabbed(false);
+			Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2 - 20);
 		}
 	}
 	
