@@ -39,6 +39,7 @@ public abstract class CamTarget {
 	
 	static {
 		registerTargetType(BlockTarget.class, "block");
+		registerTargetType(VecTarget.class, "vec");
 		registerTargetType(EntityTarget.class, "entity");
 		registerTargetType(SelfTarget.class, "self");
 	}
@@ -53,6 +54,37 @@ public abstract class CamTarget {
 		nbt.setString("id", targetTypesInverted.get(this.getClass()));
 		write(nbt);
 		return nbt;
+	}
+	
+	public static class VecTarget extends CamTarget {
+		
+		public VecTarget() {
+			
+		}
+		
+		public VecTarget(Vec3d vec) {
+			this.vec = vec;
+		}
+		
+		public Vec3d vec;
+		
+		@Override
+		public Vec3d getTargetVec(World world, float partialTicks) {
+			return vec;
+		}
+		
+		@Override
+		protected void write(NBTTagCompound nbt) {
+			nbt.setDouble("x", vec.x);
+			nbt.setDouble("y", vec.y);
+			nbt.setDouble("z", vec.z);
+		}
+		
+		@Override
+		protected void read(NBTTagCompound nbt) {
+			this.vec = new Vec3d(nbt.getDouble("x"), nbt.getDouble("y"), nbt.getDouble("z"));
+		}
+		
 	}
 	
 	public static class BlockTarget extends CamTarget {
@@ -96,6 +128,11 @@ public abstract class CamTarget {
 			
 		}
 		
+		public EntityTarget(String uuid) {
+			this.cachedEntity = null;
+			this.uuid = uuid;
+		}
+		
 		public EntityTarget(Entity entity) {
 			this.cachedEntity = entity;
 			this.uuid = entity.getCachedUniqueIdString();
@@ -116,7 +153,7 @@ public abstract class CamTarget {
 			if (cachedEntity instanceof EntityLivingBase)
 				return ((EntityLivingBase) cachedEntity).getPositionEyes(partialTicks).subtract(new Vec3d(0, ((EntityLivingBase) cachedEntity).getEyeHeight(), 0));
 			else if (cachedEntity != null)
-				return ((Entity) cachedEntity).getPositionEyes(partialTicks);
+				return cachedEntity.getPositionEyes(partialTicks);
 			
 			return null;
 		}
@@ -157,7 +194,7 @@ public abstract class CamTarget {
 			if (cachedEntity instanceof EntityLivingBase)
 				return ((EntityLivingBase) cachedEntity).getPositionEyes(partialTicks).subtract(new Vec3d(0, ((EntityLivingBase) cachedEntity).getEyeHeight(), 0));
 			else if (cachedEntity != null)
-				return ((Entity) cachedEntity).getPositionEyes(partialTicks);
+				return cachedEntity.getPositionEyes(partialTicks);
 			
 			return null;
 		}

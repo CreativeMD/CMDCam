@@ -2,6 +2,7 @@ package com.creativemd.cmdcam;
 
 import com.creativemd.cmdcam.common.packet.ConnectPacket;
 import com.creativemd.cmdcam.common.packet.GetPathPacket;
+import com.creativemd.cmdcam.common.packet.SelectTargetPacket;
 import com.creativemd.cmdcam.common.packet.SetPathPacket;
 import com.creativemd.cmdcam.common.packet.StartPathPacket;
 import com.creativemd.cmdcam.common.packet.StopPathPacket;
@@ -33,6 +34,7 @@ public class CMDCam {
 		CreativeCorePacket.registerPacket(StopPathPacket.class);
 		CreativeCorePacket.registerPacket(GetPathPacket.class);
 		CreativeCorePacket.registerPacket(SetPathPacket.class);
+		CreativeCorePacket.registerPacket(SelectTargetPacket.class);
 		
 		MinecraftForge.EVENT_BUS.register(new CamEventHandler());
 		

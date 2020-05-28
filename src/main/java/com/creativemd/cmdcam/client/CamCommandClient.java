@@ -50,8 +50,7 @@ public class CamCommandClient extends CommandBase {
 			if (subCommand.equals("clear")) {
 				sender.sendMessage(new TextComponentString("Cleared all registered points!"));
 				CMDCamClient.points.clear();
-			}
-			if (subCommand.equals("add")) {
+			} else if (subCommand.equals("add")) {
 				if (args.length == 1) {
 					CMDCamClient.points.add(new CamPoint());
 					sender.sendMessage(new TextComponentString("Registered " + CMDCamClient.points.size() + ". Point!"));
@@ -69,8 +68,7 @@ public class CamCommandClient extends CommandBase {
 					
 				} else
 					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam add [number] " + ChatFormatting.RED + "register a point at the current position."));
-			}
-			if (subCommand.equals("start")) {
+			} else if (subCommand.equals("start")) {
 				if (args.length >= 2) {
 					long duration = CamCommandServer.StringToDuration(args[1]);
 					if (duration > 0)
@@ -89,11 +87,9 @@ public class CamCommandClient extends CommandBase {
 				} catch (PathParseException e) {
 					sender.sendMessage(new TextComponentString(e.getMessage()));
 				}
-			}
-			if (subCommand.equals("stop")) {
+			} else if (subCommand.equals("stop")) {
 				CMDCamClient.stopPath();
-			}
-			if (subCommand.equals("remove")) {
+			} else if (subCommand.equals("remove")) {
 				if (args.length >= 2) {
 					try {
 						Integer index = Integer.parseInt(args[1]) - 1;
@@ -107,8 +103,7 @@ public class CamCommandClient extends CommandBase {
 					}
 				} else
 					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam remove <index> " + ChatFormatting.RED + "removes the given point"));
-			}
-			if (subCommand.equals("set")) {
+			} else if (subCommand.equals("set")) {
 				if (args.length >= 2) {
 					try {
 						Integer index = Integer.parseInt(args[1]) - 1;
@@ -122,8 +117,7 @@ public class CamCommandClient extends CommandBase {
 					}
 				} else
 					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam set <index> " + ChatFormatting.RED + "updates the giveng point to the current location"));
-			}
-			if (subCommand.equals("goto")) {
+			} else if (subCommand.equals("goto")) {
 				if (args.length >= 2) {
 					try {
 						Integer index = Integer.parseInt(args[1]) - 1;
@@ -144,8 +138,7 @@ public class CamCommandClient extends CommandBase {
 					sender.sendMessage(new TextComponentString("Missing point!"));
 					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam goto <index> " + ChatFormatting.RED + "tp to the given point"));
 				}
-			}
-			if (subCommand.equals("mode")) {
+			} else if (subCommand.equals("mode")) {
 				if (args.length >= 2) {
 					if (args[1].equals("default") || args[1].equals("outside")) {
 						CMDCamClient.lastMode = args[1];
@@ -154,8 +147,7 @@ public class CamCommandClient extends CommandBase {
 						sender.sendMessage(new TextComponentString("Path mode '" + args[1] + "' does not exit!"));
 				} else
 					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam mode <default:outside> " + ChatFormatting.RED + "set current mode"));
-			}
-			if (subCommand.equals("target")) {
+			} else if (subCommand.equals("target")) {
 				if (args.length == 2) {
 					String target = args[1];
 					if (target.equals("self")) {
@@ -166,13 +158,10 @@ public class CamCommandClient extends CommandBase {
 						sender.sendMessage(new TextComponentString("Removed target!"));
 					} else
 						sender.sendMessage(new TextComponentString("Target '" + target + "' not found!"));
-				} else {
-					CamEventHandlerClient.selectEntityMode = true;
-					sender.sendMessage(new TextComponentString("Please select a target either an entity or a block!"));
-				}
+				} else
+					CamEventHandlerClient.startSelectingTarget(null);
 				
-			}
-			if (subCommand.equals("interpolation")) {
+			} else if (subCommand.equals("interpolation")) {
 				if (args.length == 2) {
 					String target = args[1];
 					CamInterpolation move = CamInterpolation.getInterpolation(target);
@@ -183,8 +172,7 @@ public class CamCommandClient extends CommandBase {
 						sender.sendMessage(new TextComponentString("Interpolation '" + target + "' not found!"));
 				} else
 					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String.join(":", CamInterpolation.getMovementNames()) + "> " + ChatFormatting.RED + "set the camera interpolation"));
-			}
-			if (subCommand.equals("follow-speed")) {
+			} else if (subCommand.equals("follow-speed")) {
 				if (args.length == 2) {
 					try {
 						double followspeed = Double.parseDouble(args[1]);
@@ -195,8 +183,7 @@ public class CamCommandClient extends CommandBase {
 					}
 				} else
 					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam follow-speed <number> " + ChatFormatting.RED + "default is 1.0"));
-			}
-			if (subCommand.equals("show")) {
+			} else if (subCommand.equals("show")) {
 				if (args.length == 2) {
 					String target = args[1];
 					CamInterpolation move = CamInterpolation.getInterpolation(target);
@@ -212,8 +199,7 @@ public class CamCommandClient extends CommandBase {
 						sender.sendMessage(new TextComponentString("Interpolation '" + target + "' not found!"));
 				} else
 					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam show <all:" + String.join(":", CamInterpolation.getMovementNames()) + "> " + ChatFormatting.RED + "shows the path using the given interpolation"));
-			}
-			if (subCommand.equals("hide")) {
+			} else if (subCommand.equals("hide")) {
 				if (args.length == 2) {
 					String target = args[1];
 					CamInterpolation move = CamInterpolation.getInterpolation(target);
@@ -229,14 +215,16 @@ public class CamCommandClient extends CommandBase {
 						sender.sendMessage(new TextComponentString("Interpolation '" + target + "' not found!"));
 				} else
 					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam hide <all:" + String.join(":", CamInterpolation.getMovementNames()) + "> " + ChatFormatting.RED + "hides the path using the given interpolation"));
-			}
-			if (subCommand.equals("save")) {
+			} else if (subCommand.equals("save")) {
 				if (args.length == 2) {
 					try {
 						CamPath path = CMDCamClient.createPathFromCurrentConfiguration();
 						
 						if (CMDCamClient.isInstalledOnSever) {
 							PacketHandler.sendPacketToServer(new SetPathPacket(args[1], path));
+						} else if (!sender.getServer().isSinglePlayer()) {
+							CMDCamClient.savedPaths.put(args[1], path);
+							sender.sendMessage(new TextComponentString("Path will not be saved permanently. It's not installed on server side."));
 						} else {
 							CMDCamClient.savedPaths.put(args[1], path);
 							sender.sendMessage(new TextComponentString("Saved path '" + args[1] + "' successfully!"));
@@ -247,8 +235,7 @@ public class CamCommandClient extends CommandBase {
 					
 				} else
 					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam save <name> " + ChatFormatting.RED + "saves the current path (including settings) with the given name"));
-			}
-			if (subCommand.equals("load")) {
+			} else if (subCommand.equals("load")) {
 				if (args.length == 2) {
 					if (CMDCamClient.isInstalledOnSever) {
 						PacketHandler.sendPacketToServer(new GetPathPacket(args[1]));
@@ -262,8 +249,7 @@ public class CamCommandClient extends CommandBase {
 					}
 				} else
 					sender.sendMessage(new TextComponentString("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam load <name> " + ChatFormatting.RED + "tries to load the saved path with the given name"));
-			}
-			if (subCommand.equals("list")) {
+			} else if (subCommand.equals("list")) {
 				if (CMDCamClient.isInstalledOnSever) {
 					sender.sendMessage(new TextComponentString("Use /cam-server list instead!"));
 					return;

@@ -8,8 +8,10 @@ import org.lwjgl.opengl.GL11;
 import com.creativemd.cmdcam.client.interpolation.CamInterpolation;
 import com.creativemd.cmdcam.client.mode.CamMode;
 import com.creativemd.cmdcam.client.mode.OutsideMode;
+import com.creativemd.cmdcam.common.packet.SelectTargetPacket;
 import com.creativemd.cmdcam.common.utils.CamPoint;
 import com.creativemd.cmdcam.common.utils.CamTarget;
+import com.creativemd.creativecore.common.packet.PacketHandler;
 import com.creativemd.creativecore.common.utils.math.vec.Vec3;
 
 import net.minecraft.client.Minecraft;
@@ -231,7 +233,7 @@ public class CamEventHandlerClient {
 		GlStateManager.glLineWidth(1.0F);
 		GlStateManager.glBegin(GL11.GL_LINE_STRIP);
 		for (int i = 0; i < steps; i++) {
-			CamPoint pos = CamMode.getPoint(movement, points, i / (double) steps, 0, 0);
+			CamPoint pos = CamMode.getPoint(movement, points, i / steps, 0, 0);
 			GL11.glVertex3d(pos.x, pos.y, pos.z);
 		}
 		GL11.glVertex3d(points.get(points.size() - 1).x, points.get(points.size() - 1).y, points.get(points.size() - 1).z);
@@ -268,7 +270,14 @@ public class CamEventHandlerClient {
 		return true;
 	}
 	
-	public static boolean selectEntityMode = false;
+	public static void startSelectingTarget(String serverPath) {
+		selectEntityMode = true;
+		CamEventHandlerClient.serverPath = serverPath;
+		mc.player.sendMessage(new TextComponentString("Please select a target either an entity or a block!"));
+	}
+	
+	private static boolean selectEntityMode = false;
+	private static String serverPath = null;
 	
 	@SubscribeEvent
 	public void onPlayerInteract(PlayerInteractEvent event) {
@@ -276,15 +285,23 @@ public class CamEventHandlerClient {
 			return;
 		
 		if (event instanceof EntityInteract) {
-			CMDCamClient.target = new CamTarget.EntityTarget(((EntityInteract) event).getTarget());
+			if (serverPath != null)
+				PacketHandler.sendPacketToServer(new SelectTargetPacket(serverPath, new CamTarget.EntityTarget(((EntityInteract) event).getTarget())));
+			else
+				CMDCamClient.target = new CamTarget.EntityTarget(((EntityInteract) event).getTarget());
 			event.getEntityPlayer().sendMessage(new TextComponentString("Target is set to " + ((EntityInteract) event).getTarget().getCachedUniqueIdString() + "."));
 			selectEntityMode = false;
+			serverPath = null;
 		}
 		
 		if (event instanceof RightClickBlock) {
-			CMDCamClient.target = new CamTarget.BlockTarget(event.getPos());
+			if (serverPath != null)
+				PacketHandler.sendPacketToServer(new SelectTargetPacket(serverPath, new CamTarget.BlockTarget(event.getPos())));
+			else
+				CMDCamClient.target = new CamTarget.BlockTarget(event.getPos());
 			event.getEntityPlayer().sendMessage(new TextComponentString("Target is set to " + event.getPos() + "."));
 			selectEntityMode = false;
+			serverPath = null;
 		}
 	}
 }
