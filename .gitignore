@@ -1,2 +1,10 @@
 src/main/java/org
 src/main/java/com/badlogic
+/.gradle/
+/build/
+
+*.classpath
+*.project
+/.settings
+
+/bin
