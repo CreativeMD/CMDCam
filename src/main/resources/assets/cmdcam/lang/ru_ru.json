@@ -1,0 +1,11 @@
+{
+	"key.categories.cmdcam": "Настройки CMDCam",
+	"key.point": "Добавить точку",
+	"key.rollcenter": "Сбросить поворот камеры",
+	"key.rollleft": "Повернуть камеру влево",
+	"key.rollright": "Повернуть камеру вправо",
+	"key.startStop": "Запустить / Остановить",
+	"key.zoomin": "Приблизить",
+	"key.zoomout": "Отдалить",
+	"key.centerzoom": "Сбросить масштаб"
+}
