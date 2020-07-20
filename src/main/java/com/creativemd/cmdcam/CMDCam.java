@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
-@Mod(modid = CMDCam.modid, version = CMDCam.version, name = "CMDCam")
+@Mod(modid = CMDCam.modid, version = CMDCam.version, name = "CMDCam", dependencies = "required-after:creativecore")
 public class CMDCam {
 	
 	public static final String modid = "cmdcam";
