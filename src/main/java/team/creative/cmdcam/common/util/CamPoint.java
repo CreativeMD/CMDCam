@@ -3,7 +3,7 @@ package team.creative.cmdcam.common.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.cmdcam.client.CamEventHandlerClient;
@@ -58,7 +58,7 @@ public class CamPoint {
 		return new CamPoint(this.x + (point.x - this.x) * percent, this.y + (point.y - this.y) * percent, this.z + (point.z - this.z) * percent, this.rotationYaw + (point.rotationYaw - this.rotationYaw) * percent, this.rotationPitch + (point.rotationPitch - this.rotationPitch) * percent, this.roll + (point.roll - this.roll) * percent, this.zoom + (point.zoom - this.zoom) * percent);
 	}
 	
-	public void faceEntity(Vec3d pos, float minYaw, float minPitch, double ticks) {
+	public void faceEntity(Vector3d pos, float minYaw, float minPitch, double ticks) {
 		double d0 = pos.x - this.x;
 		double d2 = pos.z - this.z;
 		double d1 = pos.y - this.y;

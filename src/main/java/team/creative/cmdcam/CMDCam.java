@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.ArgumentSerializer;
@@ -17,6 +16,7 @@ import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -83,12 +83,12 @@ public class CMDCam {
 	}
 	
 	private void serverStarting(final FMLServerStartingEvent event) {
-		event.getCommandDispatcher().register(Commands.literal("cam-server").executes((x) -> {
-			x.getSource().sendFeedback(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server start <player> <path> [time|ms|s|m|h|d] [loops (-1 -> endless)] " + ChatFormatting.RED + "starts the animation"), false);
-			x.getSource().sendFeedback(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server stop <player> " + ChatFormatting.RED + "stops the animation"), false);
-			x.getSource().sendFeedback(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server list " + ChatFormatting.RED + "lists all saved paths"), false);
-			x.getSource().sendFeedback(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server remove <name> " + ChatFormatting.RED + "removes the given path"), false);
-			x.getSource().sendFeedback(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server clear " + ChatFormatting.RED + "clears all saved paths"), false);
+		event.getServer().getCommandManager().getDispatcher().register(Commands.literal("cam-server").executes((x) -> {
+			x.getSource().sendFeedback(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam-server start <player> <path> [time|ms|s|m|h|d] [loops (-1 -> endless)] " + TextFormatting.RED + "starts the animation"), false);
+			x.getSource().sendFeedback(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam-server stop <player> " + TextFormatting.RED + "stops the animation"), false);
+			x.getSource().sendFeedback(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam-server list " + TextFormatting.RED + "lists all saved paths"), false);
+			x.getSource().sendFeedback(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam-server remove <name> " + TextFormatting.RED + "removes the given path"), false);
+			x.getSource().sendFeedback(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam-server clear " + TextFormatting.RED + "clears all saved paths"), false);
 			return 0;
 		}).then(Commands.literal("start").then(Commands.argument("players", EntityArgument.players()).then(Commands.argument("name", StringArgumentType.string()).executes((x) -> {
 			Collection<ServerPlayerEntity> players = EntityArgument.getPlayers(x, "players");

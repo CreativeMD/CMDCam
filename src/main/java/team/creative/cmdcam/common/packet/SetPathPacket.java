@@ -3,6 +3,7 @@ package team.creative.cmdcam.common.packet;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.StringTextComponent;
 import team.creative.cmdcam.common.util.CamPath;
 import team.creative.cmdcam.server.CMDCamServer;
@@ -26,7 +27,7 @@ public class SetPathPacket extends CreativePacket {
 	public void executeClient(PlayerEntity player) {
 		CamPath path = new CamPath(nbt);
 		path.overwriteClientConfig();
-		player.sendMessage(new StringTextComponent("Loaded path '" + id + "' successfully!"));
+		player.sendMessage(new StringTextComponent("Loaded path '" + id + "' successfully!"), Util.field_240973_b_);
 	}
 	
 	@Override
@@ -34,8 +35,8 @@ public class SetPathPacket extends CreativePacket {
 		CamPath path = new CamPath(nbt);
 		if (((ServerPlayerEntity) player).hasPermissionLevel(4)) {
 			CMDCamServer.setPath(player.world, id, path);
-			player.sendMessage(new StringTextComponent("Saved path '" + id + "' successfully!"));
+			player.sendMessage(new StringTextComponent("Saved path '" + id + "' successfully!"), Util.field_240973_b_);
 		} else
-			player.sendMessage(new StringTextComponent("You do not have the permission to edit the path list!"));
+			player.sendMessage(new StringTextComponent("You do not have the permission to edit the path list!"), Util.field_240973_b_);
 	}
 }

@@ -14,7 +14,8 @@ import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -78,7 +79,7 @@ public class CamEventHandlerClient {
 					
 					if (KeyHandler.pointKey.isPressed()) {
 						CMDCamClient.points.add(new CamPoint());
-						mc.player.sendMessage(new StringTextComponent("Registered " + CMDCamClient.points.size() + ". Point!"));
+						mc.player.sendMessage(new StringTextComponent("Registered " + CMDCamClient.points.size() + ". Point!"), Util.field_240973_b_);
 					}
 					
 				} else {
@@ -92,7 +93,7 @@ public class CamEventHandlerClient {
 						try {
 							CMDCamClient.startPath(CMDCamClient.createPathFromCurrentConfiguration());
 						} catch (PathParseException e) {
-							mc.player.sendMessage(new StringTextComponent(e.getMessage()));
+							mc.player.sendMessage(new StringTextComponent(e.getMessage()), Util.field_240973_b_);
 						}
 				}
 			}
@@ -117,7 +118,7 @@ public class CamEventHandlerClient {
 			RenderSystem.enableDepthTest();
 			
 			ActiveRenderInfo activerenderinfo = TileEntityRendererDispatcher.instance.renderInfo;
-			Vec3d view = activerenderinfo.getProjectedView();
+			Vector3d view = activerenderinfo.getProjectedView();
 			
 			for (int i = 0; i < CMDCamClient.points.size(); i++) {
 				CamPoint point = CMDCamClient.points.get(i);
@@ -161,7 +162,7 @@ public class CamEventHandlerClient {
 		
 		double steps = 20 * (points.size() - 1);
 		ActiveRenderInfo activerenderinfo = TileEntityRendererDispatcher.instance.renderInfo;
-		Vec3d view = activerenderinfo.getProjectedView();
+		Vector3d view = activerenderinfo.getProjectedView();
 		
 		RenderSystem.depthMask(true);
 		RenderSystem.disableCull();
@@ -214,13 +215,13 @@ public class CamEventHandlerClient {
 		
 		if (event instanceof EntityInteract) {
 			CMDCamClient.target = new CamTarget.EntityTarget(((EntityInteract) event).getTarget());
-			event.getPlayer().sendMessage(new StringTextComponent("Target is set to " + ((EntityInteract) event).getTarget().getCachedUniqueIdString() + "."));
+			event.getPlayer().sendMessage(new StringTextComponent("Target is set to " + ((EntityInteract) event).getTarget().getCachedUniqueIdString() + "."), Util.field_240973_b_);
 			selectEntityMode = false;
 		}
 		
 		if (event instanceof RightClickBlock) {
 			CMDCamClient.target = new CamTarget.BlockTarget(event.getPos());
-			event.getPlayer().sendMessage(new StringTextComponent("Target is set to " + event.getPos() + "."));
+			event.getPlayer().sendMessage(new StringTextComponent("Target is set to " + event.getPos() + "."), Util.field_240973_b_);
 			selectEntityMode = false;
 		}
 	}

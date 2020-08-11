@@ -9,11 +9,12 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ISuggestionProvider;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -59,45 +60,45 @@ public class CMDCamClient {
 		KeyHandler.initKeys();
 		
 		ClientCommandRegistry.register(LiteralArgumentBuilder.<ISuggestionProvider>literal("cam").executes((x) -> {
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam add [number] " + ChatFormatting.RED + "register a point at the current position"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam clear " + ChatFormatting.RED + "delete all registered points"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam start [time|ms|s|m|h|d] [loops (-1 -> endless)] " + ChatFormatting.RED + "starts the animation"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam stop " + ChatFormatting.RED + "stops the animation"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam goto <index> " + ChatFormatting.RED + "tp to the given point"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam set <index> " + ChatFormatting.RED + "updates point to current location"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam remove <index> " + ChatFormatting.RED + "removes the given point"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam target <none:self> " + ChatFormatting.RED + "set the camera target"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam mode <default:outside> " + ChatFormatting.RED + "set current mode"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String.join(":", CamInterpolation.getMovementNames()) + "> " + ChatFormatting.RED + "set the camera interpolation"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam follow-speed <number> " + ChatFormatting.RED + "default is 1.0"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam show <all:" + String.join(":", CamInterpolation.getMovementNames()) + "> " + ChatFormatting.RED + "shows the path using the given interpolation"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam hide <all:" + String.join(":", CamInterpolation.getMovementNames()) + "> " + ChatFormatting.RED + "hides the path using the given interpolation"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam save <name> " + ChatFormatting.RED + "saves the current path (including settings) with the given name"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam load <name> " + ChatFormatting.RED + "tries to load the saved path with the given name"));
-			mc.player.sendMessage(new StringTextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam list " + ChatFormatting.RED + "lists all saved paths"));
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam add [number] " + TextFormatting.RED + "register a point at the current position"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam clear " + TextFormatting.RED + "delete all registered points"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam start [time|ms|s|m|h|d] [loops (-1 -> endless)] " + TextFormatting.RED + "starts the animation"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam stop " + TextFormatting.RED + "stops the animation"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam goto <index> " + TextFormatting.RED + "tp to the given point"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam set <index> " + TextFormatting.RED + "updates point to current location"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam remove <index> " + TextFormatting.RED + "removes the given point"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam target <none:self> " + TextFormatting.RED + "set the camera target"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam mode <default:outside> " + TextFormatting.RED + "set current mode"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam interpolation <" + String.join(":", CamInterpolation.getMovementNames()) + "> " + TextFormatting.RED + "set the camera interpolation"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam follow-speed <number> " + TextFormatting.RED + "default is 1.0"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam show <all:" + String.join(":", CamInterpolation.getMovementNames()) + "> " + TextFormatting.RED + "shows the path using the given interpolation"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam hide <all:" + String.join(":", CamInterpolation.getMovementNames()) + "> " + TextFormatting.RED + "hides the path using the given interpolation"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam save <name> " + TextFormatting.RED + "saves the current path (including settings) with the given name"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam load <name> " + TextFormatting.RED + "tries to load the saved path with the given name"), Util.field_240973_b_);
+			mc.player.sendMessage(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam list " + TextFormatting.RED + "lists all saved paths"), Util.field_240973_b_);
 			return 0;
 		}).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("clear").executes((x) -> { // cam clear
-			mc.player.sendMessage(new StringTextComponent("Cleared all registered points!"));
+			mc.player.sendMessage(new StringTextComponent("Cleared all registered points!"), Util.field_240973_b_);
 			CMDCamClient.points.clear();
 			return 0;
 		})).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("add").executes((x) -> { // cam add
 			CMDCamClient.points.add(new CamPoint());
-			mc.player.sendMessage(new StringTextComponent("Registered " + CMDCamClient.points.size() + ". Point!"));
+			mc.player.sendMessage(new StringTextComponent("Registered " + CMDCamClient.points.size() + ". Point!"), Util.field_240973_b_);
 			return 0;
 		}).then(RequiredArgumentBuilder.<ISuggestionProvider, Integer>argument("index", IntegerArgumentType.integer()).executes((x) -> { // cam add <index>
 			Integer index = IntegerArgumentType.getInteger(x, "index");
 			index--;
 			if (index >= 0 && index < CMDCamClient.points.size()) {
 				CMDCamClient.points.add(index, new CamPoint());
-				mc.player.sendMessage(new StringTextComponent("Inserted " + index + ". Point!"));
+				mc.player.sendMessage(new StringTextComponent("Inserted " + index + ". Point!"), Util.field_240973_b_);
 			} else
-				mc.player.sendMessage(new StringTextComponent("The given index '" + index + "' is too high/low!"));
+				mc.player.sendMessage(new StringTextComponent("The given index '" + index + "' is too high/low!"), Util.field_240973_b_);
 			return 0;
 		}))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("start").executes((x) -> { // cam start
 			try {
 				CMDCamClient.startPath(CMDCamClient.createPathFromCurrentConfiguration());
 			} catch (PathParseException e) {
-				mc.player.sendMessage(new StringTextComponent(e.getMessage()));
+				mc.player.sendMessage(new StringTextComponent(e.getMessage()), Util.field_240973_b_);
 			}
 			return 0;
 		}).then(RequiredArgumentBuilder.<ISuggestionProvider, Long>argument("duration", DurationArgument.duration()).executes((x) -> {
@@ -107,7 +108,7 @@ public class CMDCamClient {
 					CMDCamClient.lastDuration = duration;
 				CMDCamClient.startPath(CMDCamClient.createPathFromCurrentConfiguration());
 			} catch (PathParseException e) {
-				mc.player.sendMessage(new StringTextComponent(e.getMessage()));
+				mc.player.sendMessage(new StringTextComponent(e.getMessage()), Util.field_240973_b_);
 			}
 			return 0;
 		}).then(RequiredArgumentBuilder.<ISuggestionProvider, Integer>argument("loop", IntegerArgumentType.integer(-1)).executes((x) -> {
@@ -119,7 +120,7 @@ public class CMDCamClient {
 				CMDCamClient.lastLoop = IntegerArgumentType.getInteger(x, "loop");
 				CMDCamClient.startPath(CMDCamClient.createPathFromCurrentConfiguration());
 			} catch (PathParseException e) {
-				mc.player.sendMessage(new StringTextComponent(e.getMessage()));
+				mc.player.sendMessage(new StringTextComponent(e.getMessage()), Util.field_240973_b_);
 			}
 			return 0;
 		})))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("stop").executes((x) -> {
@@ -130,18 +131,18 @@ public class CMDCamClient {
 			index--;
 			if (index >= 0 && index < CMDCamClient.points.size()) {
 				CMDCamClient.points.remove((int) index);
-				mc.player.sendMessage(new StringTextComponent("Removed " + (index + 1) + ". point!"));
+				mc.player.sendMessage(new StringTextComponent("Removed " + (index + 1) + ". point!"), Util.field_240973_b_);
 			} else
-				mc.player.sendMessage(new StringTextComponent("The given index '" + index + "' is too high/low!"));
+				mc.player.sendMessage(new StringTextComponent("The given index '" + index + "' is too high/low!"), Util.field_240973_b_);
 			return 0;
 		}))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("set").then(RequiredArgumentBuilder.<ISuggestionProvider, Integer>argument("index", IntegerArgumentType.integer()).executes((x) -> {
 			Integer index = IntegerArgumentType.getInteger(x, "index");
 			index--;
 			if (index >= 0 && index < CMDCamClient.points.size()) {
 				CMDCamClient.points.set(index, new CamPoint());
-				mc.player.sendMessage(new StringTextComponent("Updated " + (index + 1) + ". point!"));
+				mc.player.sendMessage(new StringTextComponent("Updated " + (index + 1) + ". point!"), Util.field_240973_b_);
 			} else
-				mc.player.sendMessage(new StringTextComponent("The given index '" + index + "' is too high/low!"));
+				mc.player.sendMessage(new StringTextComponent("The given index '" + index + "' is too high/low!"), Util.field_240973_b_);
 			return 0;
 		}))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("goto").then(RequiredArgumentBuilder.<ISuggestionProvider, Integer>argument("index", IntegerArgumentType.integer()).executes((x) -> {
 			Integer index = IntegerArgumentType.getInteger(x, "index");
@@ -155,16 +156,16 @@ public class CMDCamClient {
 				mc.player.setPositionAndRotation(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
 				mc.player.setLocationAndAngles(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
 			} else
-				mc.player.sendMessage(new StringTextComponent("The given index '" + (index + 1) + "' is too high/low!"));
+				mc.player.sendMessage(new StringTextComponent("The given index '" + (index + 1) + "' is too high/low!"), Util.field_240973_b_);
 			return 0;
 		}))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("mode").then(RequiredArgumentBuilder.<ISuggestionProvider, String>argument("mode", CamModeArgument.mode()).executes((x) -> {
 			String mode = StringArgumentType.getString(x, "mode");
 			CMDCamClient.lastMode = mode;
-			mc.player.sendMessage(new StringTextComponent("Changed to " + mode + " path!"));
+			mc.player.sendMessage(new StringTextComponent("Changed to " + mode + " path!"), Util.field_240973_b_);
 			return 0;
 		}))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("target").executes((x) -> {
 			CamEventHandlerClient.selectEntityMode = true;
-			mc.player.sendMessage(new StringTextComponent("Please select a target either an entity or a block!"));
+			mc.player.sendMessage(new StringTextComponent("Please select a target either an entity or a block!"), Util.field_240973_b_);
 			return 0;
 		})/*.then(RequiredArgumentBuilder.<ISuggestionProvider, EntitySelector>argument("entity", EntityArgument.entity()).executes((x) -> {
 		  CommandContext<CommandSource> context = new CommandContext<>(mc.player.getCommandSource(), x.getInput(), argumentField.get(x), x.getCommand(), x.getRootNode(), x.getNodes(), x.getRange(), x.getChild(), x.getRedirectModifier(), x.isForked());
@@ -175,27 +176,27 @@ public class CMDCamClient {
 			        String target = StringArgumentType.getString(x, "target");
 			        if (target.equalsIgnoreCase("self")) {
 				        CMDCamClient.target = new CamTarget.SelfTarget();
-				        mc.player.sendMessage(new StringTextComponent("The camera will point towards you!"));
+				        mc.player.sendMessage(new StringTextComponent("The camera will point towards you!"), Util.field_240973_b_);
 			        } else if (target.equals("none")) {
 				        CMDCamClient.target = null;
-				        mc.player.sendMessage(new StringTextComponent("Removed target!"));
+				        mc.player.sendMessage(new StringTextComponent("Removed target!"), Util.field_240973_b_);
 			        }
 			        return 0;
 		        }))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("interpolation").then(RequiredArgumentBuilder.<ISuggestionProvider, String>argument("interpolation", InterpolationArgument.interpolation()).executes((x) -> {
 			        String interpolation = StringArgumentType.getString(x, "interpolation");
 			        CMDCamClient.lastInterpolation = interpolation;
-			        mc.player.sendMessage(new StringTextComponent("Interpolation is set to '" + interpolation + "'!"));
+			        mc.player.sendMessage(new StringTextComponent("Interpolation is set to '" + interpolation + "'!"), Util.field_240973_b_);
 			        return 0;
 		        }))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("show").then(RequiredArgumentBuilder.<ISuggestionProvider, String>argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
 			        String interpolation = StringArgumentType.getString(x, "interpolation");
 			        CamInterpolation move = CamInterpolation.getInterpolation(interpolation);
 			        if (move != null) {
 				        move.isRenderingEnabled = true;
-				        mc.player.sendMessage(new StringTextComponent("Showing '" + interpolation + "' interpolation path!"));
+				        mc.player.sendMessage(new StringTextComponent("Showing '" + interpolation + "' interpolation path!"), Util.field_240973_b_);
 			        } else if (interpolation.equalsIgnoreCase("all")) {
 				        for (CamInterpolation movement : CamInterpolation.interpolationTypes.values())
 					        movement.isRenderingEnabled = true;
-				        mc.player.sendMessage(new StringTextComponent("Showing all interpolation paths!"));
+				        mc.player.sendMessage(new StringTextComponent("Showing all interpolation paths!"), Util.field_240973_b_);
 			        }
 			        return 0;
 		        }))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("hide").then(RequiredArgumentBuilder.<ISuggestionProvider, String>argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
@@ -203,28 +204,28 @@ public class CMDCamClient {
 			        CamInterpolation move = CamInterpolation.getInterpolation(interpolation);
 			        if (move != null) {
 				        move.isRenderingEnabled = false;
-				        mc.player.sendMessage(new StringTextComponent("Hiding '" + interpolation + "' interpolation path!"));
+				        mc.player.sendMessage(new StringTextComponent("Hiding '" + interpolation + "' interpolation path!"), Util.field_240973_b_);
 			        } else if (interpolation.equalsIgnoreCase("all")) {
 				        for (CamInterpolation movement : CamInterpolation.interpolationTypes.values())
 					        movement.isRenderingEnabled = false;
-				        mc.player.sendMessage(new StringTextComponent("Hiding all interpolation paths!"));
+				        mc.player.sendMessage(new StringTextComponent("Hiding all interpolation paths!"), Util.field_240973_b_);
 			        }
 			        return 0;
 		        }))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("follow-speed").then(RequiredArgumentBuilder.<ISuggestionProvider, Double>argument("factor", DoubleArgumentType.doubleArg()).executes((x) -> {
 			        double factor = DoubleArgumentType.getDouble(x, "factor");
 			        CMDCamClient.cameraFollowSpeed = factor;
-			        mc.player.sendMessage(new StringTextComponent("Camera follow speed is set to  '" + factor + "'. Default is 1.0!"));
+			        mc.player.sendMessage(new StringTextComponent("Camera follow speed is set to  '" + factor + "'. Default is 1.0!"), Util.field_240973_b_);
 			        return 0;
 		        }))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("list").executes((x) -> {
 			        if (CMDCamClient.isInstalledOnSever) {
-				        mc.player.sendMessage(new StringTextComponent("Use /cam-server list instead!"));
+				        mc.player.sendMessage(new StringTextComponent("Use /cam-server list instead!"), Util.field_240973_b_);
 				        return 0;
 			        }
 			        String output = "There are " + CMDCamClient.savedPaths.size() + " path(s) in total. ";
 			        for (String key : CMDCamClient.savedPaths.keySet()) {
 				        output += key + ", ";
 			        }
-			        mc.player.sendMessage(new StringTextComponent(output));
+			        mc.player.sendMessage(new StringTextComponent(output), Util.field_240973_b_);
 			        return 0;
 		        })).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("load").then(RequiredArgumentBuilder.<ISuggestionProvider, String>argument("path", StringArgumentType.string()).executes((x) -> {
 			        String pathArg = StringArgumentType.getString(x, "path");
@@ -234,9 +235,9 @@ public class CMDCamClient {
 				        CamPath path = CMDCamClient.savedPaths.get(pathArg);
 				        if (path != null) {
 					        path.overwriteClientConfig();
-					        mc.player.sendMessage(new StringTextComponent("Loaded path '" + pathArg + "' successfully!"));
+					        mc.player.sendMessage(new StringTextComponent("Loaded path '" + pathArg + "' successfully!"), Util.field_240973_b_);
 				        } else
-					        mc.player.sendMessage(new StringTextComponent("Could not find path '" + pathArg + "'!"));
+					        mc.player.sendMessage(new StringTextComponent("Could not find path '" + pathArg + "'!"), Util.field_240973_b_);
 			        }
 			        return 0;
 		        }))).then(LiteralArgumentBuilder.<ISuggestionProvider>literal("save").then(RequiredArgumentBuilder.<ISuggestionProvider, String>argument("path", StringArgumentType.string()).executes((x) -> {
@@ -248,10 +249,10 @@ public class CMDCamClient {
 					        CMDCam.NETWORK.sendToServer(new SetPathPacket(pathArg, path));
 				        } else {
 					        CMDCamClient.savedPaths.put(pathArg, path);
-					        mc.player.sendMessage(new StringTextComponent("Saved path '" + pathArg + "' successfully!"));
+					        mc.player.sendMessage(new StringTextComponent("Saved path '" + pathArg + "' successfully!"), Util.field_240973_b_);
 				        }
 			        } catch (PathParseException e) {
-				        mc.player.sendMessage(new StringTextComponent(e.getMessage()));
+				        mc.player.sendMessage(new StringTextComponent(e.getMessage()), Util.field_240973_b_);
 			        }
 			        return 0;
 		        }))));

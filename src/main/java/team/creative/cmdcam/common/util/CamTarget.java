@@ -9,7 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 public abstract class CamTarget {
@@ -44,7 +44,7 @@ public abstract class CamTarget {
 		registerTargetType(SelfTarget.class, "self");
 	}
 	
-	public abstract Vec3d getTargetVec(World world, float partialTicks);
+	public abstract Vector3d getTargetVec(World world, float partialTicks);
 	
 	protected abstract void write(CompoundNBT nbt);
 	
@@ -69,8 +69,8 @@ public abstract class CamTarget {
 		public BlockPos pos;
 		
 		@Override
-		public Vec3d getTargetVec(World world, float partialTicks) {
-			return new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+		public Vector3d getTargetVec(World world, float partialTicks) {
+			return new Vector3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
 		}
 		
 		@Override
@@ -103,7 +103,7 @@ public abstract class CamTarget {
 		}
 		
 		@Override
-		public Vec3d getTargetVec(World world, float partialTicks) {
+		public Vector3d getTargetVec(World world, float partialTicks) {
 			
 			if (cachedEntity == null) {
 				for (Entity entity : world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY))) {
@@ -151,7 +151,7 @@ public abstract class CamTarget {
 		}
 		
 		@Override
-		public Vec3d getTargetVec(World world, float partialTicks) {
+		public Vector3d getTargetVec(World world, float partialTicks) {
 			
 			Entity cachedEntity = Minecraft.getInstance().player;
 			

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.cmdcam.client.CamEventHandlerClient;
@@ -54,7 +54,7 @@ public abstract class CamMode {
 			newPoint.rotationPitch = lastPitch;
 			newPoint.rotationYaw = lastYaw;
 			
-			Vec3d pos = path.target.getTargetVec(mc.world, mc.getRenderPartialTicks());
+			Vector3d pos = path.target.getTargetVec(mc.world, mc.getRenderPartialTicks());
 			
 			if (pos != null) {
 				long timeSinceLastRenderFrame = System.nanoTime() - CamEventHandlerClient.lastRenderTime;
