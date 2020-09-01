@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+FMLCorePlugin: com.creativemd.cmdcam.transform.CamPatchingLoader
+FMLCorePluginContainsFMLMod: com.cmdcam.CMDCam
+Created-By: 1.7.0 (Oracle Corporation)
