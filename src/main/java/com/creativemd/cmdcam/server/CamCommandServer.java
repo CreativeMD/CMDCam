@@ -27,6 +27,11 @@ import net.minecraft.util.text.TextComponentString;
 public class CamCommandServer extends CommandBase {
 	
 	@Override
+	public int getRequiredPermissionLevel() {
+		return 2;
+	}
+	
+	@Override
 	public String getName() {
 		return "cam-server";
 	}
