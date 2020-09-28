@@ -51,7 +51,7 @@ public class CamPoint {
 		this.rotationPitch = mc.player.rotationPitch;
 		
 		this.roll = CamEventHandlerClient.roll;
-		this.zoom = CamEventHandlerClient.fov;
+		this.zoom = CamEventHandlerClient.currentFOV;
 	}
 	
 	public CamPoint getPointBetween(CamPoint point, double percent) {

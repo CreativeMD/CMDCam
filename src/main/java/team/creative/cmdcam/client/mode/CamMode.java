@@ -71,8 +71,7 @@ public abstract class CamMode {
 	}
 	
 	public void onPathFinish() {
-		CamEventHandlerClient.fov = CamEventHandlerClient.defaultfov;
-		mc.gameSettings.fov = CamEventHandlerClient.defaultfov;
+		mc.gameSettings.fov = CamEventHandlerClient.currentFOV = CamEventHandlerClient.defaultFOV;
 		CamEventHandlerClient.roll = 0;
 	}
 	
@@ -80,7 +79,7 @@ public abstract class CamMode {
 	
 	public void processPoint(CamPoint point) {
 		CamEventHandlerClient.roll = (float) point.roll;
-		mc.gameSettings.fov = (float) point.zoom;
+		CamEventHandlerClient.currentFOV = (float) point.zoom;
 	}
 	
 	public static CamPoint getPoint(CamInterpolation movement, ArrayList<CamPoint> points, double percent, int currentLoop, int loops) {

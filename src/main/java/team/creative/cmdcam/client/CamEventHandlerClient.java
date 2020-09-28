@@ -19,6 +19,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.RenderTickEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
@@ -34,39 +35,44 @@ import team.creative.creativecore.common.util.math.vec.Vector3;
 public class CamEventHandlerClient {
 	
 	public static Minecraft mc = Minecraft.getInstance();
-	public static float defaultfov = 70.0F;
+	
 	public static final float amountZoom = 0.1F;
 	public static final float amountroll = 0.5F;
 	
-	public static double fov;
+	public static double defaultFOV = 70;
+	public static double currentFOV;
 	public static float roll = 0;
 	
 	@SubscribeEvent
 	public void onRenderTick(RenderTickEvent event) {
 		if (mc.world == null)
 			CMDCamClient.isInstalledOnSever = false;
+		if (event.phase == Phase.END)
+			return;
+		
+		if (currentFOV != mc.gameSettings.fov) {
+			currentFOV = defaultFOV = mc.gameSettings.fov;
+		}
 		
 		if (mc.player != null && mc.world != null) {
 			if (!mc.isGamePaused()) {
 				if (CMDCamClient.getCurrentPath() == null) {
 					if (KeyHandler.zoomIn.isKeyDown()) {
 						if (mc.player.isCrouching())
-							mc.gameSettings.fov -= amountZoom * 10;
+							currentFOV -= amountZoom * 10;
 						else
-							mc.gameSettings.fov -= amountZoom;
+							currentFOV -= amountZoom;
 					}
 					
 					if (KeyHandler.zoomOut.isKeyDown()) {
 						if (mc.player.isCrouching())
-							mc.gameSettings.fov += amountZoom * 10;
+							currentFOV += amountZoom * 10;
 						else
-							mc.gameSettings.fov += amountZoom;
+							currentFOV += amountZoom;
 					}
 					
-					if (KeyHandler.zoomCenter.isKeyDown()) {
-						mc.gameSettings.fov = defaultfov;
-					}
-					fov = mc.gameSettings.fov;
+					if (KeyHandler.zoomCenter.isKeyDown())
+						currentFOV = defaultFOV;
 					
 					if (KeyHandler.rollLeft.isKeyDown())
 						roll -= amountroll;
@@ -97,6 +103,7 @@ public class CamEventHandlerClient {
 						}
 				}
 			}
+			mc.gameSettings.fov = currentFOV;
 		}
 		lastRenderTime = System.nanoTime();
 	}
