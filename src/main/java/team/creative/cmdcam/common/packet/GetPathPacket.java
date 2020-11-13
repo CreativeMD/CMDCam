@@ -32,7 +32,7 @@ public class GetPathPacket extends CreativePacket {
 		if (path != null)
 			CMDCam.NETWORK.sendToClient(new SetPathPacket(id, path), (ServerPlayerEntity) player);
 		else
-			player.sendMessage(new StringTextComponent("Path '" + id + "' could not be found!"), Util.field_240973_b_);
+			player.sendMessage(new StringTextComponent("Path '" + id + "' could not be found!"), Util.DUMMY_UUID);
 	}
 	
 }

@@ -27,7 +27,7 @@ public class SetPathPacket extends CreativePacket {
 	public void executeClient(PlayerEntity player) {
 		CamPath path = new CamPath(nbt);
 		path.overwriteClientConfig();
-		player.sendMessage(new StringTextComponent("Loaded path '" + id + "' successfully!"), Util.field_240973_b_);
+		player.sendMessage(new StringTextComponent("Loaded path '" + id + "' successfully!"), Util.DUMMY_UUID);
 	}
 	
 	@Override
@@ -35,8 +35,8 @@ public class SetPathPacket extends CreativePacket {
 		CamPath path = new CamPath(nbt);
 		if (((ServerPlayerEntity) player).hasPermissionLevel(4)) {
 			CMDCamServer.setPath(player.world, id, path);
-			player.sendMessage(new StringTextComponent("Saved path '" + id + "' successfully!"), Util.field_240973_b_);
+			player.sendMessage(new StringTextComponent("Saved path '" + id + "' successfully!"), Util.DUMMY_UUID);
 		} else
-			player.sendMessage(new StringTextComponent("You do not have the permission to edit the path list!"), Util.field_240973_b_);
+			player.sendMessage(new StringTextComponent("You do not have the permission to edit the path list!"), Util.DUMMY_UUID);
 	}
 }

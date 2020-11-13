@@ -85,7 +85,7 @@ public class CamEventHandlerClient {
 					
 					if (KeyHandler.pointKey.isPressed()) {
 						CMDCamClient.points.add(new CamPoint());
-						mc.player.sendMessage(new StringTextComponent("Registered " + CMDCamClient.points.size() + ". Point!"), Util.field_240973_b_);
+						mc.player.sendMessage(new StringTextComponent("Registered " + CMDCamClient.points.size() + ". Point!"), Util.DUMMY_UUID);
 					}
 					
 				} else {
@@ -99,7 +99,7 @@ public class CamEventHandlerClient {
 						try {
 							CMDCamClient.startPath(CMDCamClient.createPathFromCurrentConfiguration());
 						} catch (PathParseException e) {
-							mc.player.sendMessage(new StringTextComponent(e.getMessage()), Util.field_240973_b_);
+							mc.player.sendMessage(new StringTextComponent(e.getMessage()), Util.DUMMY_UUID);
 						}
 				}
 			}
@@ -222,13 +222,13 @@ public class CamEventHandlerClient {
 		
 		if (event instanceof EntityInteract) {
 			CMDCamClient.target = new CamTarget.EntityTarget(((EntityInteract) event).getTarget());
-			event.getPlayer().sendMessage(new StringTextComponent("Target is set to " + ((EntityInteract) event).getTarget().getCachedUniqueIdString() + "."), Util.field_240973_b_);
+			event.getPlayer().sendMessage(new StringTextComponent("Target is set to " + ((EntityInteract) event).getTarget().getCachedUniqueIdString() + "."), Util.DUMMY_UUID);
 			selectEntityMode = false;
 		}
 		
 		if (event instanceof RightClickBlock) {
 			CMDCamClient.target = new CamTarget.BlockTarget(event.getPos());
-			event.getPlayer().sendMessage(new StringTextComponent("Target is set to " + event.getPos() + "."), Util.field_240973_b_);
+			event.getPlayer().sendMessage(new StringTextComponent("Target is set to " + event.getPos() + "."), Util.DUMMY_UUID);
 			selectEntityMode = false;
 		}
 	}
