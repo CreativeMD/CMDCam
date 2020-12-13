@@ -56,6 +56,10 @@ public abstract class CamTarget {
 		return nbt;
 	}
 	
+	public void start(World world) {}
+	
+	public void finish() {}
+	
 	public static class BlockTarget extends CamTarget {
 		
 		public BlockTarget() {
@@ -103,16 +107,24 @@ public abstract class CamTarget {
 		}
 		
 		@Override
-		public Vector3d getTargetVec(World world, float partialTicks) {
-			
-			if (cachedEntity == null) {
-				for (Entity entity : world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY))) {
-					if (entity.getCachedUniqueIdString().equals(uuid)) {
-						cachedEntity = entity;
-						break;
-					}
+		public void start(World world) {
+			for (Entity entity : world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY))) {
+				if (entity.getCachedUniqueIdString().equals(uuid)) {
+					cachedEntity = entity;
+					break;
 				}
 			}
+		}
+		
+		@Override
+		public void finish() {
+			cachedEntity = null;
+		}
+		
+		@Override
+		public Vector3d getTargetVec(World world, float partialTicks) {
+			if (cachedEntity != null && !cachedEntity.isAlive())
+				cachedEntity = null;
 			
 			if (cachedEntity instanceof LivingEntity)
 				return ((LivingEntity) cachedEntity).getEyePosition(partialTicks);

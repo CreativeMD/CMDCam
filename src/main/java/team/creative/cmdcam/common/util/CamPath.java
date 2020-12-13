@@ -94,6 +94,7 @@ public class CamPath {
 	public void start(World world) throws PathParseException {
 		this.finished = false;
 		this.running = true;
+		this.target.start(world);
 		
 		this.timeStarted = System.currentTimeMillis();
 		this.currentLoop = 0;
@@ -117,6 +118,7 @@ public class CamPath {
 	public void finish(World world) {
 		this.finished = true;
 		this.running = false;
+		this.target.finish();
 		
 		if (world.isRemote) {
 			this.cachedMode.onPathFinish();

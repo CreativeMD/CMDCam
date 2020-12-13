@@ -217,7 +217,7 @@ public class CamEventHandlerClient {
 	
 	@SubscribeEvent
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (!selectEntityMode)
+		if (!selectEntityMode || !event.getWorld().isRemote)
 			return;
 		
 		if (event instanceof EntityInteract) {
