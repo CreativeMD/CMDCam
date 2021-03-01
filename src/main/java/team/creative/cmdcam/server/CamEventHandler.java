@@ -7,10 +7,10 @@ import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.common.packet.ConnectPacket;
 
 public class CamEventHandler {
-	
-	@SubscribeEvent
-	public void onPlayerConnect(PlayerLoggedInEvent event) {
-		CMDCam.NETWORK.sendToClient(new ConnectPacket(), (ServerPlayerEntity) event.getPlayer());
-	}
-	
+    
+    @SubscribeEvent
+    public void onPlayerConnect(PlayerLoggedInEvent event) {
+        CMDCam.NETWORK.sendToClient(new ConnectPacket(), (ServerPlayerEntity) event.getPlayer());
+    }
+    
 }

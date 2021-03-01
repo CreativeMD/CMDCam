@@ -14,44 +14,44 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.util.text.StringTextComponent;
 
 public class DurationArgument implements ArgumentType<Long> {
-	
-	public static final List<String> EXAMPLES = Arrays.asList(new String[] { "10s", "20s", "30s", "1m" });
-	
-	public static DurationArgument duration() {
-		return new DurationArgument();
-	}
-	
-	public static long getDuration(final CommandContext<?> context, final String name) {
-		return context.getArgument(name, long.class);
-	}
-	
-	@Override
-	public Long parse(StringReader reader) throws CommandSyntaxException {
-		final int start = reader.getCursor();
-		long time = reader.readLong();
-		String type = reader.readString();
-		int factor = 0;
-		if (type.equalsIgnoreCase("ms"))
-			factor = 1;
-		else if (type.equalsIgnoreCase("s"))
-			factor = 1000;
-		else if (type.equalsIgnoreCase("m"))
-			factor = 1000 * 60;
-		else if (type.equalsIgnoreCase("h"))
-			factor = 1000 * 60 * 60;
-		else if (type.equalsIgnoreCase("d"))
-			factor = 1000 * 60 * 60 * 24;
-		else {
-			reader.setCursor(start);
-			throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid time format")), new StringTextComponent("Invalid time!"));
-		}
-		
-		return time * factor;
-	}
-	
-	@Override
-	public Collection<String> getExamples() {
-		return EXAMPLES;
-	}
-	
+    
+    public static final List<String> EXAMPLES = Arrays.asList(new String[] { "10s", "20s", "30s", "1m" });
+    
+    public static DurationArgument duration() {
+        return new DurationArgument();
+    }
+    
+    public static long getDuration(final CommandContext<?> context, final String name) {
+        return context.getArgument(name, long.class);
+    }
+    
+    @Override
+    public Long parse(StringReader reader) throws CommandSyntaxException {
+        final int start = reader.getCursor();
+        long time = reader.readLong();
+        String type = reader.readString();
+        int factor = 0;
+        if (type.equalsIgnoreCase("ms"))
+            factor = 1;
+        else if (type.equalsIgnoreCase("s"))
+            factor = 1000;
+        else if (type.equalsIgnoreCase("m"))
+            factor = 1000 * 60;
+        else if (type.equalsIgnoreCase("h"))
+            factor = 1000 * 60 * 60;
+        else if (type.equalsIgnoreCase("d"))
+            factor = 1000 * 60 * 60 * 24;
+        else {
+            reader.setCursor(start);
+            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid time format")), new StringTextComponent("Invalid time!"));
+        }
+        
+        return time * factor;
+    }
+    
+    @Override
+    public Collection<String> getExamples() {
+        return EXAMPLES;
+    }
+    
 }

@@ -18,33 +18,33 @@ import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.util.text.StringTextComponent;
 
 public class TargetArgument implements ArgumentType<String> {
-	
-	public static final List<String> EXAMPLES = Arrays.asList("self", "none");
-	
-	public static TargetArgument target() {
-		return new TargetArgument();
-	}
-	
-	@Override
-	public String parse(StringReader reader) throws CommandSyntaxException {
-		final int start = reader.getCursor();
-		final String result = reader.readString();
-		if (!result.equalsIgnoreCase("none") && !result.equalsIgnoreCase("self")) {
-			reader.setCursor(start);
-			throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid target")), new StringTextComponent("Invalid target!"));
-		}
-		
-		return result;
-	}
-	
-	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return context.getSource() instanceof ISuggestionProvider ? ISuggestionProvider.suggest(EXAMPLES, builder) : Suggestions.empty();
-	}
-	
-	@Override
-	public Collection<String> getExamples() {
-		return EXAMPLES;
-	}
-	
+    
+    public static final List<String> EXAMPLES = Arrays.asList("self", "none");
+    
+    public static TargetArgument target() {
+        return new TargetArgument();
+    }
+    
+    @Override
+    public String parse(StringReader reader) throws CommandSyntaxException {
+        final int start = reader.getCursor();
+        final String result = reader.readString();
+        if (!result.equalsIgnoreCase("none") && !result.equalsIgnoreCase("self")) {
+            reader.setCursor(start);
+            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid target")), new StringTextComponent("Invalid target!"));
+        }
+        
+        return result;
+    }
+    
+    @Override
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        return context.getSource() instanceof ISuggestionProvider ? ISuggestionProvider.suggest(EXAMPLES, builder) : Suggestions.empty();
+    }
+    
+    @Override
+    public Collection<String> getExamples() {
+        return EXAMPLES;
+    }
+    
 }
