@@ -102,6 +102,11 @@ public class CamEventHandlerClient {
                             mc.player.sendMessage(new StringTextComponent(e.getMessage()), Util.DUMMY_UUID);
                         }
                 }
+                
+                while (KeyHandler.clearPoint.isPressed()) {
+                    CMDCamClient.points.clear();
+                    mc.player.sendMessage(new StringTextComponent("Cleared all registered points!"), Util.DUMMY_UUID);
+                }
             }
             mc.gameSettings.fov = currentFOV;
         }

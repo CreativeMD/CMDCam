@@ -7,5 +7,6 @@
 	"key.startStop": "Start and Stop",
 	"key.zoomin": "Zoom in",
 	"key.zoomout": "Zoom out",
-	"key.centerzoom": "Reset Zoom"
+	"key.centerzoom": "Reset Zoom",
+	"key.clearPoint": "Clear Points"
 }

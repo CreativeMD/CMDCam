@@ -18,6 +18,8 @@ public class KeyHandler {
     public static KeyBinding pointKey = new KeyBinding("key.point", GLFW.GLFW_KEY_P, "key.categories.cmdcam");
     public static KeyBinding startStop = new KeyBinding("key.startStop", GLFW.GLFW_KEY_U, "key.categories.cmdcam");
     
+    public static KeyBinding clearPoint = new KeyBinding("key.clearPoint", GLFW.GLFW_KEY_DELETE, "key.categories.cmdcam");
+    
     public static void initKeys() {
         ClientRegistry.registerKeyBinding(zoomIn);
         ClientRegistry.registerKeyBinding(zoomCenter);
@@ -29,5 +31,7 @@ public class KeyHandler {
         
         ClientRegistry.registerKeyBinding(pointKey);
         ClientRegistry.registerKeyBinding(startStop);
+        
+        ClientRegistry.registerKeyBinding(clearPoint);
     }
 }
