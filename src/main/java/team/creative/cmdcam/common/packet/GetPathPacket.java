@@ -28,11 +28,11 @@ public class GetPathPacket extends CreativePacket {
     
     @Override
     public void executeServer(PlayerEntity player) {
-        CamPath path = CMDCamServer.getPath(player.getEntityWorld(), id);
+        CamPath path = CMDCamServer.getPath(player.level, id);
         if (path != null)
             CMDCam.NETWORK.sendToClient(new SetPathPacket(id, path), (ServerPlayerEntity) player);
         else
-            player.sendMessage(new StringTextComponent("Path '" + id + "' could not be found!"), Util.DUMMY_UUID);
+            player.sendMessage(new StringTextComponent("Path '" + id + "' could not be found!"), Util.NIL_UUID);
     }
     
 }

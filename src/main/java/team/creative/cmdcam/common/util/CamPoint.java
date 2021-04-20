@@ -43,12 +43,12 @@ public class CamPoint {
     @OnlyIn(Dist.CLIENT)
     public CamPoint() {
         Minecraft mc = Minecraft.getInstance();
-        this.x = mc.player.getPosX();
-        this.y = mc.player.getPosYEye();
-        this.z = mc.player.getPosZ();
+        this.x = mc.player.getX();
+        this.y = mc.player.getEyeY();
+        this.z = mc.player.getZ();
         
-        this.rotationYaw = mc.player.rotationYawHead;
-        this.rotationPitch = mc.player.rotationPitch;
+        this.rotationYaw = mc.player.yRot;
+        this.rotationPitch = mc.player.xRot;
         
         this.roll = CamEventHandlerClient.roll;
         this.zoom = CamEventHandlerClient.currentFOV;

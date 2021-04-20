@@ -28,23 +28,23 @@ public class DefaultMode extends CamMode {
         super.processPoint(point);
         //mc.mouseHelper.grabMouse();
         
-        double mouseX = mc.getMainWindow().getWidth() / 2;
-        double mouseY = mc.getMainWindow().getHeight() / 2;
-        InputMappings.setCursorPosAndMode(mc.getMainWindow().getHandle(), 212995, mouseX, mouseY);
+        double mouseX = mc.getWindow().getWidth() / 2;
+        double mouseY = mc.getWindow().getHeight() / 2;
+        InputMappings.grabOrReleaseMouse(mc.getWindow().getWindow(), 212995, mouseX, mouseY);
         
-        mc.player.abilities.isFlying = true;
+        mc.player.abilities.flying = true;
         
-        mc.player.setPositionAndRotation(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
-        mc.player.prevRotationYaw = (float) point.rotationYaw;
-        mc.player.prevRotationPitch = (float) point.rotationPitch;
-        mc.player.setLocationAndAngles(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
+        mc.player.absMoveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
+        mc.player.yRotO = (float) point.rotationYaw;
+        mc.player.xRotO = (float) point.rotationPitch;
+        mc.player.moveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
     }
     
     @Override
     public void onPathFinish() {
         super.onPathFinish();
         if (!mc.player.isCreative())
-            mc.player.abilities.isFlying = false;
+            mc.player.abilities.flying = false;
     }
     
 }

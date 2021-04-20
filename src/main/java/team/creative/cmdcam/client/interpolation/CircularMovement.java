@@ -29,7 +29,7 @@ public class CircularMovement extends HermiteMovement {
         if (target == null)
             throw new PathParseException("No target found");
         
-        Vector3d center = target.getTargetVec(mc.world, mc.getRenderPartialTicks());
+        Vector3d center = target.getTargetVec(mc.level, mc.getDeltaFrameTime());
         if (center != null) {
             points.add(points.get(0));
             
@@ -95,7 +95,7 @@ public class CircularMovement extends HermiteMovement {
         
         double angle = wholeProgress * 360;
         
-        Vector3d center = target.getTargetVec(mc.world, mc.getRenderPartialTicks());
+        Vector3d center = target.getTargetVec(mc.level, mc.getDeltaFrameTime());
         if (center != null) {
             Vector3 centerPoint = new Vector3(center.x, center.y, center.z);
             

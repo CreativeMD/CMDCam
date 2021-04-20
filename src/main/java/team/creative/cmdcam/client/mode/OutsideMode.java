@@ -13,7 +13,7 @@ public class OutsideMode extends CamMode {
     public OutsideMode(CamPath path) {
         super(path);
         if (path != null)
-            this.camPlayer = new ItemEntity(mc.world, 0, 0, 0);
+            this.camPlayer = new ItemEntity(mc.level, 0, 0, 0);
     }
     
     @Override
@@ -29,21 +29,21 @@ public class OutsideMode extends CamMode {
     @Override
     public void onPathFinish() {
         super.onPathFinish();
-        mc.renderViewEntity = mc.player;
+        mc.cameraEntity = mc.player;
     }
     
     @Override
     public void processPoint(CamPoint point) {
         super.processPoint(point);
         
-        mc.renderViewEntity = camPlayer;
+        mc.cameraEntity = camPlayer;
         if (camPlayer instanceof PlayerEntity)
-            ((PlayerEntity) camPlayer).abilities.isFlying = true;
+            ((PlayerEntity) camPlayer).abilities.flying = true;
         
-        camPlayer.setPositionAndRotation(point.x, point.y - camPlayer.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
-        camPlayer.prevRotationYaw = (float) point.rotationYaw;
-        camPlayer.prevRotationPitch = (float) point.rotationPitch;
-        camPlayer.setLocationAndAngles(point.x, point.y - camPlayer.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
+        camPlayer.absMoveTo(point.x, point.y - camPlayer.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
+        camPlayer.yRotO = (float) point.rotationYaw;
+        camPlayer.xRotO = (float) point.rotationPitch;
+        camPlayer.moveTo(point.x, point.y - camPlayer.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
     }
     
 }

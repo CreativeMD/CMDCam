@@ -54,7 +54,7 @@ public abstract class CamMode {
             newPoint.rotationPitch = lastPitch;
             newPoint.rotationYaw = lastYaw;
             
-            Vector3d pos = path.target.getTargetVec(mc.world, mc.getRenderPartialTicks());
+            Vector3d pos = path.target.getTargetVec(mc.level, mc.getDeltaFrameTime());
             
             if (pos != null) {
                 long timeSinceLastRenderFrame = System.nanoTime() - CamEventHandlerClient.lastRenderTime;
@@ -71,7 +71,7 @@ public abstract class CamMode {
     }
     
     public void onPathFinish() {
-        mc.gameSettings.fov = CamEventHandlerClient.currentFOV = CamEventHandlerClient.defaultFOV;
+        mc.options.fov = CamEventHandlerClient.currentFOV = CamEventHandlerClient.defaultFOV;
         CamEventHandlerClient.roll = 0;
     }
     

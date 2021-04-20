@@ -29,7 +29,7 @@ public class CamSaveData extends WorldSavedData {
     
     public void set(String key, CamPath path) {
         paths.put(key, path);
-        markDirty();
+        setDirty();
     }
     
     public boolean remove(String key) {
@@ -42,21 +42,19 @@ public class CamSaveData extends WorldSavedData {
     
     public void clear() {
         paths.clear();
-        markDirty();
+        setDirty();
     }
     
     @Override
-    public void read(CompoundNBT nbt) {
-        for (String key : nbt.keySet()) {
+    public void load(CompoundNBT nbt) {
+        for (String key : nbt.getAllKeys())
             paths.put(key, new CamPath(nbt.getCompound(key)));
-        }
     }
     
     @Override
-    public CompoundNBT write(CompoundNBT nbt) {
-        for (Entry<String, CamPath> entry : paths.entrySet()) {
+    public CompoundNBT save(CompoundNBT nbt) {
+        for (Entry<String, CamPath> entry : paths.entrySet())
             nbt.put(entry.getKey(), entry.getValue().writeToNBT(new CompoundNBT()));
-        }
         return nbt;
     }
     

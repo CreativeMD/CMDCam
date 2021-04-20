@@ -103,7 +103,7 @@ public class CamPath {
         if (loop != 0)
             this.tempPoints.add(this.tempPoints.get(this.tempPoints.size() - 1).copy());
         
-        if (world.isRemote) {
+        if (world.isClientSide) {
             CamMode parser = CamMode.getMode(mode);
             
             this.cachedMode = parser.createMode(this);
@@ -112,7 +112,7 @@ public class CamPath {
             this.cachedInterpolation = CamInterpolation.getInterpolationOrDefault(interpolation);
             this.cachedInterpolation.initMovement(tempPoints, loop, target);
             
-            this.hideGui = Minecraft.getInstance().gameSettings.hideGUI;
+            this.hideGui = Minecraft.getInstance().options.hideGui;
         }
     }
     
@@ -122,14 +122,14 @@ public class CamPath {
         if (target != null)
             this.target.finish();
         
-        if (world.isRemote) {
+        if (world.isClientSide) {
             this.cachedMode.onPathFinish();
             this.tempPoints = null;
             
             this.cachedMode = null;
             this.cachedInterpolation = null;
             
-            Minecraft.getInstance().gameSettings.hideGUI = hideGui;
+            Minecraft.getInstance().options.hideGui = hideGui;
         }
     }
     
@@ -142,8 +142,8 @@ public class CamPath {
             } else
                 finish(world);
         } else {
-            if (world.isRemote)
-                Minecraft.getInstance().gameSettings.hideGUI = true;
+            if (world.isClientSide)
+                Minecraft.getInstance().options.hideGui = true;
             
             long durationOfPoint = duration / (tempPoints.size() - 1);
             int currentPoint = Math.min((int) (time / durationOfPoint), tempPoints.size() - 2);

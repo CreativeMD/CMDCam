@@ -103,14 +103,14 @@ public abstract class CamTarget {
         
         public EntityTarget(Entity entity) {
             this.cachedEntity = entity;
-            this.uuid = entity.getCachedUniqueIdString();
+            this.uuid = entity.getStringUUID();
         }
         
         @Override
         public void start(World world) {
             for (Entity entity : world
-                    .getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY))) {
-                if (entity.getCachedUniqueIdString().equals(uuid)) {
+                    .getEntitiesOfClass(Entity.class, new AxisAlignedBB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY))) {
+                if (entity.getStringUUID().equals(uuid)) {
                     cachedEntity = entity;
                     break;
                 }
