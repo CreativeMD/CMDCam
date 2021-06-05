@@ -5,12 +5,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import team.creative.creativecore.common.util.math.vec.Vector;
-import team.creative.creativecore.common.util.math.vec.Vector1;
-import team.creative.creativecore.common.util.math.vec.Vector2;
-import team.creative.creativecore.common.util.math.vec.Vector3;
+import team.creative.creativecore.common.util.math.vec.VecNd;
+import team.creative.creativecore.common.util.math.vec.Vec1d;
+import team.creative.creativecore.common.util.math.vec.Vec2d;
+import team.creative.creativecore.common.util.math.vec.Vec3d;
 
-public abstract class Interpolation<T extends Vector> {
+public abstract class Interpolation<T extends VecNd> {
     
     protected LinkedHashMap<Double, T> points = new LinkedHashMap<>();
     protected ArrayList<T> pointVecs = new ArrayList<>();
@@ -93,12 +93,12 @@ public abstract class Interpolation<T extends Vector> {
     }
     
     public T createEmpty() {
-        if (classOfT == Vector1.class)
-            return (T) new Vector1();
-        else if (classOfT == Vector2.class)
-            return (T) new Vector2();
-        else if (classOfT == Vector3.class)
-            return (T) new Vector3();
+        if (classOfT == Vec1d.class)
+            return (T) new Vec1d();
+        else if (classOfT == Vec2d.class)
+            return (T) new Vec2d();
+        else if (classOfT == Vec3d.class)
+            return (T) new Vec3d();
         return null;
     }
     

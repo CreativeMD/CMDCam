@@ -1,8 +1,8 @@
 package team.creative.cmdcam.common.util.interpolation;
 
-import team.creative.creativecore.common.util.math.vec.Vector;
+import team.creative.creativecore.common.util.math.vec.VecNd;
 
-public class CubicInterpolation<T extends Vector> extends Interpolation<T> {
+public class CubicInterpolation<T extends VecNd> extends Interpolation<T> {
     
     public T beginVec;
     public T endVec;

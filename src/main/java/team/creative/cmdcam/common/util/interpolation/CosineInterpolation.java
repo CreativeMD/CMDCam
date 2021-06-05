@@ -1,8 +1,8 @@
 package team.creative.cmdcam.common.util.interpolation;
 
-import team.creative.creativecore.common.util.math.vec.Vector;
+import team.creative.creativecore.common.util.math.vec.VecNd;
 
-public class CosineInterpolation<T extends Vector> extends Interpolation<T> {
+public class CosineInterpolation<T extends VecNd> extends Interpolation<T> {
     
     public CosineInterpolation(T... points) {
         super(points);

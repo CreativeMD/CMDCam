@@ -12,17 +12,17 @@ import team.creative.cmdcam.common.util.CamPoint;
 import team.creative.cmdcam.common.util.CamTarget;
 import team.creative.cmdcam.common.util.interpolation.HermiteInterpolation;
 import team.creative.creativecore.common.util.math.matrix.Matrix3;
-import team.creative.creativecore.common.util.math.vec.Vector1;
-import team.creative.creativecore.common.util.math.vec.Vector3;
+import team.creative.creativecore.common.util.math.vec.Vec1d;
+import team.creative.creativecore.common.util.math.vec.Vec3d;
 
 public class CircularMovement extends HermiteMovement {
     
     private static Minecraft mc = Minecraft.getInstance();
     
-    public Vector3 sphereOrigin;
+    public Vec3d sphereOrigin;
     public double radius;
     public CamTarget target;
-    public HermiteInterpolation<Vector1> yAxis;
+    public HermiteInterpolation<Vec1d> yAxis;
     
     @Override
     public void initMovement(List<CamPoint> points, int loops, CamTarget target) throws PathParseException {
@@ -34,25 +34,25 @@ public class CircularMovement extends HermiteMovement {
             points.add(points.get(0));
             
             this.target = target;
-            Vector3 firstPoint = new Vector3(points.get(0).x, points.get(0).y, points.get(0).z);
-            Vector3 centerPoint = new Vector3(center.x, center.y, center.z);
-            this.sphereOrigin = new Vector3(firstPoint);
+            Vec3d firstPoint = new Vec3d(points.get(0).x, points.get(0).y, points.get(0).z);
+            Vec3d centerPoint = new Vec3d(center.x, center.y, center.z);
+            this.sphereOrigin = new Vec3d(firstPoint);
             sphereOrigin.sub(centerPoint);
             
             this.radius = sphereOrigin.length();
             
-            ArrayList<Vector1> vecs = new ArrayList<>();
+            ArrayList<Vec1d> vecs = new ArrayList<>();
             ArrayList<Double> times = new ArrayList<>();
             
             times.add(0D);
-            vecs.add(new Vector1(firstPoint.y));
+            vecs.add(new Vec1d(firstPoint.y));
             
             ArrayList<CamPoint> newPointsSorted = new ArrayList<>();
             newPointsSorted.add(points.get(0));
             
             for (int i = 1; i < points.size() - 1; i++) {
                 
-                Vector3 point = new Vector3(points.get(i).x, firstPoint.y, points.get(i).z);
+                Vec3d point = new Vec3d(points.get(i).x, firstPoint.y, points.get(i).z);
                 point.sub(centerPoint);
                 
                 double dot = point.dot(sphereOrigin);
@@ -66,23 +66,23 @@ public class CircularMovement extends HermiteMovement {
                 for (int j = 0; j < times.size(); j++) {
                     if (times.get(j) > time) {
                         times.add(j, time);
-                        vecs.add(j, new Vector1(points.get(i).y));
+                        vecs.add(j, new Vec1d(points.get(i).y));
                         newPointsSorted.add(j, points.get(i));
                         break;
                     }
                 }
                 newPointsSorted.add(points.get(i));
                 times.add(time);
-                vecs.add(new Vector1(points.get(i).y));
+                vecs.add(new Vec1d(points.get(i).y));
             }
             
             if (loops == 0)
                 newPointsSorted.add(newPointsSorted.get(0).copy());
             
             times.add(1D);
-            vecs.add(new Vector1(firstPoint.y));
+            vecs.add(new Vec1d(firstPoint.y));
             
-            this.yAxis = new HermiteInterpolation<>(ArrayUtils.toPrimitive(times.toArray(new Double[0])), vecs.toArray(new Vector1[0]));
+            this.yAxis = new HermiteInterpolation<>(ArrayUtils.toPrimitive(times.toArray(new Double[0])), vecs.toArray(new Vec1d[0]));
             
             super.initMovement(times.toArray(new Double[0]), newPointsSorted, loops, target);
         } else
@@ -97,9 +97,9 @@ public class CircularMovement extends HermiteMovement {
         
         Vector3d center = target.getTargetVec(mc.level, mc.getDeltaFrameTime());
         if (center != null) {
-            Vector3 centerPoint = new Vector3(center.x, center.y, center.z);
+            Vec3d centerPoint = new Vec3d(center.x, center.y, center.z);
             
-            Vector3 newPoint = new Vector3(sphereOrigin);
+            Vec3d newPoint = new Vec3d(sphereOrigin);
             newPoint.y = 0;
             Matrix3 matrix = new Matrix3();
             matrix.rotY(Math.toRadians(angle));
@@ -119,8 +119,8 @@ public class CircularMovement extends HermiteMovement {
     }
     
     @Override
-    public Vector3 getColor() {
-        return new Vector3(1, 1, 0);
+    public Vec3d getColor() {
+        return new Vec3d(1, 1, 0);
     }
     
 }

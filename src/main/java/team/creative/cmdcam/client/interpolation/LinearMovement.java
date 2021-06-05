@@ -5,7 +5,7 @@ import java.util.List;
 import team.creative.cmdcam.client.PathParseException;
 import team.creative.cmdcam.common.util.CamPoint;
 import team.creative.cmdcam.common.util.CamTarget;
-import team.creative.creativecore.common.util.math.vec.Vector3;
+import team.creative.creativecore.common.util.math.vec.Vec3d;
 
 public class LinearMovement extends CamInterpolation {
     
@@ -20,7 +20,7 @@ public class LinearMovement extends CamInterpolation {
     }
     
     @Override
-    public Vector3 getColor() {
-        return new Vector3(0, 0, 1);
+    public Vec3d getColor() {
+        return new Vec3d(0, 0, 1);
     }
 }

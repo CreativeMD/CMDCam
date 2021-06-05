@@ -6,16 +6,16 @@ import team.creative.cmdcam.client.PathParseException;
 import team.creative.cmdcam.common.util.CamPoint;
 import team.creative.cmdcam.common.util.CamTarget;
 import team.creative.cmdcam.common.util.interpolation.CubicInterpolation;
-import team.creative.creativecore.common.util.math.vec.Vector1;
-import team.creative.creativecore.common.util.math.vec.Vector3;
+import team.creative.creativecore.common.util.math.vec.Vec1d;
+import team.creative.creativecore.common.util.math.vec.Vec3d;
 
 public class CubicMovement extends CamInterpolation {
     
-    public CubicInterpolation<Vector1> rollSpline;
-    public CubicInterpolation<Vector1> zoomSpline;
-    public CubicInterpolation<Vector1> pitchSpline;
-    public CubicInterpolation<Vector1> yawSpline;
-    public CubicInterpolation<Vector3> positionSpline;
+    public CubicInterpolation<Vec1d> rollSpline;
+    public CubicInterpolation<Vec1d> zoomSpline;
+    public CubicInterpolation<Vec1d> pitchSpline;
+    public CubicInterpolation<Vec1d> yawSpline;
+    public CubicInterpolation<Vec3d> positionSpline;
     
     public double sizeOfIteration;
     
@@ -32,30 +32,30 @@ public class CubicMovement extends CamInterpolation {
         if (iterations > 1)
             size++;
         
-        Vector1[] rollPoints = new Vector1[size];
-        Vector1[] zoomPoints = new Vector1[size];
-        Vector1[] yawPoints = new Vector1[size];
-        Vector1[] pitchPoints = new Vector1[size];
+        Vec1d[] rollPoints = new Vec1d[size];
+        Vec1d[] zoomPoints = new Vec1d[size];
+        Vec1d[] yawPoints = new Vec1d[size];
+        Vec1d[] pitchPoints = new Vec1d[size];
         
-        Vector3[] positionPoints = new Vector3[points.size() * iterations];
+        Vec3d[] positionPoints = new Vec3d[points.size() * iterations];
         
         for (int j = 0; j < iterations; j++) {
             for (int i = 0; i < points.size(); i++) {
-                rollPoints[i + j * points.size()] = new Vector1(points.get(i).roll);
-                zoomPoints[i + j * points.size()] = new Vector1(points.get(i).zoom);
-                yawPoints[i + j * points.size()] = new Vector1(points.get(i).rotationYaw);
-                pitchPoints[i + j * points.size()] = new Vector1(points.get(i).rotationPitch);
+                rollPoints[i + j * points.size()] = new Vec1d(points.get(i).roll);
+                zoomPoints[i + j * points.size()] = new Vec1d(points.get(i).zoom);
+                yawPoints[i + j * points.size()] = new Vec1d(points.get(i).rotationYaw);
+                pitchPoints[i + j * points.size()] = new Vec1d(points.get(i).rotationPitch);
                 
-                positionPoints[i + j * points.size()] = new Vector3(points.get(i).x, points.get(i).y, points.get(i).z);
+                positionPoints[i + j * points.size()] = new Vec3d(points.get(i).x, points.get(i).y, points.get(i).z);
             }
         }
         
         if (iterations > 1) {
-            rollPoints[points.size() * iterations] = new Vector1(points.get(0).roll);
-            zoomPoints[points.size() * iterations] = new Vector1(points.get(0).zoom);
-            yawPoints[points.size() * iterations] = new Vector1(points.get(0).rotationYaw);
-            pitchPoints[points.size() * iterations] = new Vector1(points.get(0).rotationPitch);
-            positionPoints[points.size() * iterations] = new Vector3(points.get(0).x, points.get(0).y, points.get(0).z);
+            rollPoints[points.size() * iterations] = new Vec1d(points.get(0).roll);
+            zoomPoints[points.size() * iterations] = new Vec1d(points.get(0).zoom);
+            yawPoints[points.size() * iterations] = new Vec1d(points.get(0).rotationYaw);
+            pitchPoints[points.size() * iterations] = new Vec1d(points.get(0).rotationPitch);
+            positionPoints[points.size() * iterations] = new Vec3d(points.get(0).x, points.get(0).y, points.get(0).z);
         }
         
         rollSpline = new CubicInterpolation<>(rollPoints);
@@ -82,7 +82,7 @@ public class CubicMovement extends CamInterpolation {
         if (pitchSpline != null)
             point.rotationPitch = pitchSpline.valueAt(wholeProgress).x;
         if (positionSpline != null) {
-            Vector3 position = positionSpline.valueAt(wholeProgress);
+            Vec3d position = positionSpline.valueAt(wholeProgress);
             point.x = position.x;
             point.y = position.y;
             point.z = position.z;
@@ -91,8 +91,8 @@ public class CubicMovement extends CamInterpolation {
     }
     
     @Override
-    public Vector3 getColor() {
-        return new Vector3(1, 0, 0);
+    public Vec3d getColor() {
+        return new Vec3d(1, 0, 0);
     }
     
 }

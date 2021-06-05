@@ -30,7 +30,7 @@ import team.creative.cmdcam.client.mode.CamMode;
 import team.creative.cmdcam.client.mode.OutsideMode;
 import team.creative.cmdcam.common.util.CamPoint;
 import team.creative.cmdcam.common.util.CamTarget;
-import team.creative.creativecore.common.util.math.vec.Vector3;
+import team.creative.creativecore.common.util.math.vec.Vec3d;
 
 public class CamEventHandlerClient {
     
@@ -188,7 +188,7 @@ public class CamEventHandlerClient {
         mat.pushPose();
         RenderSystem.lineWidth(1.0F);
         mat.translate(-view.x(), -view.y(), -view.z());
-        Vector3 color = movement.getColor();
+        Vec3d color = movement.getColor();
         bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
         
         for (int i = 0; i < steps; i++) {

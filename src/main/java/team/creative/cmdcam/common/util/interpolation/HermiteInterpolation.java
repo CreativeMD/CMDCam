@@ -1,8 +1,8 @@
 package team.creative.cmdcam.common.util.interpolation;
 
-import team.creative.creativecore.common.util.math.vec.Vector;
+import team.creative.creativecore.common.util.math.vec.VecNd;
 
-public class HermiteInterpolation<T extends Vector> extends CubicInterpolation<T> {
+public class HermiteInterpolation<T extends VecNd> extends CubicInterpolation<T> {
     
     public Tension tension;
     public double bias;
