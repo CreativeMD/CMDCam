@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.cmdcam.client.CMDCamClient;
@@ -26,18 +26,17 @@ public class CamPath {
     public double cameraFollowSpeed;
     public boolean serverPath = false;
     
-    public CamPath(CompoundNBT nbt) {
+    public CamPath(CompoundTag nbt) {
         this.loop = nbt.getInt("loop");
         this.duration = nbt.getLong("duration");
         this.mode = nbt.getString("mode");
         this.interpolation = nbt.getString("interpolation");
         if (nbt.contains("target"))
             this.target = CamTarget.readFromNBT(nbt.getCompound("target"));
-        ListNBT list = nbt.getList("points", 10);
+        ListTag list = nbt.getList("points", 10);
         this.points = new ArrayList<>();
-        for (INBT point : list) {
-            points.add(new CamPoint((CompoundNBT) point));
-        }
+        for (Tag point : list)
+            points.add(new CamPoint((CompoundTag) point));
         this.cameraFollowSpeed = nbt.getDouble("cameraFollowSpeed");
     }
     
@@ -51,16 +50,16 @@ public class CamPath {
         this.cameraFollowSpeed = cameraFollowSpeed;
     }
     
-    public CompoundNBT writeToNBT(CompoundNBT nbt) {
+    public CompoundTag writeToNBT(CompoundTag nbt) {
         nbt.putInt("loop", loop);
         nbt.putLong("duration", duration);
         nbt.putString("mode", mode);
         nbt.putString("interpolation", interpolation);
         if (target != null)
-            nbt.put("target", target.writeToNBT(new CompoundNBT()));
-        ListNBT list = new ListNBT();
+            nbt.put("target", target.writeToNBT(new CompoundTag()));
+        ListTag list = new ListTag();
         for (CamPoint point : points) {
-            list.add(point.writeToNBT(new CompoundNBT()));
+            list.add(point.writeToNBT(new CompoundTag()));
         }
         nbt.put("points", list);
         nbt.putDouble("cameraFollowSpeed", cameraFollowSpeed);
@@ -91,11 +90,11 @@ public class CamPath {
     private boolean running;
     public List<CamPoint> tempPoints;
     
-    public void start(World world) throws PathParseException {
+    public void start(Level level) throws PathParseException {
         this.finished = false;
         this.running = true;
         if (target != null)
-            this.target.start(world);
+            this.target.start(level);
         
         this.timeStarted = System.currentTimeMillis();
         this.currentLoop = 0;
@@ -103,7 +102,7 @@ public class CamPath {
         if (loop != 0)
             this.tempPoints.add(this.tempPoints.get(this.tempPoints.size() - 1).copy());
         
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             CamMode parser = CamMode.getMode(mode);
             
             this.cachedMode = parser.createMode(this);
@@ -116,13 +115,13 @@ public class CamPath {
         }
     }
     
-    public void finish(World world) {
+    public void finish(Level level) {
         this.finished = true;
         this.running = false;
         if (target != null)
             this.target.finish();
         
-        if (world.isClientSide) {
+        if (level.isClientSide) {
             this.cachedMode.onPathFinish();
             this.tempPoints = null;
             
@@ -133,16 +132,16 @@ public class CamPath {
         }
     }
     
-    public void tick(World world, float renderTickTime) {
+    public void tick(Level level, float renderTickTime) {
         long time = System.currentTimeMillis() - timeStarted;
         if (time >= duration) {
             if (currentLoop < loop || loop < 0) {
                 timeStarted = System.currentTimeMillis();
                 currentLoop++;
             } else
-                finish(world);
+                finish(level);
         } else {
-            if (world.isClientSide)
+            if (level.isClientSide)
                 Minecraft.getInstance().options.hideGui = true;
             
             long durationOfPoint = duration / (tempPoints.size() - 1);

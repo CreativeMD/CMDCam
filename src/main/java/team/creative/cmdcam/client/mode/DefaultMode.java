@@ -1,6 +1,5 @@
 package team.creative.cmdcam.client.mode;
 
-import net.minecraft.client.util.InputMappings;
 import team.creative.cmdcam.common.util.CamPath;
 import team.creative.cmdcam.common.util.CamPoint;
 import team.creative.cmdcam.common.util.CamTarget.SelfTarget;
@@ -28,11 +27,12 @@ public class DefaultMode extends CamMode {
         super.processPoint(point);
         //mc.mouseHelper.grabMouse();
         
-        double mouseX = mc.getWindow().getWidth() / 2;
-        double mouseY = mc.getWindow().getHeight() / 2;
-        InputMappings.grabOrReleaseMouse(mc.getWindow().getWindow(), 212995, mouseX, mouseY);
+        //double mouseX = mc.getWindow().getWidth() / 2;
+        //double mouseY = mc.getWindow().getHeight() / 2;
+        mc.mouseHandler.grabMouse();
+        //InputConstants.grabOrReleaseMouse(mc.getWindow().getWindow(), 212995, mouseX, mouseY);
         
-        mc.player.abilities.flying = true;
+        mc.player.getAbilities().flying = true;
         
         mc.player.absMoveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
         mc.player.yRotO = (float) point.rotationYaw;
@@ -44,7 +44,7 @@ public class DefaultMode extends CamMode {
     public void onPathFinish() {
         super.onPathFinish();
         if (!mc.player.isCreative())
-            mc.player.abilities.flying = false;
+            mc.player.getAbilities().flying = false;
     }
     
 }

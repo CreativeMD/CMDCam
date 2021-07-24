@@ -1,7 +1,8 @@
 package team.creative.cmdcam.common.packet;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import team.creative.cmdcam.client.CMDCamClient;
 import team.creative.cmdcam.client.PathParseException;
 import team.creative.cmdcam.common.util.CamPath;
@@ -9,18 +10,18 @@ import team.creative.creativecore.common.network.CreativePacket;
 
 public class StartPathPacket extends CreativePacket {
     
-    public CompoundNBT nbt;
+    public CompoundTag nbt;
     
     public StartPathPacket() {
         
     }
     
     public StartPathPacket(CamPath path) {
-        this.nbt = path.writeToNBT(new CompoundNBT());
+        this.nbt = path.writeToNBT(new CompoundTag());
     }
     
     @Override
-    public void executeClient(PlayerEntity player) {
+    public void executeClient(Player player) {
         CamPath path = new CamPath(nbt);
         path.serverPath = true;
         if (CMDCamClient.getCurrentPath() != null)
@@ -34,7 +35,7 @@ public class StartPathPacket extends CreativePacket {
     }
     
     @Override
-    public void executeServer(PlayerEntity player) {
+    public void executeServer(ServerPlayer player) {
         
     }
     

@@ -1,9 +1,9 @@
 package team.creative.cmdcam.common.packet;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.Util;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.common.util.CamPath;
 import team.creative.cmdcam.server.CMDCamServer;
@@ -22,17 +22,17 @@ public class GetPathPacket extends CreativePacket {
     }
     
     @Override
-    public void executeClient(PlayerEntity player) {
+    public void executeClient(Player player) {
         
     }
     
     @Override
-    public void executeServer(PlayerEntity player) {
+    public void executeServer(ServerPlayer player) {
         CamPath path = CMDCamServer.getPath(player.level, id);
         if (path != null)
-            CMDCam.NETWORK.sendToClient(new SetPathPacket(id, path), (ServerPlayerEntity) player);
+            CMDCam.NETWORK.sendToClient(new SetPathPacket(id, path), player);
         else
-            player.sendMessage(new StringTextComponent("Path '" + id + "' could not be found!"), Util.NIL_UUID);
+            player.sendMessage(new TextComponent("Path '" + id + "' could not be found!"), Util.NIL_UUID);
     }
     
 }

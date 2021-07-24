@@ -1,9 +1,9 @@
 package team.creative.cmdcam.common.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.cmdcam.client.CamEventHandlerClient;
@@ -30,7 +30,7 @@ public class CamPoint {
         this.zoom = zoom;
     }
     
-    public CamPoint(CompoundNBT nbt) {
+    public CamPoint(CompoundTag nbt) {
         this.x = nbt.getDouble("x");
         this.y = nbt.getDouble("y");
         this.z = nbt.getDouble("z");
@@ -47,8 +47,8 @@ public class CamPoint {
         this.y = mc.player.getEyeY();
         this.z = mc.player.getZ();
         
-        this.rotationYaw = mc.player.yRot;
-        this.rotationPitch = mc.player.xRot;
+        this.rotationYaw = mc.player.getYRot();
+        this.rotationPitch = mc.player.getXRot();
         
         this.roll = CamEventHandlerClient.roll;
         this.zoom = CamEventHandlerClient.currentFOV;
@@ -58,7 +58,7 @@ public class CamPoint {
         return new CamPoint(this.x + (point.x - this.x) * percent, this.y + (point.y - this.y) * percent, this.z + (point.z - this.z) * percent, this.rotationYaw + (point.rotationYaw - this.rotationYaw) * percent, this.rotationPitch + (point.rotationPitch - this.rotationPitch) * percent, this.roll + (point.roll - this.roll) * percent, this.zoom + (point.zoom - this.zoom) * percent);
     }
     
-    public void faceEntity(Vector3d pos, float minYaw, float minPitch, double ticks) {
+    public void faceEntity(Vec3 pos, float minYaw, float minPitch, double ticks) {
         double d0 = pos.x - this.x;
         double d2 = pos.z - this.z;
         double d1 = pos.y - this.y;
@@ -73,7 +73,7 @@ public class CamPoint {
     
     /** Arguments: current rotation, intended rotation, max increment. */
     private double updateRotation(double rotation, double intended, double min, double ticks) {
-        double f3 = MathHelper.wrapDegrees(intended - rotation);
+        double f3 = Mth.wrapDegrees(intended - rotation);
         
         if (f3 > 0)
             f3 = Math.min(Math.abs(f3 * ticks), f3);
@@ -92,7 +92,7 @@ public class CamPoint {
         return "x:" + x + ",y:" + y + ",z:" + z + ",yaw:" + rotationYaw + ",pitch:" + rotationPitch + ",roll:" + roll + ",zoom:" + zoom;
     }
     
-    public CompoundNBT writeToNBT(CompoundNBT nbt) {
+    public CompoundTag writeToNBT(CompoundTag nbt) {
         nbt.putDouble("x", x);
         nbt.putDouble("y", y);
         nbt.putDouble("z", z);

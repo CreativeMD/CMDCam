@@ -1,8 +1,9 @@
 package team.creative.cmdcam.client.mode;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import team.creative.cmdcam.common.util.CamPath;
 import team.creative.cmdcam.common.util.CamPoint;
 
@@ -13,7 +14,7 @@ public class OutsideMode extends CamMode {
     public OutsideMode(CamPath path) {
         super(path);
         if (path != null)
-            this.camPlayer = new ItemEntity(mc.level, 0, 0, 0);
+            this.camPlayer = new ItemEntity(mc.level, 0, 0, 0, ItemStack.EMPTY);
     }
     
     @Override
@@ -37,8 +38,8 @@ public class OutsideMode extends CamMode {
         super.processPoint(point);
         
         mc.cameraEntity = camPlayer;
-        if (camPlayer instanceof PlayerEntity)
-            ((PlayerEntity) camPlayer).abilities.flying = true;
+        if (camPlayer instanceof Player)
+            ((Player) camPlayer).getAbilities().flying = true;
         
         camPlayer.absMoveTo(point.x, point.y - camPlayer.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
         camPlayer.yRotO = (float) point.rotationYaw;

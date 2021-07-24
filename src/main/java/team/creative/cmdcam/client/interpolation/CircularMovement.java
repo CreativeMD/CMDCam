@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 import team.creative.cmdcam.client.PathParseException;
 import team.creative.cmdcam.common.util.CamPoint;
 import team.creative.cmdcam.common.util.CamTarget;
@@ -29,7 +29,7 @@ public class CircularMovement extends HermiteMovement {
         if (target == null)
             throw new PathParseException("No target found");
         
-        Vector3d center = target.getTargetVec(mc.level, mc.getDeltaFrameTime());
+        Vec3 center = target.getTargetVec(mc.level, mc.getDeltaFrameTime());
         if (center != null) {
             points.add(points.get(0));
             
@@ -95,7 +95,7 @@ public class CircularMovement extends HermiteMovement {
         
         double angle = wholeProgress * 360;
         
-        Vector3d center = target.getTargetVec(mc.level, mc.getDeltaFrameTime());
+        Vec3 center = target.getTargetVec(mc.level, mc.getDeltaFrameTime());
         if (center != null) {
             Vec3d centerPoint = new Vec3d(center.x, center.y, center.z);
             

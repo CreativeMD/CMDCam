@@ -4,23 +4,20 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.storage.WorldSavedData;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.saveddata.SavedData;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.common.util.CamPath;
 
-public class CamSaveData extends WorldSavedData {
+public class CamSaveData extends SavedData {
     
     public static final String DATA_NAME = CMDCam.MODID + "_Paths";
     
     private HashMap<String, CamPath> paths = new HashMap<>();
     
-    public CamSaveData() {
-        super(DATA_NAME);
-    }
-    
-    public CamSaveData(String name) {
-        super(name);
+    public CamSaveData(CompoundTag nbt) {
+        for (String key : nbt.getAllKeys())
+            paths.put(key, new CamPath(nbt.getCompound(key)));
     }
     
     public CamPath get(String key) {
@@ -46,15 +43,9 @@ public class CamSaveData extends WorldSavedData {
     }
     
     @Override
-    public void load(CompoundNBT nbt) {
-        for (String key : nbt.getAllKeys())
-            paths.put(key, new CamPath(nbt.getCompound(key)));
-    }
-    
-    @Override
-    public CompoundNBT save(CompoundNBT nbt) {
+    public CompoundTag save(CompoundTag nbt) {
         for (Entry<String, CamPath> entry : paths.entrySet())
-            nbt.put(entry.getKey(), entry.getValue().writeToNBT(new CompoundNBT()));
+            nbt.put(entry.getKey(), entry.getValue().writeToNBT(new CompoundTag()));
         return nbt;
     }
     

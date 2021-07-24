@@ -4,13 +4,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class CamTarget {
     
@@ -26,7 +26,7 @@ public abstract class CamTarget {
         return targetTypes.get(id);
     }
     
-    public static CamTarget readFromNBT(CompoundNBT nbt) {
+    public static CamTarget readFromNBT(CompoundTag nbt) {
         Class<? extends CamTarget> targetClass = getClassByID(nbt.getString("id"));
         if (targetClass != null) {
             try {
@@ -44,19 +44,19 @@ public abstract class CamTarget {
         registerTargetType(SelfTarget.class, "self");
     }
     
-    public abstract Vector3d getTargetVec(World world, float partialTicks);
+    public abstract Vec3 getTargetVec(Level world, float partialTicks);
     
-    protected abstract void write(CompoundNBT nbt);
+    protected abstract void write(CompoundTag nbt);
     
-    protected abstract void read(CompoundNBT nbt);
+    protected abstract void read(CompoundTag nbt);
     
-    public CompoundNBT writeToNBT(CompoundNBT nbt) {
+    public CompoundTag writeToNBT(CompoundTag nbt) {
         nbt.putString("id", targetTypesInverted.get(this.getClass()));
         write(nbt);
         return nbt;
     }
     
-    public void start(World world) {}
+    public void start(Level world) {}
     
     public void finish() {}
     
@@ -73,17 +73,17 @@ public abstract class CamTarget {
         public BlockPos pos;
         
         @Override
-        public Vector3d getTargetVec(World world, float partialTicks) {
-            return new Vector3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+        public Vec3 getTargetVec(Level level, float partialTicks) {
+            return new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
         }
         
         @Override
-        protected void write(CompoundNBT nbt) {
+        protected void write(CompoundTag nbt) {
             nbt.putIntArray("data", new int[] { pos.getX(), pos.getY(), pos.getZ() });
         }
         
         @Override
-        protected void read(CompoundNBT nbt) {
+        protected void read(CompoundTag nbt) {
             int[] array = nbt.getIntArray("data");
             if (array == null || array.length != 3)
                 throw new IllegalArgumentException("Invalid block target data=" + array);
@@ -107,9 +107,9 @@ public abstract class CamTarget {
         }
         
         @Override
-        public void start(World world) {
+        public void start(Level world) {
             for (Entity entity : world
-                    .getEntitiesOfClass(Entity.class, new AxisAlignedBB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY))) {
+                    .getEntitiesOfClass(Entity.class, new AABB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY))) {
                 if (entity.getStringUUID().equals(uuid)) {
                     cachedEntity = entity;
                     break;
@@ -123,7 +123,7 @@ public abstract class CamTarget {
         }
         
         @Override
-        public Vector3d getTargetVec(World world, float partialTicks) {
+        public Vec3 getTargetVec(Level level, float partialTicks) {
             if (cachedEntity != null && !cachedEntity.isAlive())
                 cachedEntity = null;
             
@@ -136,12 +136,12 @@ public abstract class CamTarget {
         }
         
         @Override
-        protected void write(CompoundNBT nbt) {
+        protected void write(CompoundTag nbt) {
             nbt.putString("uuid", uuid);
         }
         
         @Override
-        protected void read(CompoundNBT nbt) {
+        protected void read(CompoundTag nbt) {
             uuid = nbt.getString("uuid");
         }
         
@@ -154,17 +154,17 @@ public abstract class CamTarget {
         }
         
         @Override
-        protected void write(CompoundNBT nbt) {
+        protected void write(CompoundTag nbt) {
             
         }
         
         @Override
-        protected void read(CompoundNBT nbt) {
+        protected void read(CompoundTag nbt) {
             
         }
         
         @Override
-        public Vector3d getTargetVec(World world, float partialTicks) {
+        public Vec3 getTargetVec(Level level, float partialTicks) {
             
             Entity cachedEntity = Minecraft.getInstance().player;
             

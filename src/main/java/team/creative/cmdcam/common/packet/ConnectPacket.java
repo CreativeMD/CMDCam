@@ -1,6 +1,7 @@
 package team.creative.cmdcam.common.packet;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import team.creative.cmdcam.client.CMDCamClient;
 import team.creative.creativecore.common.network.CreativePacket;
 
@@ -11,12 +12,12 @@ public class ConnectPacket extends CreativePacket {
     }
     
     @Override
-    public void executeClient(PlayerEntity player) {
+    public void executeClient(Player player) {
         CMDCamClient.isInstalledOnSever = true;
     }
     
     @Override
-    public void executeServer(PlayerEntity player) {
+    public void executeServer(ServerPlayer player) {
         
     }
 }

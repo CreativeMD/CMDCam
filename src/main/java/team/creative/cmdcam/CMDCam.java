@@ -2,33 +2,32 @@ package team.creative.cmdcam;
 
 import java.util.Collection;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 
-import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.ArgumentSerializer;
-import net.minecraft.command.arguments.ArgumentTypes;
-import net.minecraft.command.arguments.EntityArgument;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.synchronization.ArgumentTypes;
+import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.network.FMLNetworkConstants;
+import net.minecraftforge.fmllegacy.network.FMLNetworkConstants;
+import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
 import team.creative.cmdcam.client.CMDCamClient;
 import team.creative.cmdcam.common.command.argument.CamModeArgument;
 import team.creative.cmdcam.common.command.argument.DurationArgument;
@@ -56,13 +55,14 @@ public class CMDCam {
     
     public CMDCam() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client));
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client));
         MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
     }
     
     @OnlyIn(value = Dist.CLIENT)
     private void client(final FMLClientSetupEvent event) {
-        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+        ModLoadingContext.get()
+                .registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
         CMDCamClient.init(event);
     }
     
@@ -73,11 +73,11 @@ public class CMDCam {
         NETWORK.registerType(StartPathPacket.class);
         NETWORK.registerType(StopPathPacket.class);
         
-        ArgumentTypes.register("duration", DurationArgument.class, new ArgumentSerializer<>(() -> DurationArgument.duration()));
-        ArgumentTypes.register("cameramode", CamModeArgument.class, new ArgumentSerializer<>(() -> CamModeArgument.mode()));
-        ArgumentTypes.register("cameratarget", TargetArgument.class, new ArgumentSerializer<>(() -> TargetArgument.target()));
-        ArgumentTypes.register("interpolation", InterpolationArgument.class, new ArgumentSerializer<>(() -> InterpolationArgument.interpolation()));
-        ArgumentTypes.register("allinterpolation", AllInterpolationArgument.class, new ArgumentSerializer<>(() -> InterpolationArgument.interpolationAll()));
+        ArgumentTypes.register("duration", DurationArgument.class, new EmptyArgumentSerializer<>(() -> DurationArgument.duration()));
+        ArgumentTypes.register("cameramode", CamModeArgument.class, new EmptyArgumentSerializer<>(() -> CamModeArgument.mode()));
+        ArgumentTypes.register("cameratarget", TargetArgument.class, new EmptyArgumentSerializer<>(() -> TargetArgument.target()));
+        ArgumentTypes.register("interpolation", InterpolationArgument.class, new EmptyArgumentSerializer<>(() -> InterpolationArgument.interpolation()));
+        ArgumentTypes.register("allinterpolation", AllInterpolationArgument.class, new EmptyArgumentSerializer<>(() -> InterpolationArgument.interpolationAll()));
         
         MinecraftForge.EVENT_BUS.register(new CamEventHandler());
     }
@@ -85,31 +85,31 @@ public class CMDCam {
     private void serverStarting(final FMLServerStartingEvent event) {
         event.getServer().getCommands().getDispatcher().register(Commands.literal("cam-server").executes((x) -> {
             x.getSource()
-                    .sendSuccess(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam-server start <player> <path> [time|ms|s|m|h|d] [loops (-1 -> endless)] " + TextFormatting.RED + "starts the animation"), false);
+                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server start <player> <path> [time|ms|s|m|h|d] [loops (-1 -> endless)] " + ChatFormatting.RED + "starts the animation"), false);
             x.getSource()
-                    .sendSuccess(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam-server stop <player> " + TextFormatting.RED + "stops the animation"), false);
+                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server stop <player> " + ChatFormatting.RED + "stops the animation"), false);
             x.getSource()
-                    .sendSuccess(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam-server list " + TextFormatting.RED + "lists all saved paths"), false);
+                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server list " + ChatFormatting.RED + "lists all saved paths"), false);
             x.getSource()
-                    .sendSuccess(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam-server remove <name> " + TextFormatting.RED + "removes the given path"), false);
+                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server remove <name> " + ChatFormatting.RED + "removes the given path"), false);
             x.getSource()
-                    .sendSuccess(new StringTextComponent("" + TextFormatting.BOLD + TextFormatting.YELLOW + "/cam-server clear " + TextFormatting.RED + "clears all saved paths"), false);
+                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server clear " + ChatFormatting.RED + "clears all saved paths"), false);
             return 0;
         }).then(Commands.literal("start").then(Commands.argument("players", EntityArgument.players()).then(Commands.argument("name", StringArgumentType.string()).executes((x) -> {
-            Collection<ServerPlayerEntity> players = EntityArgument.getPlayers(x, "players");
+            Collection<ServerPlayer> players = EntityArgument.getPlayers(x, "players");
             if (players.isEmpty())
                 return 0;
             String pathName = StringArgumentType.getString(x, "name");
             CamPath path = CMDCamServer.getPath(x.getSource().getLevel(), pathName);
             if (path != null) {
                 CreativePacket packet = new StartPathPacket(path);
-                for (ServerPlayerEntity player : players)
+                for (ServerPlayer player : players)
                     CMDCam.NETWORK.sendToClient(packet, player);
             } else
-                x.getSource().sendSuccess(new StringTextComponent("Path '" + pathName + "' could not be found!"), true);
+                x.getSource().sendSuccess(new TextComponent("Path '" + pathName + "' could not be found!"), true);
             return 0;
         }).then(Commands.argument("duration", DurationArgument.duration()).executes((x) -> {
-            Collection<ServerPlayerEntity> players = EntityArgument.getPlayers(x, "players");
+            Collection<ServerPlayer> players = EntityArgument.getPlayers(x, "players");
             if (players.isEmpty())
                 return 0;
             String pathName = StringArgumentType.getString(x, "name");
@@ -120,13 +120,13 @@ public class CMDCam {
                 if (duration > 0)
                     path.duration = duration;
                 CreativePacket packet = new StartPathPacket(path);
-                for (ServerPlayerEntity player : players)
+                for (ServerPlayer player : players)
                     CMDCam.NETWORK.sendToClient(packet, player);
             } else
-                x.getSource().sendSuccess(new StringTextComponent("Path '" + pathName + "' could not be found!"), true);
+                x.getSource().sendSuccess(new TextComponent("Path '" + pathName + "' could not be found!"), true);
             return 0;
         }).then(Commands.argument("loop", IntegerArgumentType.integer(-1)).executes((x) -> {
-            Collection<ServerPlayerEntity> players = EntityArgument.getPlayers(x, "players");
+            Collection<ServerPlayer> players = EntityArgument.getPlayers(x, "players");
             if (players.isEmpty())
                 return 0;
             String pathName = StringArgumentType.getString(x, "name");
@@ -139,14 +139,14 @@ public class CMDCam {
                 
                 path.currentLoop = IntegerArgumentType.getInteger(x, "loop");
                 CreativePacket packet = new StartPathPacket(path);
-                for (ServerPlayerEntity player : players)
+                for (ServerPlayer player : players)
                     CMDCam.NETWORK.sendToClient(packet, player);
             } else
-                x.getSource().sendSuccess(new StringTextComponent("Path '" + pathName + "' could not be found!"), true);
+                x.getSource().sendSuccess(new TextComponent("Path '" + pathName + "' could not be found!"), true);
             return 0;
         })))))).then(Commands.literal("stop").then(Commands.argument("players", EntityArgument.players()).executes((x) -> {
             CreativePacket packet = new StopPathPacket();
-            for (ServerPlayerEntity player : EntityArgument.getPlayers(x, "players"))
+            for (ServerPlayer player : EntityArgument.getPlayers(x, "players"))
                 CMDCam.NETWORK.sendToClient(packet, player);
             return 0;
         }))).then(Commands.literal("list").executes((x) -> {
@@ -155,18 +155,18 @@ public class CMDCam {
             for (String key : names) {
                 output += key + ", ";
             }
-            x.getSource().sendSuccess(new StringTextComponent(output), true);
+            x.getSource().sendSuccess(new TextComponent(output), true);
             return 0;
         })).then(Commands.literal("clear").executes((x) -> {
             CMDCamServer.clearPaths(x.getSource().getLevel());
-            x.getSource().sendSuccess(new StringTextComponent("Removed all existing paths (in this world)!"), true);
+            x.getSource().sendSuccess(new TextComponent("Removed all existing paths (in this world)!"), true);
             return 0;
         })).then(Commands.literal("remove").then(Commands.argument("name", StringArgumentType.string()).executes((x) -> {
             String path = StringArgumentType.getString(x, "name");
             if (CMDCamServer.removePath(x.getSource().getLevel(), path))
-                x.getSource().sendSuccess(new StringTextComponent("Path '" + path + "' has been removed!"), true);
+                x.getSource().sendSuccess(new TextComponent("Path '" + path + "' has been removed!"), true);
             else
-                x.getSource().sendSuccess(new StringTextComponent("Path '" + path + "' could not be found!"), true);
+                x.getSource().sendSuccess(new TextComponent("Path '" + path + "' could not be found!"), true);
             return 0;
         }))));
     }

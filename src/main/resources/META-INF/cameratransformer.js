@@ -5,7 +5,7 @@ function initializeCoreMod() {
             'target': {
                 'type': 'METHOD',
 				'class': 'net.minecraft.client.renderer.GameRenderer',
-				'methodName': 'func_78473_a',
+				'methodName': 'm_109087_',
 				'methodDesc': '(F)V'
             },
             'transformer': function(method) {
@@ -22,8 +22,8 @@ function initializeCoreMod() {
 		'currentEntity': {
             'target': {
                 'type': 'METHOD',
-				'class': 'net.minecraft.client.entity.player.ClientPlayerEntity',
-				'methodName': 'func_175160_A',
+				'class': 'net.minecraft.client.player.LocalPlayer',
+				'methodName': 'm_108636_',
 				'methodDesc': '()Z'
             },
             'transformer': function(method) {
@@ -42,9 +42,9 @@ function initializeCoreMod() {
 		'renderPlayer': {
             'target': {
                 'type': 'METHOD',
-				'class': 'net.minecraft.client.renderer.WorldRenderer',
-				'methodName': 'func_228426_a_',
-				'methodDesc': '(Lcom/mojang/blaze3d/matrix/MatrixStack;FJZLnet/minecraft/client/renderer/ActiveRenderInfo;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lnet/minecraft/util/math/vector/Matrix4f;)V'
+				'class': 'net.minecraft.client.renderer.LevelRenderer',
+				'methodName': 'm_109599_',
+				'methodDesc': '(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lcom/mojang/math/Matrix4f;)V'
 			},
             'transformer': function(method) {
 				var Opcodes = Java.type('org.objectweb.asm.Opcodes');
@@ -54,7 +54,7 @@ function initializeCoreMod() {
 				var node = null;
 				var index = 0;
 				
-				while(node == null || node.desc !== 'net/minecraft/client/entity/player/ClientPlayerEntity') {
+				while(node == null || node.desc !== 'net/minecraft/client/player/LocalPlayer') {
 					node = asmapi.findFirstInstructionAfter(method, Opcodes.INSTANCEOF, index);
 					index = method.instructions.indexOf(node) + 1;	
 				}

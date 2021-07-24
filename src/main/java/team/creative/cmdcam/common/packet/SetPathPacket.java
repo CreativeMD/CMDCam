@@ -1,10 +1,10 @@
 package team.creative.cmdcam.common.packet;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.Util;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import team.creative.cmdcam.common.util.CamPath;
 import team.creative.cmdcam.server.CMDCamServer;
 import team.creative.creativecore.common.network.CreativePacket;
@@ -12,7 +12,8 @@ import team.creative.creativecore.common.network.CreativePacket;
 public class SetPathPacket extends CreativePacket {
     
     public String id;
-    public CompoundNBT nbt;
+    
+    public CompoundTag nbt;
     
     public SetPathPacket() {
         
@@ -20,23 +21,23 @@ public class SetPathPacket extends CreativePacket {
     
     public SetPathPacket(String id, CamPath path) {
         this.id = id;
-        this.nbt = path.writeToNBT(new CompoundNBT());
+        this.nbt = path.writeToNBT(new CompoundTag());
     }
     
     @Override
-    public void executeClient(PlayerEntity player) {
+    public void executeClient(Player player) {
         CamPath path = new CamPath(nbt);
         path.overwriteClientConfig();
-        player.sendMessage(new StringTextComponent("Loaded path '" + id + "' successfully!"), Util.NIL_UUID);
+        player.sendMessage(new TextComponent("Loaded path '" + id + "' successfully!"), Util.NIL_UUID);
     }
     
     @Override
-    public void executeServer(PlayerEntity player) {
+    public void executeServer(ServerPlayer player) {
         CamPath path = new CamPath(nbt);
-        if (((ServerPlayerEntity) player).hasPermissions(4)) {
+        if (player.hasPermissions(4)) {
             CMDCamServer.setPath(player.level, id, path);
-            player.sendMessage(new StringTextComponent("Saved path '" + id + "' successfully!"), Util.NIL_UUID);
+            player.sendMessage(new TextComponent("Saved path '" + id + "' successfully!"), Util.NIL_UUID);
         } else
-            player.sendMessage(new StringTextComponent("You do not have the permission to edit the path list!"), Util.NIL_UUID);
+            player.sendMessage(new TextComponent("You do not have the permission to edit the path list!"), Util.NIL_UUID);
     }
 }

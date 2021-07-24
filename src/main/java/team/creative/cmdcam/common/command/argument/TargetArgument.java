@@ -14,8 +14,8 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.TextComponent;
 
 public class TargetArgument implements ArgumentType<String> {
     
@@ -31,7 +31,7 @@ public class TargetArgument implements ArgumentType<String> {
         final String result = reader.readString();
         if (!result.equalsIgnoreCase("none") && !result.equalsIgnoreCase("self")) {
             reader.setCursor(start);
-            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid target")), new StringTextComponent("Invalid target!"));
+            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid target")), new TextComponent("Invalid target!"));
         }
         
         return result;
@@ -39,7 +39,7 @@ public class TargetArgument implements ArgumentType<String> {
     
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return context.getSource() instanceof ISuggestionProvider ? ISuggestionProvider.suggest(EXAMPLES, builder) : Suggestions.empty();
+        return context.getSource() instanceof SharedSuggestionProvider ? SharedSuggestionProvider.suggest(EXAMPLES, builder) : Suggestions.empty();
     }
     
     @Override

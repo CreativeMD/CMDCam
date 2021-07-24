@@ -14,8 +14,8 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.TextComponent;
 import team.creative.cmdcam.client.interpolation.CamInterpolation;
 
 public class InterpolationArgument implements ArgumentType<String> {
@@ -34,7 +34,7 @@ public class InterpolationArgument implements ArgumentType<String> {
         final String result = reader.readString();
         if (!isAllowed(result)) {
             reader.setCursor(start);
-            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid interpolation")), new StringTextComponent("Invalid interpolation!"));
+            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid interpolation")), new TextComponent("Invalid interpolation!"));
         }
         
         return result;
@@ -42,7 +42,7 @@ public class InterpolationArgument implements ArgumentType<String> {
     
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return context.getSource() instanceof ISuggestionProvider ? ISuggestionProvider.suggest(getAll(), builder) : Suggestions.empty();
+        return context.getSource() instanceof SharedSuggestionProvider ? SharedSuggestionProvider.suggest(getAll(), builder) : Suggestions.empty();
     }
     
     @Override
