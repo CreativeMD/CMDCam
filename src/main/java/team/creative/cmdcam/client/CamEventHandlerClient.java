@@ -1,21 +1,21 @@
 package team.creative.cmdcam.client;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
-import com.mojang.math.Vector3f;
 
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -123,35 +123,40 @@ public class CamEventHandlerClient {
         }
         if (CMDCamClient.getCurrentPath() == null && shouldRender && CMDCamClient.points.size() > 0) {
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(770, 771, 1, 0);
+            RenderSystem
+                    .blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             RenderSystem.disableTexture();
             RenderSystem.depthMask(false);
             RenderSystem.enableDepthTest();
             
-            Vector3f view = mc.gameRenderer.getMainCamera().getLookVector();
+            Vec3 view = mc.gameRenderer.getMainCamera().getPosition();
+            
+            RenderSystem.setProjectionMatrix(event.getProjectionMatrix());
+            PoseStack mat = RenderSystem.getModelViewStack();
+            mat.pushPose();
+            mat.setIdentity();
+            mat.mulPoseMatrix(event.getMatrixStack().last().pose());
+            mat.translate(-view.x(), -view.y(), -view.z());
+            
+            RenderSystem.applyModelViewMatrix();
             
             for (int i = 0; i < CMDCamClient.points.size(); i++) {
                 CamPoint point = CMDCamClient.points.get(i);
                 
-                PoseStack mat = event.getMatrixStack();
-                mat.pushPose();
-                mat.translate(-view.x(), -view.y(), -view.z());
-                
-                RenderSystem.setProjectionMatrix(mat.last().pose());
-                DebugRenderer.renderFloatingText((i + 1) + "", point.x + view.x(), point.y + 0.2 + view.y(), point.z + view.z(), -1);
+                DebugRenderer.renderFloatingText((i + 1) + "", point.x + view.x, point.y + 0.2 + view.y, point.z + view.z, -1);
                 DebugRenderer.renderFilledBox(point.x - 0.05, point.y - 0.05, point.z - 0.05, point.x + 0.05, point.y + 0.05, point.z + 0.05, 1, 1, 1, 1);
                 
                 RenderSystem.depthMask(false);
                 RenderSystem.disableTexture();
-                mat.popPose();
             }
             
-            for (Iterator<CamInterpolation> iterator = CamInterpolation.interpolationTypes.values().iterator(); iterator.hasNext();) {
-                CamInterpolation movement = iterator.next();
+            for (CamInterpolation movement : CamInterpolation.interpolationTypes.values())
                 if (movement.isRenderingEnabled)
-                    renderMovement(event.getMatrixStack(), movement, new ArrayList<>(CMDCamClient.points));
-            }
+                    renderMovement(mat, movement, new ArrayList<>(CMDCamClient.points));
+                
+            mat.popPose();
             
+            RenderSystem.applyModelViewMatrix();
             RenderSystem.depthMask(true);
             RenderSystem.enableTexture();
             RenderSystem.enableBlend();
@@ -167,8 +172,6 @@ public class CamEventHandlerClient {
         }
         
         double steps = 20 * (points.size() - 1);
-        Vector3f view = mc.gameRenderer.getMainCamera().getLookVector();
-        
         RenderSystem.depthMask(true);
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
@@ -178,21 +181,18 @@ public class CamEventHandlerClient {
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuilder();
         
-        mat.pushPose();
         RenderSystem.lineWidth(1.0F);
-        mat.translate(-view.x(), -view.y(), -view.z());
         Vec3d color = movement.getColor();
         bufferbuilder.begin(Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         
         for (int i = 0; i < steps; i++) {
             CamPoint pos = CamMode.getPoint(movement, points, i / steps, 0, 0);
-            bufferbuilder.vertex(mat.last().pose(), (float) pos.x, (float) pos.y, (float) pos.z).color((float) color.x, (float) color.y, (float) color.z, 1).endVertex();
+            bufferbuilder.vertex((float) pos.x, (float) pos.y, (float) pos.z).color((float) color.x, (float) color.y, (float) color.z, 1).endVertex();
         }
-        bufferbuilder.vertex(mat.last().pose(), (float) points.get(points.size() - 1).x, (float) points.get(points.size() - 1).y, (float) points.get(points.size() - 1).z)
+        bufferbuilder.vertex((float) points.get(points.size() - 1).x, (float) points.get(points.size() - 1).y, (float) points.get(points.size() - 1).z)
                 .color((float) color.x, (float) color.y, (float) color.z, 1).endVertex();
         
         tessellator.end();
-        mat.popPose();
     }
     
     @SubscribeEvent
