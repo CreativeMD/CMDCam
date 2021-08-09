@@ -1,5 +1,8 @@
 package team.creative.cmdcam.client.mode;
 
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.cmdcam.common.util.CamPath;
 import team.creative.cmdcam.common.util.CamPoint;
 import team.creative.cmdcam.common.util.CamTarget.SelfTarget;
@@ -8,7 +11,7 @@ public class DefaultMode extends CamMode {
     
     public DefaultMode(CamPath path) {
         super(path);
-        if (path != null && path.target != null && mc != null && path.target instanceof SelfTarget)
+        if (path != null && path.target != null && path.target instanceof SelfTarget)
             path.target = null;
     }
     
@@ -23,8 +26,10 @@ public class DefaultMode extends CamMode {
     }
     
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void processPoint(CamPoint point) {
         super.processPoint(point);
+        Minecraft mc = Minecraft.getInstance();
         //mc.mouseHelper.grabMouse();
         
         //double mouseX = mc.getWindow().getWidth() / 2;
@@ -41,8 +46,10 @@ public class DefaultMode extends CamMode {
     }
     
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void onPathFinish() {
         super.onPathFinish();
+        Minecraft mc = Minecraft.getInstance();
         if (!mc.player.isCreative())
             mc.player.getAbilities().flying = false;
     }

@@ -12,10 +12,7 @@ import team.creative.cmdcam.client.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.util.CamPath;
 import team.creative.cmdcam.common.util.CamPoint;
 
-@OnlyIn(Dist.CLIENT)
 public abstract class CamMode {
-    
-    protected static Minecraft mc = Minecraft.getInstance();
     
     public static HashMap<String, CamMode> modes = new HashMap<>();
     
@@ -48,12 +45,14 @@ public abstract class CamMode {
     
     public abstract CamMode createMode(CamPath path);
     
+    @OnlyIn(Dist.CLIENT)
     public CamPoint getCamPoint(CamPoint point1, CamPoint point2, double percent, double wholeProgress, float renderTickTime, boolean isFirstLoop, boolean isLastLoop) {
         CamPoint newPoint = path.cachedInterpolation.getPointInBetween(point1, point2, percent, wholeProgress, isFirstLoop, isLastLoop);
         if (path.target != null) {
             newPoint.rotationPitch = lastPitch;
             newPoint.rotationYaw = lastYaw;
             
+            Minecraft mc = Minecraft.getInstance();
             Vec3 pos = path.target.getTargetVec(mc.level, mc.getDeltaFrameTime());
             
             if (pos != null) {
@@ -66,17 +65,20 @@ public abstract class CamMode {
         return newPoint;
     }
     
+    @OnlyIn(Dist.CLIENT)
     public void onPathStart() {
         
     }
     
+    @OnlyIn(Dist.CLIENT)
     public void onPathFinish() {
-        mc.options.fov = CamEventHandlerClient.currentFOV = CamEventHandlerClient.defaultFOV;
+        Minecraft.getInstance().options.fov = CamEventHandlerClient.currentFOV = CamEventHandlerClient.defaultFOV;
         CamEventHandlerClient.roll = 0;
     }
     
     public abstract String getDescription();
     
+    @OnlyIn(Dist.CLIENT)
     public void processPoint(CamPoint point) {
         CamEventHandlerClient.roll = (float) point.roll;
         CamEventHandlerClient.currentFOV = (float) point.zoom;
