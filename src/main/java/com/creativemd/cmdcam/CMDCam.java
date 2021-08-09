@@ -19,32 +19,32 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 @Mod(modid = CMDCam.modid, version = CMDCam.version, name = "CMDCam", dependencies = "required-after:creativecore")
 public class CMDCam {
-	
-	public static final String modid = "cmdcam";
-	
-	public static final String version = "1.4.0";
-	
-	@SidedProxy(clientSide = "com.creativemd.cmdcam.client.CMDCamClient", serverSide = "com.creativemd.cmdcam.server.CMDCamServer")
-	public static CMDCamProxy proxy;
-	
-	@EventHandler
-	public void Init(FMLInitializationEvent event) {
-		CreativeCorePacket.registerPacket(ConnectPacket.class);
-		CreativeCorePacket.registerPacket(StartPathPacket.class);
-		CreativeCorePacket.registerPacket(StopPathPacket.class);
-		CreativeCorePacket.registerPacket(GetPathPacket.class);
-		CreativeCorePacket.registerPacket(SetPathPacket.class);
-		CreativeCorePacket.registerPacket(SelectTargetPacket.class);
-		
-		MinecraftForge.EVENT_BUS.register(new CamEventHandler());
-		
-		proxy.init(event);
-	}
-	
-	@EventHandler
-	public void serverStarting(FMLServerStartingEvent event) {
-		proxy.serverStarting(event);
-		
-		event.registerServerCommand(new CamCommandServer());
-	}
+    
+    public static final String modid = "cmdcam";
+    
+    public static final String version = "1.4.0";
+    
+    @SidedProxy(clientSide = "com.creativemd.cmdcam.client.CMDCamClient", serverSide = "com.creativemd.cmdcam.server.CMDCamServer")
+    public static CMDCamProxy proxy;
+    
+    @EventHandler
+    public void Init(FMLInitializationEvent event) {
+        CreativeCorePacket.registerPacket(ConnectPacket.class);
+        CreativeCorePacket.registerPacket(StartPathPacket.class);
+        CreativeCorePacket.registerPacket(StopPathPacket.class);
+        CreativeCorePacket.registerPacket(GetPathPacket.class);
+        CreativeCorePacket.registerPacket(SetPathPacket.class);
+        CreativeCorePacket.registerPacket(SelectTargetPacket.class);
+        
+        MinecraftForge.EVENT_BUS.register(new CamEventHandler());
+        
+        proxy.init(event);
+    }
+    
+    @EventHandler
+    public void serverStarting(FMLServerStartingEvent event) {
+        proxy.serverStarting(event);
+        
+        event.registerServerCommand(new CamCommandServer());
+    }
 }

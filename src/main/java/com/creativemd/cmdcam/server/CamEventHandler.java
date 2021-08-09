@@ -8,10 +8,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 public class CamEventHandler {
-	
-	@SubscribeEvent
-	public void onPlayerConnect(PlayerLoggedInEvent event) {
-		PacketHandler.sendPacketToPlayer(new ConnectPacket(), (EntityPlayerMP) event.player);
-	}
-	
+    
+    @SubscribeEvent
+    public void onPlayerConnect(PlayerLoggedInEvent event) {
+        PacketHandler.sendPacketToPlayer(new ConnectPacket(), (EntityPlayerMP) event.player);
+    }
+    
 }

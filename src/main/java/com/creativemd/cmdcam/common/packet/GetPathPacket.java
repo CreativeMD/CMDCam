@@ -11,39 +11,39 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.TextComponentString;
 
 public class GetPathPacket extends CreativeCorePacket {
-	
-	public String id;
-	
-	public GetPathPacket() {
-		
-	}
-	
-	public GetPathPacket(String id) {
-		this.id = id;
-	}
-	
-	@Override
-	public void writeBytes(ByteBuf buf) {
-		writeString(buf, id);
-	}
-	
-	@Override
-	public void readBytes(ByteBuf buf) {
-		id = readString(buf);
-	}
-	
-	@Override
-	public void executeClient(EntityPlayer player) {
-		
-	}
-	
-	@Override
-	public void executeServer(EntityPlayer player) {
-		CamPath path = CMDCamServer.getPath(player.getEntityWorld(), id);
-		if (path != null)
-			PacketHandler.sendPacketToPlayer(new SetPathPacket(id, path), (EntityPlayerMP) player);
-		else
-			player.sendMessage(new TextComponentString("Path '" + id + "' could not be found!"));
-	}
-	
+    
+    public String id;
+    
+    public GetPathPacket() {
+        
+    }
+    
+    public GetPathPacket(String id) {
+        this.id = id;
+    }
+    
+    @Override
+    public void writeBytes(ByteBuf buf) {
+        writeString(buf, id);
+    }
+    
+    @Override
+    public void readBytes(ByteBuf buf) {
+        id = readString(buf);
+    }
+    
+    @Override
+    public void executeClient(EntityPlayer player) {
+        
+    }
+    
+    @Override
+    public void executeServer(EntityPlayer player) {
+        CamPath path = CMDCamServer.getPath(player.getEntityWorld(), id);
+        if (path != null)
+            PacketHandler.sendPacketToPlayer(new SetPathPacket(id, path), (EntityPlayerMP) player);
+        else
+            player.sendMessage(new TextComponentString("Path '" + id + "' could not be found!"));
+    }
+    
 }

@@ -7,28 +7,28 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class ConnectPacket extends CreativeCorePacket {
-	
-	public ConnectPacket() {
-		
-	}
-	
-	@Override
-	public void writeBytes(ByteBuf buf) {
-		
-	}
-	
-	@Override
-	public void readBytes(ByteBuf buf) {
-		
-	}
-	
-	@Override
-	public void executeClient(EntityPlayer player) {
-		CMDCamClient.isInstalledOnSever = true;
-	}
-	
-	@Override
-	public void executeServer(EntityPlayer player) {
-		
-	}
+    
+    public ConnectPacket() {
+        
+    }
+    
+    @Override
+    public void writeBytes(ByteBuf buf) {
+        
+    }
+    
+    @Override
+    public void readBytes(ByteBuf buf) {
+        
+    }
+    
+    @Override
+    public void executeClient(EntityPlayer player) {
+        CMDCamClient.isInstalledOnSever = true;
+    }
+    
+    @Override
+    public void executeServer(EntityPlayer player) {
+        
+    }
 }
