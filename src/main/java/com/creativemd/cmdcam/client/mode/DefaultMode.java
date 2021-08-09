@@ -8,12 +8,14 @@ import com.creativemd.cmdcam.common.utils.CamPoint;
 import com.creativemd.cmdcam.common.utils.CamTarget.SelfTarget;
 
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class DefaultMode extends CamMode {
     
     public DefaultMode(CamPath path) {
         super(path);
-        if (path != null && path.target != null && mc != null && path.target instanceof SelfTarget)
+        if (path != null && path.target != null && Minecraft.getMinecraft() != null && path.target instanceof SelfTarget)
             path.target = null;
     }
     
@@ -28,11 +30,14 @@ public class DefaultMode extends CamMode {
     }
     
     @Override
+    @SideOnly(Side.CLIENT)
     public void processPoint(CamPoint point) {
         super.processPoint(point);
         
         Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2);
         Mouse.setGrabbed(true);
+        
+        Minecraft mc = Minecraft.getMinecraft();
         
         mc.player.capabilities.isFlying = true;
         
@@ -44,8 +49,12 @@ public class DefaultMode extends CamMode {
     }
     
     @Override
+    @SideOnly(Side.CLIENT)
     public void onPathFinish() {
         super.onPathFinish();
+        
+        Minecraft mc = Minecraft.getMinecraft();
+        
         if (!mc.player.isCreative() && !mc.player.isSpectator())
             mc.player.capabilities.isFlying = false;
         

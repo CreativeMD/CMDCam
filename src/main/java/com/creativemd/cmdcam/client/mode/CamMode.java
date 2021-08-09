@@ -14,10 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
 public abstract class CamMode {
-    
-    protected static Minecraft mc = Minecraft.getMinecraft();
     
     public static HashMap<String, CamMode> modes = new HashMap<>();
     
@@ -52,11 +49,13 @@ public abstract class CamMode {
     
     public abstract CamMode createMode(CamPath path);
     
+    @SideOnly(Side.CLIENT)
     public CamPoint getCamPoint(CamPoint point1, CamPoint point2, double percent, double wholeProgress, float renderTickTime, boolean isFirstLoop, boolean isLastLoop) {
         CamPoint newPoint = path.cachedInterpolation.getPointInBetween(point1, point2, percent, wholeProgress, isFirstLoop, isLastLoop);
         if (path.target != null) {
             newPoint.rotationPitch = lastPitch;
             newPoint.rotationYaw = lastYaw;
+            Minecraft mc = Minecraft.getMinecraft();
             
             Vec3d pos = path.target.getTargetVec(mc.world, mc.getRenderPartialTicks());
             
@@ -70,24 +69,28 @@ public abstract class CamMode {
         return newPoint;
     }
     
+    @SideOnly(Side.CLIENT)
     public void onPathStart() {
         
     }
     
+    @SideOnly(Side.CLIENT)
     public void onPathFinish() {
-        mc.gameSettings.fovSetting = CamEventHandlerClient.defaultfov;
+        Minecraft.getMinecraft().gameSettings.fovSetting = CamEventHandlerClient.defaultfov;
         CamEventHandlerClient.roll = 0;
     }
     
+    @SideOnly(Side.CLIENT)
     public EntityLivingBase getCamera() {
-        return mc.player;
+        return Minecraft.getMinecraft().player;
     }
     
     public abstract String getDescription();
     
+    @SideOnly(Side.CLIENT)
     public void processPoint(CamPoint point) {
         CamEventHandlerClient.roll = (float) point.roll;
-        mc.gameSettings.fovSetting = (float) point.zoom;
+        Minecraft.getMinecraft().gameSettings.fovSetting = (float) point.zoom;
     }
     
     public static CamPoint getPoint(CamInterpolation movement, ArrayList<CamPoint> points, double percent, int currentLoop, int loops) {
