@@ -1,8 +1,11 @@
 package team.creative.cmdcam.client.mode;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.cmdcam.common.util.CamPath;
 import team.creative.cmdcam.common.util.CamPoint;
 
@@ -13,7 +16,7 @@ public class OutsideMode extends CamMode {
     public OutsideMode(CamPath path) {
         super(path);
         if (path != null)
-            this.camPlayer = new ItemEntity(mc.level, 0, 0, 0);
+            this.camPlayer = new ItemEntity(Minecraft.getInstance().level, 0, 0, 0);
     }
     
     @Override
@@ -27,16 +30,19 @@ public class OutsideMode extends CamMode {
     }
     
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void onPathFinish() {
         super.onPathFinish();
+        Minecraft mc = Minecraft.getInstance();
         mc.cameraEntity = mc.player;
     }
     
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void processPoint(CamPoint point) {
         super.processPoint(point);
         
-        mc.cameraEntity = camPlayer;
+        Minecraft.getInstance().cameraEntity = camPlayer;
         if (camPlayer instanceof PlayerEntity)
             ((PlayerEntity) camPlayer).abilities.flying = true;
         
