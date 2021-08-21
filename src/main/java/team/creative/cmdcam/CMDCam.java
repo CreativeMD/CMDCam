@@ -67,11 +67,11 @@ public class CMDCam {
     }
     
     private void init(final FMLCommonSetupEvent event) {
-        NETWORK.registerType(ConnectPacket.class);
-        NETWORK.registerType(GetPathPacket.class);
-        NETWORK.registerType(SetPathPacket.class);
-        NETWORK.registerType(StartPathPacket.class);
-        NETWORK.registerType(StopPathPacket.class);
+        NETWORK.registerType(ConnectPacket.class, ConnectPacket::new);
+        NETWORK.registerType(GetPathPacket.class, GetPathPacket::new);
+        NETWORK.registerType(SetPathPacket.class, SetPathPacket::new);
+        NETWORK.registerType(StartPathPacket.class, StartPathPacket::new);
+        NETWORK.registerType(StopPathPacket.class, StopPathPacket::new);
         
         ArgumentTypes.register("duration", DurationArgument.class, new EmptyArgumentSerializer<>(() -> DurationArgument.duration()));
         ArgumentTypes.register("cameramode", CamModeArgument.class, new EmptyArgumentSerializer<>(() -> CamModeArgument.mode()));
