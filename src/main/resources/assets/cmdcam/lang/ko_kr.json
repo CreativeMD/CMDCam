@@ -1,0 +1,12 @@
+{
+	"key.categories.cmdcam": "CMDCam 설정",
+	"key.point": "지점 추가",
+	"key.rollcenter": "롤 리셋",
+	"key.rollleft": "왼쪽 롤",
+	"key.rollright": "오른쪽 롤",
+	"key.startStop": "시작과 정지",
+	"key.zoomin": "줌 인",
+	"key.zoomout": "줌 아웃",
+	"key.centerzoom": "줌 리셋",
+	"key.clearPoint": "지점 삭제"
+}
