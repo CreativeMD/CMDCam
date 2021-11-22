@@ -313,6 +313,11 @@ public class CMDCamClient {
         }
     }
     
+    public static void stopPathServer() {
+        currentPath.finish(mc.level);
+        currentPath = null;
+    }
+    
     public static void stopPath() {
         if (currentPath.serverPath)
             return;

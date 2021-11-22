@@ -7,19 +7,15 @@ import team.creative.creativecore.common.network.CreativePacket;
 
 public class StopPathPacket extends CreativePacket {
     
-    public StopPathPacket() {
-        
-    }
+    public StopPathPacket() {}
     
     @Override
     public void executeClient(Player player) {
         if (CMDCamClient.getCurrentPath() != null && CMDCamClient.getCurrentPath().serverPath)
-            CMDCamClient.stopPath();
+            CMDCamClient.stopPathServer();
     }
     
     @Override
-    public void executeServer(ServerPlayer player) {
-        
-    }
+    public void executeServer(ServerPlayer player) {}
     
 }
