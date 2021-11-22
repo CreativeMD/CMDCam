@@ -137,7 +137,7 @@ public class CMDCam {
                 if (duration > 0)
                     path.duration = duration;
                 
-                path.currentLoop = IntegerArgumentType.getInteger(x, "loop");
+                path.loop = IntegerArgumentType.getInteger(x, "loop");
                 CreativePacket packet = new StartPathPacket(path);
                 for (ServerPlayerEntity player : players)
                     CMDCam.NETWORK.sendToClient(packet, player);
