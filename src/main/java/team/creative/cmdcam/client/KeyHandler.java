@@ -3,7 +3,7 @@ package team.creative.cmdcam.client;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
+import net.minecraftforge.client.ClientRegistry;
 
 public class KeyHandler {
     

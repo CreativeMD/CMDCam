@@ -17,7 +17,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.RenderTickEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -113,7 +113,7 @@ public class CamEventHandlerClient {
     }
     
     @SubscribeEvent
-    public void worldRender(RenderWorldLastEvent event) {
+    public void worldRender(RenderLevelLastEvent event) {
         boolean shouldRender = false;
         for (CamInterpolation movement : CamInterpolation.interpolationTypes.values()) {
             if (movement.isRenderingEnabled) {
@@ -135,7 +135,7 @@ public class CamEventHandlerClient {
             PoseStack mat = RenderSystem.getModelViewStack();
             mat.pushPose();
             mat.setIdentity();
-            mat.mulPoseMatrix(event.getMatrixStack().last().pose());
+            mat.mulPoseMatrix(event.getPoseStack().last().pose());
             mat.translate(-view.x(), -view.y(), -view.z());
             
             RenderSystem.applyModelViewMatrix();
