@@ -56,6 +56,7 @@ public class CMDCam {
     public CMDCam() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client));
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.addListener(CMDCamClient::commands));
         MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
     }
     
