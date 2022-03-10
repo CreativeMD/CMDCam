@@ -5,8 +5,8 @@ import java.util.List;
 import team.creative.cmdcam.client.PathParseException;
 import team.creative.cmdcam.common.util.CamPoint;
 import team.creative.cmdcam.common.util.CamTarget;
-import team.creative.cmdcam.common.util.interpolation.HermiteInterpolation;
-import team.creative.cmdcam.common.util.interpolation.HermiteInterpolation.Tension;
+import team.creative.creativecore.common.util.math.interpolation.HermiteInterpolation;
+import team.creative.creativecore.common.util.math.interpolation.HermiteInterpolation.Tension;
 import team.creative.creativecore.common.util.math.vec.Vec1d;
 import team.creative.creativecore.common.util.math.vec.Vec3d;
 
