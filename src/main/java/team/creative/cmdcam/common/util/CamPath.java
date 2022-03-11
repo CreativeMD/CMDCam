@@ -111,7 +111,7 @@ public class CamPath {
             this.cachedInterpolation = CamInterpolation.getInterpolationOrDefault(interpolation);
             this.cachedInterpolation.initMovement(tempPoints, loop, target);
             
-            this.hideGui = Minecraft.getInstance().options.hideGui;
+            this.hideGui = CMDCamClient.getCurrentPath() != null ? CMDCamClient.getCurrentPath().hideGui : Minecraft.getInstance().options.hideGui;
         }
     }
     
