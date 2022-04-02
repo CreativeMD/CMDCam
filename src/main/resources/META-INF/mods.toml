@@ -6,7 +6,7 @@ license="GNU General Public License v3.0"
 
 [[mods]]
 	modId="cmdcam"
-	version="1.5.0"
+	version="${file.jarVersion}"
 	displayName="CMDCam"
 	displayURL="https://minecraft.curseforge.com/projects/cmdcam"
 	authors="CreativeMD"
