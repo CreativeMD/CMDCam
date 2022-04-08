@@ -57,6 +57,9 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
+                creativecore {
+                    source project(':CreativeCore').sourceSets.main
+                }
                 cmdcam {
                     source sourceSets.main
                 }
@@ -79,6 +82,9 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
+                creativecore {
+                    source project(':CreativeCore').sourceSets.main
+                }
                 cmdcam {
                     source sourceSets.main
                 }
