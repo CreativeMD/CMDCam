@@ -39,7 +39,7 @@ import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
 import team.creative.cmdcam.common.packet.StartPathPacket;
 import team.creative.cmdcam.common.packet.StopPathPacket;
-import team.creative.cmdcam.common.util.CamPath;
+import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.server.CMDCamServer;
 import team.creative.cmdcam.server.CamEventHandler;
 import team.creative.creativecore.common.network.CreativeNetwork;
@@ -101,9 +101,9 @@ public class CMDCam {
             if (players.isEmpty())
                 return 0;
             String pathName = StringArgumentType.getString(x, "name");
-            CamPath path = CMDCamServer.getPath(x.getSource().getLevel(), pathName);
-            if (path != null) {
-                CreativePacket packet = new StartPathPacket(path);
+            CamScene scene = CMDCamServer.get(x.getSource().getLevel(), pathName);
+            if (scene != null) {
+                CreativePacket packet = new StartPathPacket(scene);
                 for (ServerPlayer player : players)
                     CMDCam.NETWORK.sendToClient(packet, player);
             } else
@@ -114,13 +114,13 @@ public class CMDCam {
             if (players.isEmpty())
                 return 0;
             String pathName = StringArgumentType.getString(x, "name");
-            CamPath path = CMDCamServer.getPath(x.getSource().getLevel(), pathName);
-            if (path != null) {
-                path = path.copy();
+            CamScene scene = CMDCamServer.get(x.getSource().getLevel(), pathName);
+            if (scene != null) {
+                scene = scene.copy();
                 long duration = DurationArgument.getDuration(x, "duration");
                 if (duration > 0)
-                    path.duration = duration;
-                CreativePacket packet = new StartPathPacket(path);
+                    scene.duration = duration;
+                CreativePacket packet = new StartPathPacket(scene);
                 for (ServerPlayer player : players)
                     CMDCam.NETWORK.sendToClient(packet, player);
             } else
@@ -131,15 +131,15 @@ public class CMDCam {
             if (players.isEmpty())
                 return 0;
             String pathName = StringArgumentType.getString(x, "name");
-            CamPath path = CMDCamServer.getPath(x.getSource().getLevel(), pathName);
-            if (path != null) {
-                path = path.copy();
+            CamScene scene = CMDCamServer.get(x.getSource().getLevel(), pathName);
+            if (scene != null) {
+                scene = scene.copy();
                 long duration = DurationArgument.getDuration(x, "duration");
                 if (duration > 0)
-                    path.duration = duration;
+                    scene.duration = duration;
                 
-                path.loop = IntegerArgumentType.getInteger(x, "loop");
-                CreativePacket packet = new StartPathPacket(path);
+                scene.loop = IntegerArgumentType.getInteger(x, "loop");
+                CreativePacket packet = new StartPathPacket(scene);
                 for (ServerPlayer player : players)
                     CMDCam.NETWORK.sendToClient(packet, player);
             } else

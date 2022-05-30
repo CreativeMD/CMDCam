@@ -5,7 +5,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import team.creative.cmdcam.CMDCam;
-import team.creative.cmdcam.common.util.CamPath;
+import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.server.CMDCamServer;
 import team.creative.creativecore.common.network.CreativePacket;
 
@@ -28,7 +28,7 @@ public class GetPathPacket extends CreativePacket {
     
     @Override
     public void executeServer(ServerPlayer player) {
-        CamPath path = CMDCamServer.getPath(player.level, id);
+        CamScene path = CMDCamServer.get(player.level, id);
         if (path != null)
             CMDCam.NETWORK.sendToClient(new SetPathPacket(id, path), player);
         else

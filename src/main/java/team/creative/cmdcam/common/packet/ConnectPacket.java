@@ -7,17 +7,13 @@ import team.creative.creativecore.common.network.CreativePacket;
 
 public class ConnectPacket extends CreativePacket {
     
-    public ConnectPacket() {
-        
-    }
+    public ConnectPacket() {}
     
     @Override
     public void executeClient(Player player) {
-        CMDCamClient.isInstalledOnSever = true;
+        CMDCamClient.setServerAvailability();
     }
     
     @Override
-    public void executeServer(ServerPlayer player) {
-        
-    }
+    public void executeServer(ServerPlayer player) {}
 }

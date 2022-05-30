@@ -14,7 +14,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.TextComponent;
-import team.creative.cmdcam.client.mode.CamMode;
+import team.creative.cmdcam.common.scene.mode.CamMode;
 
 public class CamModeArgument implements ArgumentType<String> {
     
@@ -26,8 +26,7 @@ public class CamModeArgument implements ArgumentType<String> {
     public String parse(StringReader reader) throws CommandSyntaxException {
         final int start = reader.getCursor();
         final String result = reader.readString();
-        CamMode mode = CamMode.getMode(result);
-        if (mode == null) {
+        if (CamMode.REGISTRY.get(result) == null) {
             reader.setCursor(start);
             throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid mode")), new TextComponent("Invalid mode!"));
         }
@@ -37,12 +36,12 @@ public class CamModeArgument implements ArgumentType<String> {
     
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return context.getSource() instanceof SharedSuggestionProvider ? SharedSuggestionProvider.suggest(CamMode.modes.keySet(), builder) : Suggestions.empty();
+        return context.getSource() instanceof SharedSuggestionProvider ? SharedSuggestionProvider.suggest(CamMode.REGISTRY.keys(), builder) : Suggestions.empty();
     }
     
     @Override
     public Collection<String> getExamples() {
-        return CamMode.modes.keySet();
+        return CamMode.REGISTRY.keys();
     }
     
 }

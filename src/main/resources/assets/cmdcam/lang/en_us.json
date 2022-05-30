@@ -1,12 +1,14 @@
 {
-	"key.categories.cmdcam": "CMDCam Settings",
-	"key.point": "Add Point",
-	"key.rollcenter": "Reset Roll",
-	"key.rollleft": "Roll Left",
-	"key.rollright": "Roll Right",
-	"key.startStop": "Start and Stop",
-	"key.zoomin": "Zoom in",
-	"key.zoomout": "Zoom out",
-	"key.centerzoom": "Reset Zoom",
-	"key.clearPoint": "Clear Points"
+    "key.categories.cmdcam": "CMDCam Settings",
+    "key.point": "Add Point",
+    "key.rollcenter": "Reset Roll",
+    "key.rollleft": "Roll Left",
+    "key.rollright": "Roll Right",
+    "key.startStop": "Start and Stop",
+    "key.zoomin": "Zoom in",
+    "key.zoomout": "Zoom out",
+    "key.centerzoom": "Reset Zoom",
+    "key.clearPoint": "Clear Points",
+    "mode.default.desc": "the player acts as the camera",
+    "mode.outside.desc": "the player is not the camera, but you are still in control"
 }

@@ -1,0 +1,16 @@
+{
+    "required": true,
+    "package": "team.creative.cmdcam.client.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "refmap": "cmdcam.mixin.refmap.json",
+    "server": [
+    ],
+    "mixins": [
+    ],
+    "client": [
+        "MouseOverMixin",
+        "CurrentViewEntityMixin",
+        "CameraMixin"
+    ],
+    "minVersion": "0.8"
+}

@@ -16,7 +16,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.TextComponent;
-import team.creative.cmdcam.client.interpolation.CamInterpolation;
+import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 
 public class InterpolationArgument implements ArgumentType<String> {
     
@@ -51,11 +51,11 @@ public class InterpolationArgument implements ArgumentType<String> {
     }
     
     public Collection<String> getAll() {
-        return CamInterpolation.interpolationTypes.keySet();
+        return CamInterpolation.REGISTRY.keys();
     }
     
     public boolean isAllowed(String result) {
-        return CamInterpolation.getInterpolation(result) != null;
+        return CamInterpolation.REGISTRY.get(result) != null;
     }
     
     public static class AllInterpolationArgument extends InterpolationArgument {
@@ -75,7 +75,7 @@ public class InterpolationArgument implements ArgumentType<String> {
         static {
             EXAMPLES = new ArrayList<>();
             EXAMPLES.add("all");
-            EXAMPLES.addAll(CamInterpolation.interpolationTypes.keySet());
+            EXAMPLES.addAll(CamInterpolation.REGISTRY.keys());
         }
         
     }

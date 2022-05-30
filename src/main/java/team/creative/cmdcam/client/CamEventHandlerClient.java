@@ -24,11 +24,13 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import team.creative.cmdcam.client.interpolation.CamInterpolation;
-import team.creative.cmdcam.client.mode.CamMode;
-import team.creative.cmdcam.client.mode.OutsideMode;
-import team.creative.cmdcam.common.util.CamPoint;
-import team.creative.cmdcam.common.util.CamTarget;
+import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
+import team.creative.cmdcam.common.math.point.CamPoint;
+import team.creative.cmdcam.common.scene.CamScene;
+import team.creative.cmdcam.common.scene.attribute.CamAttribute;
+import team.creative.cmdcam.common.scene.mode.OutsideMode;
+import team.creative.cmdcam.common.target.CamTarget;
+import team.creative.creativecore.common.util.math.interpolation.Interpolation;
 import team.creative.creativecore.common.util.math.vec.Vec3d;
 
 public class CamEventHandlerClient {
@@ -42,10 +44,14 @@ public class CamEventHandlerClient {
     public static double currentFOV;
     public static float roll = 0;
     
+    public static long lastRenderTime;
+    
+    public static boolean selectEntityMode = false;
+    
     @SubscribeEvent
     public void onRenderTick(RenderTickEvent event) {
         if (mc.level == null)
-            CMDCamClient.isInstalledOnSever = false;
+            CMDCamClient.resetServerAvailability();
         if (event.phase == Phase.END)
             return;
         
@@ -55,7 +61,9 @@ public class CamEventHandlerClient {
         
         if (mc.player != null && mc.level != null) {
             if (!mc.isPaused()) {
-                if (CMDCamClient.getCurrentPath() == null) {
+                if (CMDCamClient.isPlaying())
+                    CMDCamClient.tickPath(mc.level, event.renderTickTime);
+                else {
                     if (KeyHandler.zoomIn.isDown()) {
                         if (mc.player.isCrouching())
                             currentFOV -= amountZoom * 10;
@@ -83,27 +91,25 @@ public class CamEventHandlerClient {
                         roll = 0;
                     
                     if (KeyHandler.pointKey.consumeClick()) {
-                        CMDCamClient.points.add(new CamPoint());
-                        mc.player.sendMessage(new TextComponent("Registered " + CMDCamClient.points.size() + ". Point!"), Util.NIL_UUID);
+                        CMDCamClient.getPoints().add(CamPoint.createLocal());
+                        mc.player.sendMessage(new TextComponent("Registered " + CMDCamClient.getPoints().size() + ". Point!"), Util.NIL_UUID);
                     }
                     
-                } else {
-                    CMDCamClient.tickPath(mc.level, event.renderTickTime);
                 }
                 
                 if (KeyHandler.startStop.consumeClick()) {
-                    if (CMDCamClient.getCurrentPath() != null) {
-                        CMDCamClient.stopPath();
-                    } else
+                    if (CMDCamClient.isPlaying())
+                        CMDCamClient.stop();
+                    else
                         try {
-                            CMDCamClient.startPath(CMDCamClient.createPathFromCurrentConfiguration());
+                            CMDCamClient.start(CMDCamClient.createScene());
                         } catch (PathParseException e) {
                             mc.player.sendMessage(new TextComponent(e.getMessage()), Util.NIL_UUID);
                         }
                 }
                 
                 while (KeyHandler.clearPoint.consumeClick()) {
-                    CMDCamClient.points.clear();
+                    CMDCamClient.getPoints().clear();
                     mc.player.sendMessage(new TextComponent("Cleared all registered points!"), Util.NIL_UUID);
                 }
             }
@@ -115,13 +121,13 @@ public class CamEventHandlerClient {
     @SubscribeEvent
     public void worldRender(RenderLevelLastEvent event) {
         boolean shouldRender = false;
-        for (CamInterpolation movement : CamInterpolation.interpolationTypes.values()) {
+        for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
             if (movement.isRenderingEnabled) {
                 shouldRender = true;
                 break;
             }
-        }
-        if (CMDCamClient.getCurrentPath() == null && shouldRender && CMDCamClient.points.size() > 0) {
+        
+        if (!CMDCamClient.isPlaying() && shouldRender && CMDCamClient.getPoints().size() > 0) {
             RenderSystem.enableBlend();
             RenderSystem
                     .blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -140,8 +146,8 @@ public class CamEventHandlerClient {
             
             RenderSystem.applyModelViewMatrix();
             
-            for (int i = 0; i < CMDCamClient.points.size(); i++) {
-                CamPoint point = CMDCamClient.points.get(i);
+            for (int i = 0; i < CMDCamClient.getPoints().size(); i++) {
+                CamPoint point = CMDCamClient.getPoints().get(i);
                 
                 DebugRenderer.renderFloatingText((i + 1) + "", point.x + view.x, point.y + 0.2 + view.y, point.z + view.z, -1);
                 DebugRenderer.renderFilledBox(point.x - 0.05, point.y - 0.05, point.z - 0.05, point.x + 0.05, point.y + 0.05, point.z + 0.05, 1, 1, 1, 1);
@@ -150,10 +156,13 @@ public class CamEventHandlerClient {
                 RenderSystem.disableTexture();
             }
             
-            for (CamInterpolation movement : CamInterpolation.interpolationTypes.values())
-                if (movement.isRenderingEnabled)
-                    renderMovement(mat, movement, new ArrayList<>(CMDCamClient.points));
-                
+            try {
+                CamScene scene = CMDCamClient.createScene();
+                for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
+                    if (movement.isRenderingEnabled)
+                        renderPath(mat, movement, scene);
+            } catch (PathParseException e) {}
+            
             mat.popPose();
             
             RenderSystem.applyModelViewMatrix();
@@ -164,14 +173,8 @@ public class CamEventHandlerClient {
         }
     }
     
-    public void renderMovement(PoseStack mat, CamInterpolation movement, ArrayList<CamPoint> points) {
-        try {
-            movement.initMovement(points, 0, CMDCamClient.target);
-        } catch (PathParseException e) {
-            return;
-        }
-        
-        double steps = 20 * (points.size() - 1);
+    public void renderPath(PoseStack mat, CamInterpolation inter, CamScene scene) {
+        double steps = 20 * (scene.points.size() - 1);
         RenderSystem.depthMask(true);
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
@@ -182,15 +185,16 @@ public class CamEventHandlerClient {
         BufferBuilder bufferbuilder = tessellator.getBuilder();
         
         RenderSystem.lineWidth(1.0F);
-        Vec3d color = movement.getColor();
+        Vec3d color = inter.color.toVec();
         bufferbuilder.begin(Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         
+        Interpolation<Vec3d> interpolation = inter.create(scene, null, new ArrayList<Vec3d>(scene.points), null, CamAttribute.POSITION);
         for (int i = 0; i < steps; i++) {
-            CamPoint pos = CamMode.getPoint(movement, points, i / steps, 0, 0);
+            Vec3d pos = interpolation.valueAt(i / steps);
             bufferbuilder.vertex((float) pos.x, (float) pos.y, (float) pos.z).color((float) color.x, (float) color.y, (float) color.z, 1).endVertex();
         }
-        bufferbuilder.vertex((float) points.get(points.size() - 1).x, (float) points.get(points.size() - 1).y, (float) points.get(points.size() - 1).z)
-                .color((float) color.x, (float) color.y, (float) color.z, 1).endVertex();
+        bufferbuilder.vertex((float) scene.points.get(scene.points.size() - 1).x, (float) scene.points.get(scene.points.size() - 1).y, (float) scene.points
+                .get(scene.points.size() - 1).z).color((float) color.x, (float) color.y, (float) color.z, 1).endVertex();
         
         tessellator.end();
     }
@@ -200,33 +204,19 @@ public class CamEventHandlerClient {
         event.setRoll(roll);
     }
     
-    public static long lastRenderTime;
-    
-    public static boolean isCurrentViewEntity() {
-        if (isPathActive())
-            return true;
-        return mc.cameraEntity == mc.player;
-    }
-    
-    public static boolean isPathActive() {
-        return CMDCamClient.getCurrentPath() != null;
-    }
-    
-    public static boolean selectEntityMode = false;
-    
     @SubscribeEvent
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!selectEntityMode || !event.getWorld().isClientSide)
             return;
         
         if (event instanceof EntityInteract) {
-            CMDCamClient.target = new CamTarget.EntityTarget(((EntityInteract) event).getTarget());
+            CMDCamClient.getScene().lookTarget = new CamTarget.EntityTarget(((EntityInteract) event).getTarget());
             event.getPlayer().sendMessage(new TextComponent("Target is set to " + ((EntityInteract) event).getTarget().getStringUUID() + "."), Util.NIL_UUID);
             selectEntityMode = false;
         }
         
         if (event instanceof RightClickBlock) {
-            CMDCamClient.target = new CamTarget.BlockTarget(event.getPos());
+            CMDCamClient.getScene().lookTarget = new CamTarget.BlockTarget(event.getPos());
             event.getPlayer().sendMessage(new TextComponent("Target is set to " + event.getPos() + "."), Util.NIL_UUID);
             selectEntityMode = false;
         }
@@ -235,14 +225,14 @@ public class CamEventHandlerClient {
     public static Entity camera = null;
     
     public static void setupMouseHandlerBefore() {
-        if (CMDCamClient.getCurrentPath() != null && CMDCamClient.getCurrentPath().cachedMode instanceof OutsideMode) {
+        if (CMDCamClient.isPlaying() && CMDCamClient.getScene().mode instanceof OutsideMode) {
             camera = mc.cameraEntity;
             mc.cameraEntity = mc.player;
         }
     }
     
     public static void setupMouseHandlerAfter() {
-        if (CMDCamClient.getCurrentPath() != null && CMDCamClient.getCurrentPath().cachedMode instanceof OutsideMode) {
+        if (CMDCamClient.isPlaying() && CMDCamClient.getScene().mode instanceof OutsideMode) {
             mc.cameraEntity = camera;
             camera = null;
         }

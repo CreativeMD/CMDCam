@@ -11,8 +11,8 @@ public class StopPathPacket extends CreativePacket {
     
     @Override
     public void executeClient(Player player) {
-        if (CMDCamClient.getCurrentPath() != null && CMDCamClient.getCurrentPath().serverPath)
-            CMDCamClient.stopPathServer();
+        if (CMDCamClient.isPlaying() && CMDCamClient.getScene().serverSynced())
+            CMDCamClient.stopServer();
     }
     
     @Override

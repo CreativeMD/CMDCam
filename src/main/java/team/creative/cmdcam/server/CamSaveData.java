@@ -7,45 +7,50 @@ import java.util.Map.Entry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.saveddata.SavedData;
 import team.creative.cmdcam.CMDCam;
-import team.creative.cmdcam.common.util.CamPath;
+import team.creative.cmdcam.common.scene.CamScene;
+import team.creative.creativecore.common.util.registry.exception.RegistryException;
 
 public class CamSaveData extends SavedData {
     
-    public static final String DATA_NAME = CMDCam.MODID + "_Paths";
+    public static final String DATA_NAME = CMDCam.MODID + "_Scenes";
     
-    private HashMap<String, CamPath> paths = new HashMap<>();
+    private HashMap<String, CamScene> scenes = new HashMap<>();
     
     public CamSaveData(CompoundTag nbt) {
         for (String key : nbt.getAllKeys())
-            paths.put(key, new CamPath(nbt.getCompound(key)));
+            try {
+                scenes.put(key, new CamScene(nbt.getCompound(key)));
+            } catch (RegistryException e) {
+                e.printStackTrace();
+            }
     }
     
-    public CamPath get(String key) {
-        return paths.get(key);
+    public CamScene get(String key) {
+        return scenes.get(key);
     }
     
-    public void set(String key, CamPath path) {
-        paths.put(key, path);
+    public void set(String key, CamScene path) {
+        scenes.put(key, path);
         setDirty();
     }
     
     public boolean remove(String key) {
-        return paths.remove(key) != null;
+        return scenes.remove(key) != null;
     }
     
     public Collection<String> names() {
-        return paths.keySet();
+        return scenes.keySet();
     }
     
     public void clear() {
-        paths.clear();
+        scenes.clear();
         setDirty();
     }
     
     @Override
     public CompoundTag save(CompoundTag nbt) {
-        for (Entry<String, CamPath> entry : paths.entrySet())
-            nbt.put(entry.getKey(), entry.getValue().writeToNBT(new CompoundTag()));
+        for (Entry<String, CamScene> entry : scenes.entrySet())
+            nbt.put(entry.getKey(), entry.getValue().save(new CompoundTag()));
         return nbt;
     }
     
