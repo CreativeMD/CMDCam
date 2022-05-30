@@ -11,7 +11,7 @@ import team.creative.cmdcam.client.CMDCamClient;
 @Mixin(Camera.class)
 public class CameraMixin {
     
-    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/Camera;isDetached()Z")
+    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/Camera;isDetached()Z", cancellable = true)
     public void isDetached(CallbackInfoReturnable<Boolean> info) {
         if (CMDCamClient.isPlaying())
             info.setReturnValue(true);

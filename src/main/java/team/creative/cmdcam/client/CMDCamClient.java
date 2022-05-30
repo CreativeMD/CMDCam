@@ -41,6 +41,7 @@ public class CMDCamClient {
     private static final CamScene scene = new CamScene(10000, 0, "default", new ArrayList<>(), CamInterpolation.HERMITE);
     private static CamScene playing;
     private static boolean serverAvailable = false;
+    private static boolean hideGuiCache;
     
     public static void resetServerAvailability() {
         serverAvailable = false;
@@ -278,9 +279,7 @@ public class CMDCamClient {
                         }))));
     }
     
-    public static void renderBefore(RenderPlayerEvent.Pre event) {
-        
-    }
+    public static void renderBefore(RenderPlayerEvent.Pre event) {}
     
     public static CamScene getScene() {
         if (isPlaying())
@@ -335,10 +334,16 @@ public class CMDCamClient {
         playing = null;
     }
     
+    public static void noTickPath(Level level, float renderTickTime) {
+        hideGuiCache = mc.options.hideGui;
+    }
+    
     public static void tickPath(Level level, float renderTickTime) {
         playing.tick(level, renderTickTime);
-        if (!playing.playing())
+        if (!playing.playing()) {
+            mc.options.hideGui = hideGuiCache;
             playing = null;
+        }
     }
     
     public static CamScene createScene() throws PathParseException {

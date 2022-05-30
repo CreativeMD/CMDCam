@@ -11,7 +11,7 @@ import team.creative.cmdcam.client.CMDCamClient;
 @Mixin(LocalPlayer.class)
 public abstract class CurrentViewEntityMixin {
     
-    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/player/LocalPlayer;isControlledCamera()Z")
+    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/player/LocalPlayer;isControlledCamera()Z", cancellable = true)
     public void isControlledCamera(CallbackInfoReturnable<Boolean> callback) {
         if (CMDCamClient.isPlaying())
             callback.setReturnValue(true);

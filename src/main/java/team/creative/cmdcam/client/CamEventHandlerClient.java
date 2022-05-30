@@ -64,6 +64,7 @@ public class CamEventHandlerClient {
                 if (CMDCamClient.isPlaying())
                     CMDCamClient.tickPath(mc.level, event.renderTickTime);
                 else {
+                    CMDCamClient.noTickPath(mc.level, event.renderTickTime);
                     if (KeyHandler.zoomIn.isDown()) {
                         if (mc.player.isCrouching())
                             currentFOV -= amountZoom * 10;
