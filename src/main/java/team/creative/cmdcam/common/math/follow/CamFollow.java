@@ -20,7 +20,11 @@ public abstract class CamFollow<T extends VecNd> {
     
     protected T current;
     
-    public CamFollow(T initial) {}
+    public CamFollow() {}
+    
+    public void setInitial(T initial) {
+        this.current = initial;
+    }
     
     public abstract T follow(T target);
     

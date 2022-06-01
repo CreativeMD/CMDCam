@@ -7,12 +7,25 @@ public class CamFollowConfig<T extends VecNd> {
     
     public String type;
     
-    public double div;
+    public double div = 20;
     public double threshold;
     public double maxSpeed;
     
+    public CamFollowConfig() {}
+    
+    public CamFollowConfig(double div) {
+        this.div = div;
+    }
+    
+    public CamFollowConfig(String type, double div) {
+        this.type = type;
+        this.div = div;
+    }
+    
     public CamFollow<T> create(T initial) {
-        return CamFollow.REGISTRY.createSafe(CamFollowStepDistance.class, type, initial, this);
+        CamFollow<T> follow = CamFollow.REGISTRY.createSafe(CamFollowStepDistance.class, type, this);
+        follow.setInitial(initial);
+        return follow;
     }
     
     public void load(CompoundTag nbt) {

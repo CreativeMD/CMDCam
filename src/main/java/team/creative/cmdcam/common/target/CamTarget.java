@@ -146,14 +146,7 @@ public abstract class CamTarget {
         
         @Override
         public Vec3d position(Level level, float partialTicks) {
-            Entity cachedEntity = Minecraft.getInstance().player;
-            
-            if (cachedEntity instanceof LivingEntity)
-                return new Vec3d(((LivingEntity) cachedEntity).getEyePosition(partialTicks));
-            else if (cachedEntity != null)
-                return new Vec3d(cachedEntity.getEyePosition(partialTicks));
-            
-            return null;
+            return new Vec3d(Minecraft.getInstance().player.getEyePosition(partialTicks));
         }
         
     }

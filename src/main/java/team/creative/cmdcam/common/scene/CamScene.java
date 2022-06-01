@@ -3,6 +3,7 @@ package team.creative.cmdcam.common.scene;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -34,12 +35,12 @@ public class CamScene {
     public CamInterpolation interpolation;
     
     public CamTarget lookTarget;
-    public CamFollowConfig<Vec1d> pitchFollowConfig;
-    public CamFollowConfig<Vec1d> yawFollowConfig;
+    public CamFollowConfig<Vec1d> pitchFollowConfig = new CamFollowConfig<>(10);
+    public CamFollowConfig<Vec1d> yawFollowConfig = new CamFollowConfig<>(10);
     
     /** if null it will be the same as the lookTarget */
     public CamTarget posTarget;
-    public CamFollowConfig<Vec3d> posFollowConfig;
+    public CamFollowConfig<Vec3d> posFollowConfig = new CamFollowConfig<>(2);
     
     //public boolean targetBodyRotation = false;
     //public boolean targetHeadRotation = false;
@@ -141,7 +142,7 @@ public class CamScene {
     }
     
     public boolean playing() {
-        return started;
+        return run != null && run.playing();
     }
     
     protected void started(Level level) {
@@ -151,7 +152,7 @@ public class CamScene {
             posTarget.start(level);
         
         if (level.isClientSide)
-            run = new CamRun(level, mode.getCamera(), this);
+            run = new CamRun(level, Minecraft.getInstance().player, this);
     }
     
     public void finish(Level level) {
@@ -183,7 +184,7 @@ public class CamScene {
         this.duration = scene.duration;
         this.loop = scene.loop;
         this.mode = CamMode.REGISTRY.createSafe(DefaultMode.class, CamMode.REGISTRY.getId(scene.mode), this);
-        this.points = new ArrayList<>(scene.points);
+        this.points = copyPoints();
         this.interpolation = scene.interpolation;
         this.serverSynced = scene.serverSynced;
         this.lookTarget = scene.lookTarget;
@@ -196,8 +197,15 @@ public class CamScene {
         this.distanceBasedTiming = scene.distanceBasedTiming;
     }
     
+    private List<CamPoint> copyPoints() {
+        List<CamPoint> newPoints = new ArrayList<>(points.size());
+        for (int i = 0; i < points.size(); i++)
+            newPoints.add(points.get(i).copy());
+        return newPoints;
+    }
+    
     public CamScene copy() {
-        CamScene scene = new CamScene(duration, loop, CamMode.REGISTRY.getId(mode), new ArrayList<>(points), interpolation);
+        CamScene scene = new CamScene(duration, loop, CamMode.REGISTRY.getId(mode), copyPoints(), interpolation);
         scene.set(this);
         return scene;
     }

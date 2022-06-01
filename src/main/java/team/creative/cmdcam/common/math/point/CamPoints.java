@@ -60,7 +60,7 @@ public class CamPoints implements Iterable<CamPoint> {
     }
     
     public void fixSpinning() {
-        double wrappedYaw = 0;
+        double wrappedYaw = 180;
         double lastYaw = 0;
         for (Iterator<CamPoint> iterator = iteratorAll(); iterator.hasNext();) {
             CamPoint point = iterator.next();
@@ -91,7 +91,7 @@ public class CamPoints implements Iterable<CamPoint> {
         double originalYaw = 0;
         for (Iterator<CamPoint> iterator = iteratorAll(); iterator.hasNext();) {
             CamPoint point = iterator.next();
-            lastYaw += (originalYaw - point.rotationYaw) % 360;
+            lastYaw += (point.rotationYaw - originalYaw) % 360;
             originalYaw = point.rotationYaw;
             point.rotationYaw = lastYaw;
         }

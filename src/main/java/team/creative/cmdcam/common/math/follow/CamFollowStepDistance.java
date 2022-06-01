@@ -10,15 +10,15 @@ public class CamFollowStepDistance<T extends VecNd> extends CamFollow<T> {
     private double threshold;
     private double maxSpeed;
     
-    public CamFollowStepDistance(T initial, CamFollowConfig config) {
-        super(initial);
-        this.stepDiv = config.div;
+    public CamFollowStepDistance(CamFollowConfig config) {
+        super();
+        this.stepDiv = Math.max(1, config.div);
         this.threshold = config.threshold;
         this.maxSpeed = config.maxSpeed;
     }
     
-    public CamFollowStepDistance(T initial) {
-        super(initial);
+    public CamFollowStepDistance() {
+        super();
         this.stepDiv = 1;
         this.threshold = -1;
         this.maxSpeed = -1;
@@ -49,9 +49,12 @@ public class CamFollowStepDistance<T extends VecNd> extends CamFollow<T> {
             speed.add(current);
             return speed;
         }
+        
         T vec = (T) current.copy();
         for (int i = 0; i < vec.dimensions(); i++)
             vec.set(i, (target.get(i) - current.get(i)) / stepDiv + current.get(i));
+        
+        this.current = vec;
         return vec;
     }
     
