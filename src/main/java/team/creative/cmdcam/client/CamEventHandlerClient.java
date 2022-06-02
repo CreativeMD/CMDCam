@@ -46,7 +46,11 @@ public class CamEventHandlerClient {
     
     public static long lastRenderTime;
     
-    public static boolean selectEntityMode = false;
+    private static boolean selectEntityMode = false;
+    
+    public static void startSelectionMode() {
+        selectEntityMode = true;
+    }
     
     @SubscribeEvent
     public void onRenderTick(RenderTickEvent event) {

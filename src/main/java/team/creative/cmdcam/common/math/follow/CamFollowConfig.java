@@ -1,28 +1,35 @@
 package team.creative.cmdcam.common.math.follow;
 
 import net.minecraft.nbt.CompoundTag;
+import team.creative.cmdcam.common.scene.attribute.CamAttribute;
 import team.creative.creativecore.common.util.math.vec.VecNd;
 
 public class CamFollowConfig<T extends VecNd> {
     
-    public String type;
+    public final CamAttribute attribute;
+    public String type = "step";
     
     public double div = 20;
     public double threshold;
     public double maxSpeed;
     
-    public CamFollowConfig() {}
+    public CamFollowConfig(CamAttribute attribute) {
+        this.attribute = attribute;
+    }
     
-    public CamFollowConfig(double div) {
+    public CamFollowConfig(CamAttribute attribute, double div) {
+        this(attribute);
         this.div = div;
     }
     
-    public CamFollowConfig(String type, double div) {
+    public CamFollowConfig(CamAttribute attribute, String type, double div) {
+        this(attribute, div);
         this.type = type;
-        this.div = div;
     }
     
     public CamFollow<T> create(T initial) {
+        if (div < 1)
+            div = 1;
         CamFollow<T> follow = CamFollow.REGISTRY.createSafe(CamFollowStepDistance.class, type, this);
         follow.setInitial(initial);
         return follow;
@@ -30,7 +37,7 @@ public class CamFollowConfig<T extends VecNd> {
     
     public void load(CompoundTag nbt) {
         type = nbt.getString("type");
-        div = nbt.getDouble("div");
+        div = Math.max(1, nbt.getDouble("div"));
         threshold = nbt.getDouble("threshold");
         maxSpeed = nbt.getDouble("max_speed");
     }
@@ -38,13 +45,15 @@ public class CamFollowConfig<T extends VecNd> {
     public CompoundTag save(CompoundTag nbt) {
         nbt.putString("type", type);
         nbt.putDouble("div", div);
-        nbt.putDouble("threshold", threshold);
-        nbt.putDouble("max_speed", maxSpeed);
+        if (threshold > 0)
+            nbt.putDouble("threshold", threshold);
+        if (maxSpeed > 0)
+            nbt.putDouble("max_speed", maxSpeed);
         return nbt;
     }
     
     public CamFollowConfig<T> copy() {
-        CamFollowConfig<T> copy = new CamFollowConfig<T>();
+        CamFollowConfig<T> copy = new CamFollowConfig<T>(attribute);
         copy.type = type;
         copy.div = div;
         copy.threshold = threshold;

@@ -14,12 +14,14 @@ import team.creative.cmdcam.common.math.follow.CamFollowConfig;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.interpolation.CamPitchMode;
 import team.creative.cmdcam.common.math.point.CamPoint;
+import team.creative.cmdcam.common.scene.attribute.CamAttribute;
 import team.creative.cmdcam.common.scene.mode.CamMode;
 import team.creative.cmdcam.common.scene.mode.DefaultMode;
 import team.creative.cmdcam.common.scene.run.CamRun;
 import team.creative.cmdcam.common.target.CamTarget;
 import team.creative.creativecore.common.util.math.vec.Vec1d;
 import team.creative.creativecore.common.util.math.vec.Vec3d;
+import team.creative.creativecore.common.util.math.vec.VecNd;
 import team.creative.creativecore.common.util.registry.exception.RegistryException;
 
 public class CamScene {
@@ -35,12 +37,12 @@ public class CamScene {
     public CamInterpolation interpolation;
     
     public CamTarget lookTarget;
-    public CamFollowConfig<Vec1d> pitchFollowConfig = new CamFollowConfig<>(10);
-    public CamFollowConfig<Vec1d> yawFollowConfig = new CamFollowConfig<>(10);
+    public CamFollowConfig<Vec1d> pitchFollowConfig = new CamFollowConfig<>(CamAttribute.PITCH, 10);
+    public CamFollowConfig<Vec1d> yawFollowConfig = new CamFollowConfig<>(CamAttribute.YAW, 10);
     
     /** if null it will be the same as the lookTarget */
     public CamTarget posTarget;
-    public CamFollowConfig<Vec3d> posFollowConfig = new CamFollowConfig<>(2);
+    public CamFollowConfig<Vec3d> posFollowConfig = new CamFollowConfig<>(CamAttribute.POSITION, 2);
     
     //public boolean targetBodyRotation = false;
     //public boolean targetHeadRotation = false;
@@ -208,6 +210,16 @@ public class CamScene {
         CamScene scene = new CamScene(duration, loop, CamMode.REGISTRY.getId(mode), copyPoints(), interpolation);
         scene.set(this);
         return scene;
+    }
+    
+    public <T extends VecNd> CamFollowConfig<T> getConfig(CamAttribute<T> attribute) {
+        if (attribute == CamAttribute.POSITION)
+            return (CamFollowConfig<T>) posFollowConfig;
+        if (attribute == CamAttribute.PITCH)
+            return (CamFollowConfig<T>) pitchFollowConfig;
+        if (attribute == CamAttribute.YAW)
+            return (CamFollowConfig<T>) yawFollowConfig;
+        return null;
     }
     
 }

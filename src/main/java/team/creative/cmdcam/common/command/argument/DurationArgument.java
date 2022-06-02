@@ -15,7 +15,7 @@ import net.minecraft.network.chat.TextComponent;
 
 public class DurationArgument implements ArgumentType<Long> {
     
-    public static final List<String> EXAMPLES = Arrays.asList(new String[] { "10s", "20s", "30s", "1m" });
+    public static final List<String> EXAMPLES = Arrays.asList(new String[] { "10s", "30s", "1m", "500ms" });
     
     public static DurationArgument duration() {
         return new DurationArgument();

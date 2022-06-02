@@ -12,6 +12,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
@@ -22,19 +23,21 @@ import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.common.command.argument.CamModeArgument;
 import team.creative.cmdcam.common.command.argument.DurationArgument;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
-import team.creative.cmdcam.common.command.argument.TargetArgument;
+import team.creative.cmdcam.common.command.builder.FollowArgumentBuilder;
+import team.creative.cmdcam.common.command.builder.TargetArgumentBuilder;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
 import team.creative.cmdcam.common.scene.CamScene;
+import team.creative.cmdcam.common.scene.attribute.CamAttribute;
 import team.creative.cmdcam.common.scene.mode.CamMode;
 import team.creative.cmdcam.common.scene.mode.DefaultMode;
-import team.creative.cmdcam.common.target.CamTarget;
 
 public class CMDCamClient {
     
     public final static Minecraft mc = Minecraft.getInstance();
+    private static final CamCommandProcessorClient processor = new CamCommandProcessorClient();
     
     public static HashMap<String, CamScene> savedPaths = new HashMap<>();
     
@@ -72,13 +75,11 @@ public class CMDCamClient {
             x.getSource()
                     .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam remove <index> " + ChatFormatting.RED + "removes the given point"), false);
             x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam target <none:self> " + ChatFormatting.RED + "set the camera target"), false);
+                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam target <none:self:player:entity:pos:select> " + ChatFormatting.RED + "set the camera target"), false);
             x.getSource()
                     .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam mode <default:outside> " + ChatFormatting.RED + "set current mode"), false);
             x.getSource().sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String
                     .join(":", CamInterpolation.REGISTRY.keys()) + "> " + ChatFormatting.RED + "set the camera interpolation"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam follow-speed <number> " + ChatFormatting.RED + "default is 1.0"), false);
             x.getSource().sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam show <all:" + String
                     .join(":", CamInterpolation.REGISTRY.keys()) + "> " + ChatFormatting.RED + "shows the path using the given interpolation"), false);
             x.getSource().sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam hide <all:" + String
@@ -89,11 +90,11 @@ public class CMDCamClient {
                     .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam load <name> " + ChatFormatting.RED + "tries to load the saved path with the given name"), false);
             x.getSource().sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam list " + ChatFormatting.RED + "lists all saved paths"), false);
             return 0;
-        }).then(LiteralArgumentBuilder.<CommandSourceStack>literal("clear").executes((x) -> { // cam clear
+        }).then(Commands.literal("clear").executes((x) -> { // cam clear
             x.getSource().sendSuccess(new TextComponent("Cleared all registered points!"), false);
             CMDCamClient.getPoints().clear();
             return 0;
-        })).then(LiteralArgumentBuilder.<CommandSourceStack>literal("add").executes((x) -> { // cam add
+        })).then(Commands.literal("add").executes((x) -> { // cam add
             CMDCamClient.getPoints().add(CamPoint.createLocal());
             x.getSource().sendSuccess(new TextComponent("Registered " + CMDCamClient.getPoints().size() + ". Point!"), false);
             return 0;
@@ -182,26 +183,8 @@ public class CMDCamClient {
                             x.getSource().sendSuccess(new TextComponent("Changed to " + mode + " path!"), false);
                             return 0;
                         })))
-                .then(LiteralArgumentBuilder.<CommandSourceStack>literal("target").executes((x) -> {
-                    CamEventHandlerClient.selectEntityMode = true;
-                    x.getSource().sendSuccess(new TextComponent("Please select a target either an entity or a block!"), false);
-                    return 0;
-                })/*.then(RequiredArgumentBuilder.<ISuggestionProvider, EntitySelector>argument("entity", EntityArgument.entity()).executes((x) -> {
-                  CommandContext<CommandSource> context = new CommandContext<>(mc.player.getCommandSource(), x.getInput(), argumentField.get(x), x.getCommand(), x.getRootNode(), x.getNodes(), x.getRange(), x.getChild(), x.getRedirectModifier(), x.isForked());
-                  Entity entity = EntityArgument.getEntity(context, "entity");
-                  return 0;
-                  }))*/
-                        .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("target", TargetArgument.target()).executes((x) -> {
-                            String target = StringArgumentType.getString(x, "target");
-                            if (target.equalsIgnoreCase("self")) {
-                                CMDCamClient.getConfigScene().lookTarget = new CamTarget.SelfTarget();
-                                x.getSource().sendSuccess(new TextComponent("The camera will point towards you!"), false);
-                            } else if (target.equals("none")) {
-                                CMDCamClient.getConfigScene().lookTarget = null;
-                                x.getSource().sendSuccess(new TextComponent("Removed target!"), false);
-                            }
-                            return 0;
-                        })))
+                .then(new TargetArgumentBuilder("target", processor)).then(new FollowArgumentBuilder(CamAttribute.PITCH, processor))
+                .then(new FollowArgumentBuilder(CamAttribute.YAW, processor)).then(new FollowArgumentBuilder(CamAttribute.POSITION, processor))
                 .then(LiteralArgumentBuilder.<CommandSourceStack>literal("interpolation")
                         .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("interpolation", InterpolationArgument.interpolation()).executes((x) -> {
                             String interpolation = StringArgumentType.getString(x, "interpolation");

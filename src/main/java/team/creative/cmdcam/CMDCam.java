@@ -33,7 +33,6 @@ import team.creative.cmdcam.common.command.argument.CamModeArgument;
 import team.creative.cmdcam.common.command.argument.DurationArgument;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument.AllInterpolationArgument;
-import team.creative.cmdcam.common.command.argument.TargetArgument;
 import team.creative.cmdcam.common.packet.ConnectPacket;
 import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
@@ -76,7 +75,6 @@ public class CMDCam {
         
         ArgumentTypes.register("duration", DurationArgument.class, new EmptyArgumentSerializer<>(() -> DurationArgument.duration()));
         ArgumentTypes.register("cameramode", CamModeArgument.class, new EmptyArgumentSerializer<>(() -> CamModeArgument.mode()));
-        ArgumentTypes.register("cameratarget", TargetArgument.class, new EmptyArgumentSerializer<>(() -> TargetArgument.target()));
         ArgumentTypes.register("interpolation", InterpolationArgument.class, new EmptyArgumentSerializer<>(() -> InterpolationArgument.interpolation()));
         ArgumentTypes.register("allinterpolation", AllInterpolationArgument.class, new EmptyArgumentSerializer<>(() -> InterpolationArgument.interpolationAll()));
         

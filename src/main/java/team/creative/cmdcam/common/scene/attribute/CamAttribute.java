@@ -18,9 +18,17 @@ public abstract class CamAttribute<T extends VecNd> {
         public void set(CamPoint point, Vec3d vec) {
             point.set(vec);
         }
+        
+        @Override
+        public String name() {
+            return "pos";
+        }
     };
     
     public static final CamAttribute<Vec1d> YAW = new CamAttribute<Vec1d>() {
+        
+        private final Vec1d min = new Vec1d(-270);
+        private final Vec1d max = new Vec1d(90);
         
         @Override
         public Vec1d get(CamPoint point) {
@@ -30,6 +38,26 @@ public abstract class CamAttribute<T extends VecNd> {
         @Override
         public void set(CamPoint point, Vec1d vec) {
             point.rotationYaw = vec.x;
+        }
+        
+        @Override
+        public String name() {
+            return "yaw";
+        }
+        
+        @Override
+        public boolean hasBounds() {
+            return true;
+        }
+        
+        @Override
+        public Vec1d getMin() {
+            return min;
+        }
+        
+        @Override
+        public Vec1d getMax() {
+            return max;
         }
     };
     
@@ -44,6 +72,11 @@ public abstract class CamAttribute<T extends VecNd> {
         public void set(CamPoint point, Vec1d vec) {
             point.rotationPitch = vec.x;
         }
+        
+        @Override
+        public String name() {
+            return "pitch";
+        }
     };
     
     public static final CamAttribute<Vec1d> ZOOM = new CamAttribute<Vec1d>() {
@@ -56,6 +89,11 @@ public abstract class CamAttribute<T extends VecNd> {
         @Override
         public void set(CamPoint point, Vec1d vec) {
             point.zoom = vec.x;
+        }
+        
+        @Override
+        public String name() {
+            return "zoom";
         }
     };
     
@@ -70,10 +108,30 @@ public abstract class CamAttribute<T extends VecNd> {
         public void set(CamPoint point, Vec1d vec) {
             point.roll = vec.x;
         }
+        
+        @Override
+        public String name() {
+            return "roll";
+        }
+        
     };
     
     public abstract T get(CamPoint point);
     
     public abstract void set(CamPoint point, T vec);
+    
+    public boolean hasBounds() {
+        return false;
+    }
+    
+    public T getMin() {
+        return null;
+    }
+    
+    public T getMax() {
+        return null;
+    }
+    
+    public abstract String name();
     
 }

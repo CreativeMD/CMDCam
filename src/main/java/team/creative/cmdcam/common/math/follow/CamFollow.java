@@ -1,41 +1,68 @@
 package team.creative.cmdcam.common.math.follow;
 
-import net.minecraft.nbt.CompoundTag;
 import team.creative.creativecore.common.util.math.vec.VecNd;
 import team.creative.creativecore.common.util.registry.NamedTypeRegistry;
 
 public abstract class CamFollow<T extends VecNd> {
     
-    public static final NamedTypeRegistry<CamFollow> REGISTRY = new NamedTypeRegistry<CamFollow>().addConstructorPattern(VecNd.class, CamFollowConfig.class);
-    
-    public static <T extends VecNd> CamFollow<T> load(CompoundTag nbt, Class<? extends T> clazz) {
-        CamFollow follow = REGISTRY.createSafe(CamFollowStepDistance.class, nbt.getString("id"));
-        follow.loadExtra(nbt);
-        return follow;
-    }
+    public static final NamedTypeRegistry<CamFollow> REGISTRY = new NamedTypeRegistry<CamFollow>().addConstructorPattern(CamFollowConfig.class);
     
     static {
-        REGISTRY.register("step_distance", CamFollowStepDistance.class);
+        REGISTRY.register("step", CamFollowStepDistance.class);
     }
     
     protected T current;
+    public CamFollowConfig<T> config;
     
-    public CamFollow() {}
+    public CamFollow(CamFollowConfig<T> config) {
+        this.config = config;
+    }
     
     public void setInitial(T initial) {
         this.current = initial;
     }
     
-    public abstract T follow(T target);
-    
-    protected abstract void loadExtra(CompoundTag nbt);
-    
-    public CompoundTag save(CompoundTag nbt) {
-        nbt.putString("id", REGISTRY.getId(this));
-        saveExtra(nbt);
-        return nbt;
+    private void makeInBounds(T vec) {
+        for (int i = 0; i < vec.dimensions(); i++) {
+            double value = vec.get(i);
+            double min = config.attribute.getMin().get(i);
+            double max = config.attribute.getMax().get(i);
+            if (value >= min && value <= max)
+                continue;
+            
+            value += min;
+            value %= max - min;
+            value -= min;
+        }
     }
     
-    protected abstract CompoundTag saveExtra(CompoundTag nbt);
+    public T follow(T target) {
+        if (config.attribute.getMin() != null) {
+            makeInBounds(target);
+            makeInBounds(current);
+            
+            for (int i = 0; i < target.dimensions(); i++) {
+                double valueT = target.get(i);
+                double valueC = current.get(i);
+                
+                double min = config.attribute.getMin().get(i);
+                double max = config.attribute.getMax().get(i);
+                
+                if (valueC > valueT) {
+                    if (valueC - valueT > (max - min) - valueC + min - valueT)
+                        valueT += max - min;
+                } else if (valueC < valueT) {
+                    if (valueT - valueC > (max - min) - valueT + min - valueC)
+                        valueT -= max - min;
+                }
+                
+                target.set(i, valueT);
+            }
+        }
+        
+        return followInternal(target);
+    }
+    
+    protected abstract T followInternal(T target);
     
 }

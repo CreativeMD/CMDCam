@@ -10,5 +10,12 @@
     "key.centerzoom": "Reset Zoom",
     "key.clearPoint": "Clear Points",
     "mode.default.desc": "the player acts as the camera",
-    "mode.outside.desc": "the player is not the camera, but you are still in control"
+    "mode.outside.desc": "the player is not the camera, but you are still in control",
+    "scene.look.target.remove": "Removed target",
+    "scene.look.target.self": "The camera will point towards you",
+    "scene.look.target.self.select": "Please select a target either an entity or a block",
+    "scene.look.target.self.player": "Selected %s",
+    "scene.look.target.self.entity": "Selected entity %s",
+    "scene.look.target.self.pos": "Selected block %s",
+    "scene.follow.div": "Set step of %s to %s"
 }
