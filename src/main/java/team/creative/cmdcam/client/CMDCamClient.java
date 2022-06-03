@@ -148,6 +148,10 @@ public class CMDCamClient {
     }
     
     public static void start(CamScene scene) {
+        if (scene.points.isEmpty())
+            return;
+        if (scene.points.size() == 1)
+            scene.points.add(scene.points.get(0));
         playing = scene;
         playing.play();
     }

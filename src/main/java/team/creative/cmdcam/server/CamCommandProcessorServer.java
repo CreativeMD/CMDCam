@@ -9,6 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.client.PathParseException;
@@ -67,7 +68,12 @@ public class CamCommandProcessorServer implements CamCommandProcessor {
     
     @Override
     public void start(CommandContext<CommandSourceStack> context) throws PathParseException {
-        CreativePacket packet = new StartPathPacket(getScene(context));
+        CamScene scene = getScene(context);
+        if (scene.points.isEmpty()) {
+            context.getSource().sendFailure(new TranslatableComponent("scene.create_fail"));
+            return;
+        }
+        CreativePacket packet = new StartPathPacket(scene);
         for (ServerPlayer player : getPlayers(context))
             CMDCam.NETWORK.sendToClient(packet, player);
     }

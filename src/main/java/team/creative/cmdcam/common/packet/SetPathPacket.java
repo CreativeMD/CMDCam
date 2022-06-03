@@ -17,9 +17,7 @@ public class SetPathPacket extends CreativePacket {
     
     public CompoundTag nbt;
     
-    public SetPathPacket() {
-        
-    }
+    public SetPathPacket() {}
     
     public SetPathPacket(String id, CamScene scene) {
         this.id = id;

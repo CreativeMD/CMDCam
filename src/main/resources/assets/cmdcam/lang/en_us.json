@@ -47,6 +47,6 @@
     "scene.interpolation.hide_all": "Hiding all interpolations",
     "scene.interpolation.hide": "Hiding %s interpolation",
     "scenes.list_fail": "Use /cam-server list instead",
-    "scenes.list": "There are %s scene(s): ",
+    "scenes.list": "There are %s scene(s): %s",
     "scenes.clear": "Removed all existing scenes (in this world)"
 }

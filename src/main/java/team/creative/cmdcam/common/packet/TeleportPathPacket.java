@@ -11,9 +11,7 @@ public class TeleportPathPacket extends CreativePacket {
     
     public CompoundTag nbt;
     
-    public TeleportPathPacket() {
-        
-    }
+    public TeleportPathPacket() {}
     
     public TeleportPathPacket(CamPoint point) {
         this.nbt = point.save(new CompoundTag());

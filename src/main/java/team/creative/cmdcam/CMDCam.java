@@ -83,7 +83,10 @@ public class CMDCam {
     
     private void serverStarting(final ServerStartingEvent event) {
         LiteralArgumentBuilder<CommandSourceStack> camServer = Commands.literal("cam-server");
-        SceneCommandBuilder.scene(camServer, CMDCamServer.PROCESSOR);
+        
+        LiteralArgumentBuilder<CommandSourceStack> get = Commands.literal("get");
+        SceneCommandBuilder.scene(get, CMDCamServer.PROCESSOR);
+        camServer.then(get);
         
         event.getServer().getCommands().getDispatcher().register(camServer.then(Commands.literal("list").executes((x) -> {
             Collection<String> names = CMDCamServer.getSavedPaths(x.getSource().getLevel());

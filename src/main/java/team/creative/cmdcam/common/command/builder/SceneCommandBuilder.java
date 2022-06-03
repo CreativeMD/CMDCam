@@ -24,12 +24,10 @@ import team.creative.cmdcam.common.scene.attribute.CamAttribute;
 public class SceneCommandBuilder {
     
     public static void scene(ArgumentBuilder<CommandSourceStack, ?> origin, CamCommandProcessor processor) {
+        ArgumentBuilder<CommandSourceStack, ?> original = origin;
         
-        if (processor.requiresSceneName()) {
-            ArgumentBuilder<CommandSourceStack, ?> name = Commands.argument("name", StringArgumentType.string());
-            origin.then(name);
-            origin = name;
-        }
+        if (processor.requiresSceneName())
+            origin = Commands.argument("name", StringArgumentType.string());
         
         origin.then(Commands.literal("clear").executes((x) -> {
             processor.getScene(x).points.clear();
@@ -62,16 +60,12 @@ public class SceneCommandBuilder {
             return 0;
         })));
         
-        ArgumentBuilder<CommandSourceStack, ?> start = Commands.literal("start");
-        origin.then(start);
+        ArgumentBuilder<CommandSourceStack, ?> startO = Commands.literal("start");
+        ArgumentBuilder<CommandSourceStack, ?> start = startO;
+        if (processor.requiresPlayer())
+            start = Commands.argument("players", EntityArgument.players());
         
-        if (processor.requiresPlayer()) {
-            ArgumentBuilder<CommandSourceStack, ?> players = Commands.argument("players", EntityArgument.players());
-            start.then(players);
-            start = players;
-        }
-        
-        start.then(Commands.literal("start").executes((x) -> {
+        start.executes((x) -> {
             try {
                 processor.start(x);
             } catch (PathParseException e) {
@@ -100,7 +94,11 @@ public class SceneCommandBuilder {
                 x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
             }
             return 0;
-        }))));
+        })));
+        if (processor.requiresPlayer())
+            origin.then(startO.then(start));
+        else
+            origin.then(startO);
         
         origin.then(Commands.literal("duration").then(Commands.argument("duration", DurationArgument.duration()).executes(x -> {
             long duration = DurationArgument.getDuration(x, "duration");
@@ -122,14 +120,10 @@ public class SceneCommandBuilder {
             return 0;
         })));
         
-        ArgumentBuilder<CommandSourceStack, ?> tp = Commands.literal("goto");
-        origin.then(tp);
-        
-        if (processor.requiresPlayer()) {
-            ArgumentBuilder<CommandSourceStack, ?> players = Commands.argument("players", EntityArgument.players());
-            tp.then(players);
-            tp = players;
-        }
+        ArgumentBuilder<CommandSourceStack, ?> tpO = Commands.literal("goto");
+        ArgumentBuilder<CommandSourceStack, ?> tp = tpO;
+        if (processor.requiresPlayer())
+            tp = Commands.argument("players", EntityArgument.players());
         
         tp.then(Commands.argument("index", IntegerArgumentType.integer(0)).executes(x -> {
             int index = IntegerArgumentType.getInteger(x, "index") - 1;
@@ -140,6 +134,10 @@ public class SceneCommandBuilder {
                 x.getSource().sendFailure(new TranslatableComponent("scene.index", index + 1));
             return 0;
         }));
+        if (processor.requiresPlayer())
+            origin.then(tpO.then(tp));
+        else
+            origin.then(tpO);
         
         origin.then(Commands.literal("mode").then(Commands.argument("mode", CamModeArgument.mode()).executes(x -> {
             processor.getScene(x).setMode(StringArgumentType.getString(x, "mode"));
@@ -150,19 +148,19 @@ public class SceneCommandBuilder {
         origin.then(new FollowArgumentBuilder(CamAttribute.PITCH, processor)).then(new FollowArgumentBuilder(CamAttribute.YAW, processor))
                 .then(new FollowArgumentBuilder(CamAttribute.POSITION, processor));
         
-        ArgumentBuilder<CommandSourceStack, ?> stop = Commands.literal("stop");
-        origin.then(stop);
-        
-        if (processor.requiresPlayer()) {
-            ArgumentBuilder<CommandSourceStack, ?> players = Commands.argument("players", EntityArgument.players());
-            stop.then(players);
-            stop = players;
-        }
+        ArgumentBuilder<CommandSourceStack, ?> stopO = Commands.literal("stop");
+        ArgumentBuilder<CommandSourceStack, ?> stop = stopO;
+        if (processor.requiresPlayer())
+            stop = Commands.argument("players", EntityArgument.players());
         
         stop.executes((x) -> {
             processor.stop(x);
             return 0;
         });
+        if (processor.requiresPlayer())
+            origin.then(stopO.then(stop));
+        else
+            origin.then(stopO);
         
         origin.then(Commands.literal("interpolation").then(Commands.argument("interpolation", InterpolationArgument.interpolation()).executes((x) -> {
             String interpolation = StringArgumentType.getString(x, "interpolation");
@@ -191,6 +189,9 @@ public class SceneCommandBuilder {
             x.getSource().sendSuccess(new TranslatableComponent("scene.distance_timing", value), false);
             return 0;
         })));
+        
+        if (processor.requiresSceneName())
+            original.then(origin);
         
     }
     
