@@ -59,25 +59,21 @@ public class CMDCamClient {
             return 0;
         })).then(Commands.literal("show").then(Commands.argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
             String interpolation = StringArgumentType.getString(x, "interpolation");
-            CamInterpolation move = CamInterpolation.REGISTRY.get(interpolation);
-            if (move != null) {
-                move.isRenderingEnabled = true;
+            if (!interpolation.equalsIgnoreCase("all")) {
+                CamInterpolation.REGISTRY.get(interpolation).isRenderingEnabled = true;
                 x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.show", interpolation), false);
-            } else if (interpolation.equalsIgnoreCase("all")) {
+            } else {
                 for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
                     movement.isRenderingEnabled = true;
                 x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.show_all"), false);
             }
             return 0;
-        }))).then(Commands.literal("hide").then(Commands.argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) ->
-        
-        {
+        }))).then(Commands.literal("hide").then(Commands.argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
             String interpolation = StringArgumentType.getString(x, "interpolation");
-            CamInterpolation move = CamInterpolation.REGISTRY.get(interpolation);
-            if (move != null) {
-                move.isRenderingEnabled = false;
+            if (!interpolation.equalsIgnoreCase("all")) {
+                CamInterpolation.REGISTRY.get(interpolation).isRenderingEnabled = false;
                 x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.hide", interpolation), false);
-            } else if (interpolation.equalsIgnoreCase("all")) {
+            } else {
                 for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
                     movement.isRenderingEnabled = false;
                 x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.hide_all"), false);
