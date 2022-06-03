@@ -68,9 +68,14 @@ public class CamEventHandlerClient {
         
         if (mc.player != null && mc.level != null) {
             if (!mc.isPaused()) {
-                if (CMDCamClient.isPlaying())
+                if (CMDCamClient.isPlaying()) {
+                    while (mc.options.keyJump.consumeClick()) {
+                        if (CMDCamClient.isPlaying())
+                            CMDCamClient.getScene().togglePause();
+                    }
+                    
                     CMDCamClient.tickPath(mc.level, event.renderTickTime);
-                else {
+                } else {
                     CMDCamClient.noTickPath(mc.level, event.renderTickTime);
                     if (KeyHandler.zoomIn.isDown()) {
                         if (mc.player.isCrouching())
@@ -98,11 +103,10 @@ public class CamEventHandlerClient {
                     if (KeyHandler.rollCenter.isDown())
                         roll = 0;
                     
-                    if (KeyHandler.pointKey.consumeClick()) {
+                    while (KeyHandler.pointKey.consumeClick()) {
                         CMDCamClient.getPoints().add(CamPoint.createLocal());
                         mc.player.sendMessage(new TranslatableComponent("scene.add", CMDCamClient.getPoints().size()), Util.NIL_UUID);
                     }
-                    
                 }
                 
                 if (KeyHandler.startStop.consumeClick()) {

@@ -36,6 +36,8 @@ import team.creative.cmdcam.common.command.argument.InterpolationArgument.AllInt
 import team.creative.cmdcam.common.command.builder.SceneCommandBuilder;
 import team.creative.cmdcam.common.packet.ConnectPacket;
 import team.creative.cmdcam.common.packet.GetPathPacket;
+import team.creative.cmdcam.common.packet.PausePathPacket;
+import team.creative.cmdcam.common.packet.ResumePathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
 import team.creative.cmdcam.common.packet.StartPathPacket;
 import team.creative.cmdcam.common.packet.StopPathPacket;
@@ -75,6 +77,8 @@ public class CMDCam {
         NETWORK.registerType(StartPathPacket.class, StartPathPacket::new);
         NETWORK.registerType(StopPathPacket.class, StopPathPacket::new);
         NETWORK.registerType(TeleportPathPacket.class, TeleportPathPacket::new);
+        NETWORK.registerType(PausePathPacket.class, PausePathPacket::new);
+        NETWORK.registerType(ResumePathPacket.class, ResumePathPacket::new);
         
         ArgumentTypes.register("duration", DurationArgument.class, new EmptyArgumentSerializer<>(() -> DurationArgument.duration()));
         ArgumentTypes.register("cameramode", CamModeArgument.class, new EmptyArgumentSerializer<>(() -> CamModeArgument.mode()));
@@ -93,6 +97,16 @@ public class CMDCam {
         
         event.getServer().getCommands().getDispatcher().register(camServer.then(Commands.literal("stop").then(Commands.argument("players", EntityArgument.players()).executes(x -> {
             CreativePacket packet = new StopPathPacket();
+            for (ServerPlayer player : EntityArgument.getPlayers(x, "players"))
+                CMDCam.NETWORK.sendToClient(packet, player);
+            return 0;
+        }))).then(Commands.literal("pause").then(Commands.argument("players", EntityArgument.players()).executes(x -> {
+            CreativePacket packet = new PausePathPacket();
+            for (ServerPlayer player : EntityArgument.getPlayers(x, "players"))
+                CMDCam.NETWORK.sendToClient(packet, player);
+            return 0;
+        }))).then(Commands.literal("resume").then(Commands.argument("players", EntityArgument.players()).executes(x -> {
+            CreativePacket packet = new ResumePathPacket();
             for (ServerPlayer player : EntityArgument.getPlayers(x, "players"))
                 CMDCam.NETWORK.sendToClient(packet, player);
             return 0;

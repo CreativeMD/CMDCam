@@ -135,6 +135,18 @@ public class CamScene {
         started = true;
     }
     
+    public boolean paused() {
+        return !run.playing();
+    }
+    
+    public void togglePause() {
+        if (playing())
+            if (paused())
+                resume();
+            else
+                pause();
+    }
+    
     public void pause() {
         run.pause();
     }
@@ -148,7 +160,7 @@ public class CamScene {
     }
     
     public boolean playing() {
-        return run != null && run.playing();
+        return run != null;
     }
     
     protected void started(Level level) {

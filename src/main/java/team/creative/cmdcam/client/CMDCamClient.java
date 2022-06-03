@@ -57,6 +57,12 @@ public class CMDCamClient {
         event.getDispatcher().register(cam.then(Commands.literal("stop").executes(x -> {
             CMDCamClient.stop();
             return 0;
+        })).then(Commands.literal("pause").executes(x -> {
+            CMDCamClient.pause();
+            return 0;
+        })).then(Commands.literal("resume").executes(x -> {
+            CMDCamClient.resume();
+            return 0;
         })).then(Commands.literal("show").then(Commands.argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
             String interpolation = StringArgumentType.getString(x, "interpolation");
             if (!interpolation.equalsIgnoreCase("all")) {
