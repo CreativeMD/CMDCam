@@ -24,8 +24,8 @@ public class CircularCamInterpolation extends CamInterpolation {
     }
     
     @Override
-    public <T extends VecNd> Interpolation<T> create(CamScene scene, T before, List<T> points, T after, CamAttribute<T> attribute) {
-        if (attribute == CamAttribute.POSITION) {
+    public <T extends VecNd> Interpolation<T> create(double[] timed, CamScene scene, T before, List<T> points, T after, CamAttribute<T> attribute) {
+        if (attribute == CamAttribute.POSITION && scene.lookTarget != null) {
             Minecraft mc = Minecraft.getInstance();
             Vec3d center = scene.lookTarget.position(mc.level, mc.getDeltaFrameTime());
             if (center != null) {

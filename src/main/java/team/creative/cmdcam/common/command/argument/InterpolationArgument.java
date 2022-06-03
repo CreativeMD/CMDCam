@@ -55,7 +55,7 @@ public class InterpolationArgument implements ArgumentType<String> {
     }
     
     public boolean isAllowed(String result) {
-        return CamInterpolation.REGISTRY.get(result) != null;
+        return CamInterpolation.REGISTRY.contains(result);
     }
     
     public static class AllInterpolationArgument extends InterpolationArgument {

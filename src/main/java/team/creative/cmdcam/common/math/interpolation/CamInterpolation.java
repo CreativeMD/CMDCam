@@ -30,6 +30,6 @@ public abstract class CamInterpolation {
         this.color = color;
     }
     
-    public abstract <T extends VecNd> Interpolation<T> create(CamScene scene, T before, List<T> points, T after, CamAttribute<T> attribute);
+    public abstract <T extends VecNd> Interpolation<T> create(double[] times, CamScene scene, T before, List<T> points, T after, CamAttribute<T> attribute);
     
 }

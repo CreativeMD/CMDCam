@@ -10,6 +10,7 @@ import team.creative.cmdcam.common.math.interpolation.CamPitchMode;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.attribute.CamAttribute;
 import team.creative.creativecore.common.util.math.interpolation.Interpolation;
+import team.creative.creativecore.common.util.math.vec.Vec3d;
 import team.creative.creativecore.common.util.math.vec.VecNd;
 import team.creative.creativecore.common.util.type.itr.ConsecutiveIterator;
 import team.creative.creativecore.common.util.type.itr.SingleIterator;
@@ -113,14 +114,46 @@ public class CamPoints implements Iterable<CamPoint> {
         return distance;
     }
     
-    public <T extends VecNd> Interpolation<T> interpolate(CamScene scene, CamAttribute<T> attribute) {
+    public <T extends VecNd> Interpolation<T> interpolate(double[] times, CamScene scene, CamAttribute<T> attribute) {
         List vecs = new ArrayList(content.size());
         for (CamPoint point : content)
             vecs.add(attribute.get(point));
-        Interpolation<T> inter = scene.interpolation.create(scene, before != null ? attribute.get(before) : null, vecs, after != null ? attribute.get(after) : null, attribute);
-        if (scene.distanceBasedTiming)
-            inter.makeTimingDistanceBased();
+        Interpolation<T> inter = scene.interpolation
+                .create(times, scene, before != null ? attribute.get(before) : null, vecs, after != null ? attribute.get(after) : null, attribute);
         return inter;
+    }
+    
+    public double[] createTimes(CamScene scene) {
+        double[] times = new double[size()];
+        double startTime = 0;
+        double endTime = 1;
+        times[times.length - 1] = endTime;
+        
+        double stepLength = 1D / (size() - 1);
+        double time = stepLength;
+        if (size() > 2)
+            for (int i = 1; i < times.length - 1; i++) {
+                times[i] = time;
+                time += stepLength;
+            }
+        else
+            return times;
+        
+        if (scene.distanceBasedTiming) {
+            Interpolation<Vec3d> inter = interpolate(times, scene, CamAttribute.POSITION);
+            double[] data = inter.estimateDistance();
+            double totalDistance = data[0];
+            
+            double duration = endTime - startTime;
+            double speed = duration / totalDistance;
+            time = startTime;
+            for (int i = 1; i < data.length - 1; i++) {
+                time += data[i] * speed;
+                times[i] = time;
+            }
+        }
+        
+        return times;
     }
     
     public int size() {

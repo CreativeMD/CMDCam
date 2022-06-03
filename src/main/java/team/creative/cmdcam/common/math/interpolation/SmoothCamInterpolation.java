@@ -16,8 +16,8 @@ public class SmoothCamInterpolation extends CamInterpolation {
     }
     
     @Override
-    public <T extends VecNd> Interpolation<T> create(CamScene scene, T before, List<T> points, T after, CamAttribute<T> attribute) {
-        return new CosineInterpolation<T>(points);
+    public <T extends VecNd> Interpolation<T> create(double[] times, CamScene scene, T before, List<T> points, T after, CamAttribute<T> attribute) {
+        return new CosineInterpolation<T>(times, points);
     }
     
 }

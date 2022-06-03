@@ -16,8 +16,8 @@ public class HermiteCamInterpolation extends CamInterpolation {
     }
     
     @Override
-    public <T extends VecNd> Interpolation<T> create(CamScene scene, T before, List<T> points, T after, CamAttribute<T> attribute) {
-        return new HermiteInterpolation<T>(before, points, after);
+    public <T extends VecNd> Interpolation<T> create(double[] times, CamScene scene, T before, List<T> points, T after, CamAttribute<T> attribute) {
+        return new HermiteInterpolation<T>(times, before, points, after);
     }
     
 }

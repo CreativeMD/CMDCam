@@ -16,8 +16,8 @@ public class CubicCamInterpolation extends CamInterpolation {
     }
     
     @Override
-    public <T extends VecNd> Interpolation<T> create(CamScene scene, T before, List<T> points, T after, CamAttribute<T> attribute) {
-        return new CubicInterpolation<T>(before, points, after);
+    public <T extends VecNd> Interpolation<T> create(double[] times, CamScene scene, T before, List<T> points, T after, CamAttribute<T> attribute) {
+        return new CubicInterpolation<T>(times, before, points, after);
     }
     
 }

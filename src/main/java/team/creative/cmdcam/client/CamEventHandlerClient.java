@@ -26,6 +26,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBloc
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.point.CamPoint;
+import team.creative.cmdcam.common.math.point.CamPoints;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.attribute.CamAttribute;
 import team.creative.cmdcam.common.scene.mode.OutsideMode;
@@ -194,8 +195,9 @@ public class CamEventHandlerClient {
         RenderSystem.lineWidth(1.0F);
         Vec3d color = inter.color.toVec();
         bufferbuilder.begin(Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-        
-        Interpolation<Vec3d> interpolation = inter.create(scene, null, new ArrayList<Vec3d>(scene.points), null, CamAttribute.POSITION);
+        CamPoints points = new CamPoints(scene.points);
+        double[] times = points.createTimes(scene);
+        Interpolation<Vec3d> interpolation = inter.create(times, scene, null, new ArrayList<Vec3d>(scene.points), null, CamAttribute.POSITION);
         for (int i = 0; i < steps; i++) {
             Vec3d pos = interpolation.valueAt(i / steps);
             bufferbuilder.vertex((float) pos.x, (float) pos.y, (float) pos.z).color((float) color.x, (float) color.y, (float) color.z, 1).endVertex();
