@@ -28,6 +28,10 @@ public class CMDCamServer {
         data.set(name, scene);
     }
     
+    public static void markDirty(Level level) {
+        ((ServerLevel) level).getDataStorage().get((x) -> new CamSaveData(x), CamSaveData.DATA_NAME).setDirty();
+    }
+    
     public static boolean removePath(Level level, String name) {
         CamSaveData data = ((ServerLevel) level).getDataStorage().get((x) -> new CamSaveData(x), CamSaveData.DATA_NAME);
         if (data != null)

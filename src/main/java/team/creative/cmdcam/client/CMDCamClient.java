@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
@@ -55,72 +54,71 @@ public class CMDCamClient {
         
         SceneCommandBuilder.scene(cam, processor);
         
-        event.getDispatcher().register(cam.then(LiteralArgumentBuilder.<CommandSourceStack>literal("show")
-                .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
-                    String interpolation = StringArgumentType.getString(x, "interpolation");
-                    CamInterpolation move = CamInterpolation.REGISTRY.get(interpolation);
-                    if (move != null) {
-                        move.isRenderingEnabled = true;
-                        x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.show", interpolation), false);
-                    } else if (interpolation.equalsIgnoreCase("all")) {
-                        for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
-                            movement.isRenderingEnabled = true;
-                        x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.show_all"), false);
-                    }
-                    return 0;
-                }))).then(LiteralArgumentBuilder.<CommandSourceStack>literal("hide")
-                        .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
-                            String interpolation = StringArgumentType.getString(x, "interpolation");
-                            CamInterpolation move = CamInterpolation.REGISTRY.get(interpolation);
-                            if (move != null) {
-                                move.isRenderingEnabled = false;
-                                x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.hide", interpolation), false);
-                            } else if (interpolation.equalsIgnoreCase("all")) {
-                                for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
-                                    movement.isRenderingEnabled = false;
-                                x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.hide_all"), false);
-                            }
-                            return 0;
-                        })))
-                .then(LiteralArgumentBuilder.<CommandSourceStack>literal("list").executes((x) -> {
-                    if (CMDCamClient.serverAvailable) {
-                        x.getSource().sendFailure(new TranslatableComponent("scenes.list_fail"));
-                        return 0;
-                    }
-                    x.getSource().sendSuccess(new TranslatableComponent("scenes.list", savedPaths.size(), String.join(", ", savedPaths.keySet())), true);
-                    return 0;
-                })).then(LiteralArgumentBuilder.<CommandSourceStack>literal("load")
-                        .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("path", StringArgumentType.string()).executes((x) -> {
-                            String pathArg = StringArgumentType.getString(x, "path");
-                            if (CMDCamClient.serverAvailable)
-                                CMDCam.NETWORK.sendToServer(new GetPathPacket(pathArg));
-                            else {
-                                CamScene scene = CMDCamClient.savedPaths.get(pathArg);
-                                if (scene != null) {
-                                    set(scene);
-                                    x.getSource().sendSuccess(new TranslatableComponent("scenes.load", pathArg), false);
-                                } else
-                                    x.getSource().sendFailure(new TranslatableComponent("scenes.load_fail", pathArg));
-                            }
-                            return 0;
-                        })))
-                .then(LiteralArgumentBuilder.<CommandSourceStack>literal("save")
-                        .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("path", StringArgumentType.string()).executes((x) -> {
-                            String pathArg = StringArgumentType.getString(x, "path");
-                            try {
-                                CamScene scene = CMDCamClient.createScene();
-                                
-                                if (CMDCamClient.serverAvailable)
-                                    CMDCam.NETWORK.sendToServer(new SetPathPacket(pathArg, scene));
-                                else {
-                                    CMDCamClient.savedPaths.put(pathArg, scene);
-                                    x.getSource().sendSuccess(new TranslatableComponent("scenes.save", pathArg), false);
-                                }
-                            } catch (PathParseException e) {
-                                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
-                            }
-                            return 0;
-                        }))));
+        event.getDispatcher().register(cam.then(Commands.literal("stop").executes(x -> {
+            CMDCamClient.stop();
+            return 0;
+        })).then(Commands.literal("show").then(Commands.argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
+            String interpolation = StringArgumentType.getString(x, "interpolation");
+            CamInterpolation move = CamInterpolation.REGISTRY.get(interpolation);
+            if (move != null) {
+                move.isRenderingEnabled = true;
+                x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.show", interpolation), false);
+            } else if (interpolation.equalsIgnoreCase("all")) {
+                for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
+                    movement.isRenderingEnabled = true;
+                x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.show_all"), false);
+            }
+            return 0;
+        }))).then(Commands.literal("hide").then(Commands.argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) ->
+        
+        {
+            String interpolation = StringArgumentType.getString(x, "interpolation");
+            CamInterpolation move = CamInterpolation.REGISTRY.get(interpolation);
+            if (move != null) {
+                move.isRenderingEnabled = false;
+                x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.hide", interpolation), false);
+            } else if (interpolation.equalsIgnoreCase("all")) {
+                for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
+                    movement.isRenderingEnabled = false;
+                x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.hide_all"), false);
+            }
+            return 0;
+        }))).then(Commands.literal("list").executes((x) -> {
+            if (CMDCamClient.serverAvailable) {
+                x.getSource().sendFailure(new TranslatableComponent("scenes.list_fail"));
+                return 0;
+            }
+            x.getSource().sendSuccess(new TranslatableComponent("scenes.list", savedPaths.size(), String.join(", ", savedPaths.keySet())), true);
+            return 0;
+        })).then(Commands.literal("load").then(Commands.argument("path", StringArgumentType.string()).executes((x) -> {
+            String pathArg = StringArgumentType.getString(x, "path");
+            if (CMDCamClient.serverAvailable)
+                CMDCam.NETWORK.sendToServer(new GetPathPacket(pathArg));
+            else {
+                CamScene scene = CMDCamClient.savedPaths.get(pathArg);
+                if (scene != null) {
+                    set(scene);
+                    x.getSource().sendSuccess(new TranslatableComponent("scenes.load", pathArg), false);
+                } else
+                    x.getSource().sendFailure(new TranslatableComponent("scenes.load_fail", pathArg));
+            }
+            return 0;
+        }))).then(Commands.literal("save").then(Commands.argument("path", StringArgumentType.string()).executes((x) -> {
+            String pathArg = StringArgumentType.getString(x, "path");
+            try {
+                CamScene scene = CMDCamClient.createScene();
+                
+                if (CMDCamClient.serverAvailable)
+                    CMDCam.NETWORK.sendToServer(new SetPathPacket(pathArg, scene));
+                else {
+                    CMDCamClient.savedPaths.put(pathArg, scene);
+                    x.getSource().sendSuccess(new TranslatableComponent("scenes.save", pathArg), false);
+                }
+            } catch (PathParseException e) {
+                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
+            }
+            return 0;
+        }))));
     }
     
     public static void renderBefore(RenderPlayerEvent.Pre event) {}

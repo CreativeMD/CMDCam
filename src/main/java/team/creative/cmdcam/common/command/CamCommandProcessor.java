@@ -27,6 +27,6 @@ public interface CamCommandProcessor {
     
     public void teleport(CommandContext<CommandSourceStack> context, int index);
     
-    public void stop(CommandContext<CommandSourceStack> context);
+    public void markDirty(CommandContext<CommandSourceStack> context);
     
 }

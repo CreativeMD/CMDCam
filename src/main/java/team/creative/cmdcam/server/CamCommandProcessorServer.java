@@ -16,7 +16,6 @@ import team.creative.cmdcam.client.PathParseException;
 import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.packet.StartPathPacket;
-import team.creative.cmdcam.common.packet.StopPathPacket;
 import team.creative.cmdcam.common.packet.TeleportPathPacket;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.creativecore.common.network.CreativePacket;
@@ -86,10 +85,8 @@ public class CamCommandProcessorServer implements CamCommandProcessor {
     }
     
     @Override
-    public void stop(CommandContext<CommandSourceStack> context) {
-        CreativePacket packet = new StopPathPacket();
-        for (ServerPlayer player : getPlayers(context))
-            CMDCam.NETWORK.sendToClient(packet, player);
+    public void markDirty(CommandContext<CommandSourceStack> context) {
+        CMDCamServer.markDirty(context.getSource().getLevel());
     }
     
 }

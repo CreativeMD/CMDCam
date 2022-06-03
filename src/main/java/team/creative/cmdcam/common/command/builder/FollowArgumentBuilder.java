@@ -32,6 +32,7 @@ public class FollowArgumentBuilder extends ArgumentBuilder<CommandSourceStack, F
                 .then(Commands.literal("step").then(Commands.argument("div", DoubleArgumentType.doubleArg(1)).executes(x -> {
                     double div = DoubleArgumentType.getDouble(x, "div");
                     processor.getScene(x).getConfig(attribute).div = div;
+                    processor.markDirty(x);
                     x.getSource().sendSuccess(new TranslatableComponent("scene.follow.div", attribute.name(), div), false);
                     return 0;
                 })));

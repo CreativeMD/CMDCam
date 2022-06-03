@@ -55,8 +55,6 @@ public class CamCommandProcessorClient implements CamCommandProcessor {
     }
     
     @Override
-    public void stop(CommandContext<CommandSourceStack> context) {
-        CMDCamClient.stop();
-    }
+    public void markDirty(CommandContext<CommandSourceStack> context) {}
     
 }

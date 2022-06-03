@@ -38,25 +38,30 @@ public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, T
     public CommandNode<CommandSourceStack> build() {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal(literal).then(Commands.literal("none").executes(x -> {
             processor.getScene(x).lookTarget = null;
+            processor.markDirty(x);
             x.getSource().sendSuccess(new TranslatableComponent("scene.look.target.remove"), false);
             return 0;
         })).then(Commands.literal("self").executes(x -> {
             processor.getScene(x).lookTarget = new CamTarget.SelfTarget();
+            processor.markDirty(x);
             x.getSource().sendSuccess(new TranslatableComponent("scene.look.target.self"), false);
             return 0;
         })).then(Commands.literal("player").then(Commands.argument("player", EntityArgument.player()).executes(x -> {
             Player player = EntityArgument.getPlayer(x, "player");
             processor.getScene(x).lookTarget = new CamTarget.PlayerTarget(player);
+            processor.markDirty(x);
             x.getSource().sendSuccess(new TranslatableComponent("scene.look.target.player", player.getScoreboardName()), false);
             return 0;
         }))).then(Commands.literal("entity").then(Commands.argument("entity", EntityArgument.entity()).executes(x -> {
             Entity entity = EntityArgument.getEntity(x, "entity");
             processor.getScene(x).lookTarget = new CamTarget.EntityTarget(entity);
+            processor.markDirty(x);
             x.getSource().sendSuccess(new TranslatableComponent("scene.look.target.entity", entity.getStringUUID()), false);
             return 0;
         }))).then(Commands.literal("pos").then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(x -> {
             BlockPos pos = BlockPosArgument.getLoadedBlockPos(x, "pos");
             processor.getScene(x).lookTarget = new CamTarget.BlockTarget(pos);
+            processor.markDirty(x);
             x.getSource().sendSuccess(new TranslatableComponent("scene.look.target.pos", pos.toShortString()), false);
             return 0;
         })));

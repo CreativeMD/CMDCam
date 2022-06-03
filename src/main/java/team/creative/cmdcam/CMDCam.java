@@ -10,10 +10,12 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,6 +44,7 @@ import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.server.CMDCamServer;
 import team.creative.cmdcam.server.CamEventHandler;
 import team.creative.creativecore.common.network.CreativeNetwork;
+import team.creative.creativecore.common.network.CreativePacket;
 
 @Mod(value = CMDCam.MODID)
 public class CMDCam {
@@ -88,7 +91,12 @@ public class CMDCam {
         SceneCommandBuilder.scene(get, CMDCamServer.PROCESSOR);
         camServer.then(get);
         
-        event.getServer().getCommands().getDispatcher().register(camServer.then(Commands.literal("list").executes((x) -> {
+        event.getServer().getCommands().getDispatcher().register(camServer.then(Commands.literal("stop").then(Commands.argument("players", EntityArgument.players()).executes(x -> {
+            CreativePacket packet = new StopPathPacket();
+            for (ServerPlayer player : EntityArgument.getPlayers(x, "players"))
+                CMDCam.NETWORK.sendToClient(packet, player);
+            return 0;
+        }))).then(Commands.literal("list").executes((x) -> {
             Collection<String> names = CMDCamServer.getSavedPaths(x.getSource().getLevel());
             x.getSource().sendSuccess(new TranslatableComponent("scenes.list", names.size(), String.join(", ", names)), true);
             return 0;
