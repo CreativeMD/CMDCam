@@ -5,17 +5,15 @@ import java.util.Collection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
-import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,16 +31,17 @@ import team.creative.cmdcam.common.command.argument.CamModeArgument;
 import team.creative.cmdcam.common.command.argument.DurationArgument;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument.AllInterpolationArgument;
+import team.creative.cmdcam.common.command.builder.SceneCommandBuilder;
 import team.creative.cmdcam.common.packet.ConnectPacket;
 import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
 import team.creative.cmdcam.common.packet.StartPathPacket;
 import team.creative.cmdcam.common.packet.StopPathPacket;
+import team.creative.cmdcam.common.packet.TeleportPathPacket;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.server.CMDCamServer;
 import team.creative.cmdcam.server.CamEventHandler;
 import team.creative.creativecore.common.network.CreativeNetwork;
-import team.creative.creativecore.common.network.CreativePacket;
 
 @Mod(value = CMDCam.MODID)
 public class CMDCam {
@@ -72,6 +71,7 @@ public class CMDCam {
         NETWORK.registerType(SetPathPacket.class, SetPathPacket::new);
         NETWORK.registerType(StartPathPacket.class, StartPathPacket::new);
         NETWORK.registerType(StopPathPacket.class, StopPathPacket::new);
+        NETWORK.registerType(TeleportPathPacket.class, TeleportPathPacket::new);
         
         ArgumentTypes.register("duration", DurationArgument.class, new EmptyArgumentSerializer<>(() -> DurationArgument.duration()));
         ArgumentTypes.register("cameramode", CamModeArgument.class, new EmptyArgumentSerializer<>(() -> CamModeArgument.mode()));
@@ -82,90 +82,32 @@ public class CMDCam {
     }
     
     private void serverStarting(final ServerStartingEvent event) {
-        event.getServer().getCommands().getDispatcher().register(Commands.literal("cam-server").executes((x) -> {
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server start <player> <path> [time|ms|s|m|h|d] [loops (-1 -> endless)] " + ChatFormatting.RED + "starts the animation"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server stop <player> " + ChatFormatting.RED + "stops the animation"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server list " + ChatFormatting.RED + "lists all saved paths"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server remove <name> " + ChatFormatting.RED + "removes the given path"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam-server clear " + ChatFormatting.RED + "clears all saved paths"), false);
-            return 0;
-        }).then(Commands.literal("start").then(Commands.argument("players", EntityArgument.players()).then(Commands.argument("name", StringArgumentType.string()).executes((x) -> {
-            Collection<ServerPlayer> players = EntityArgument.getPlayers(x, "players");
-            if (players.isEmpty())
-                return 0;
-            String pathName = StringArgumentType.getString(x, "name");
-            CamScene scene = CMDCamServer.get(x.getSource().getLevel(), pathName);
-            if (scene != null) {
-                CreativePacket packet = new StartPathPacket(scene);
-                for (ServerPlayer player : players)
-                    CMDCam.NETWORK.sendToClient(packet, player);
-            } else
-                x.getSource().sendSuccess(new TextComponent("Path '" + pathName + "' could not be found!"), true);
-            return 0;
-        }).then(Commands.argument("duration", DurationArgument.duration()).executes((x) -> {
-            Collection<ServerPlayer> players = EntityArgument.getPlayers(x, "players");
-            if (players.isEmpty())
-                return 0;
-            String pathName = StringArgumentType.getString(x, "name");
-            CamScene scene = CMDCamServer.get(x.getSource().getLevel(), pathName);
-            if (scene != null) {
-                scene = scene.copy();
-                long duration = DurationArgument.getDuration(x, "duration");
-                if (duration > 0)
-                    scene.duration = duration;
-                CreativePacket packet = new StartPathPacket(scene);
-                for (ServerPlayer player : players)
-                    CMDCam.NETWORK.sendToClient(packet, player);
-            } else
-                x.getSource().sendSuccess(new TextComponent("Path '" + pathName + "' could not be found!"), true);
-            return 0;
-        }).then(Commands.argument("loop", IntegerArgumentType.integer(-1)).executes((x) -> {
-            Collection<ServerPlayer> players = EntityArgument.getPlayers(x, "players");
-            if (players.isEmpty())
-                return 0;
-            String pathName = StringArgumentType.getString(x, "name");
-            CamScene scene = CMDCamServer.get(x.getSource().getLevel(), pathName);
-            if (scene != null) {
-                scene = scene.copy();
-                long duration = DurationArgument.getDuration(x, "duration");
-                if (duration > 0)
-                    scene.duration = duration;
-                
-                scene.loop = IntegerArgumentType.getInteger(x, "loop");
-                CreativePacket packet = new StartPathPacket(scene);
-                for (ServerPlayer player : players)
-                    CMDCam.NETWORK.sendToClient(packet, player);
-            } else
-                x.getSource().sendSuccess(new TextComponent("Path '" + pathName + "' could not be found!"), true);
-            return 0;
-        })))))).then(Commands.literal("stop").then(Commands.argument("players", EntityArgument.players()).executes((x) -> {
-            CreativePacket packet = new StopPathPacket();
-            for (ServerPlayer player : EntityArgument.getPlayers(x, "players"))
-                CMDCam.NETWORK.sendToClient(packet, player);
-            return 0;
-        }))).then(Commands.literal("list").executes((x) -> {
+        LiteralArgumentBuilder<CommandSourceStack> camServer = Commands.literal("cam-server");
+        SceneCommandBuilder.scene(camServer, CMDCamServer.PROCESSOR);
+        
+        event.getServer().getCommands().getDispatcher().register(camServer.then(Commands.literal("list").executes((x) -> {
             Collection<String> names = CMDCamServer.getSavedPaths(x.getSource().getLevel());
-            String output = "There are " + names.size() + " path(s) in total. ";
-            for (String key : names) {
-                output += key + ", ";
-            }
-            x.getSource().sendSuccess(new TextComponent(output), true);
+            x.getSource().sendSuccess(new TranslatableComponent("scenes.list", names.size(), String.join(", ", names)), true);
             return 0;
         })).then(Commands.literal("clear").executes((x) -> {
             CMDCamServer.clearPaths(x.getSource().getLevel());
-            x.getSource().sendSuccess(new TextComponent("Removed all existing paths (in this world)!"), true);
+            x.getSource().sendSuccess(new TranslatableComponent("scenes.clear"), true);
             return 0;
         })).then(Commands.literal("remove").then(Commands.argument("name", StringArgumentType.string()).executes((x) -> {
-            String path = StringArgumentType.getString(x, "name");
-            if (CMDCamServer.removePath(x.getSource().getLevel(), path))
-                x.getSource().sendSuccess(new TextComponent("Path '" + path + "' has been removed!"), true);
+            String name = StringArgumentType.getString(x, "name");
+            if (CMDCamServer.removePath(x.getSource().getLevel(), name))
+                x.getSource().sendSuccess(new TranslatableComponent("scene.remove", name), true);
             else
-                x.getSource().sendSuccess(new TextComponent("Path '" + path + "' could not be found!"), true);
+                x.getSource().sendFailure(new TranslatableComponent("scene.remove_fail", name));
+            return 0;
+        }))).then(Commands.literal("create").then(Commands.argument("name", StringArgumentType.string()).executes((x) -> {
+            String name = StringArgumentType.getString(x, "name");
+            if (CMDCamServer.get(x.getSource().getLevel(), name) != null)
+                x.getSource().sendSuccess(new TranslatableComponent("scene.exists", name), true);
+            else {
+                CMDCamServer.set(x.getSource().getLevel(), name, CamScene.createDefault());
+                x.getSource().sendSuccess(new TranslatableComponent("scene.create", name), true);
+            }
             return 0;
         }))));
     }

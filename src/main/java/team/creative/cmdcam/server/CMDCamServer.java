@@ -10,6 +10,8 @@ import team.creative.cmdcam.common.scene.CamScene;
 
 public class CMDCamServer {
     
+    public static final CamCommandProcessorServer PROCESSOR = new CamCommandProcessorServer();
+    
     public static CamScene get(Level level, String name) {
         CamSaveData data = ((ServerLevel) level).getDataStorage().get((x) -> new CamSaveData(x), CamSaveData.DATA_NAME);
         if (data != null)

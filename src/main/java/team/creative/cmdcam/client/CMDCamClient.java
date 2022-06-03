@@ -1,38 +1,29 @@
 package team.creative.cmdcam.client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import team.creative.cmdcam.CMDCam;
-import team.creative.cmdcam.common.command.argument.CamModeArgument;
-import team.creative.cmdcam.common.command.argument.DurationArgument;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
-import team.creative.cmdcam.common.command.builder.FollowArgumentBuilder;
-import team.creative.cmdcam.common.command.builder.TargetArgumentBuilder;
+import team.creative.cmdcam.common.command.builder.SceneCommandBuilder;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
 import team.creative.cmdcam.common.scene.CamScene;
-import team.creative.cmdcam.common.scene.attribute.CamAttribute;
-import team.creative.cmdcam.common.scene.mode.CamMode;
-import team.creative.cmdcam.common.scene.mode.DefaultMode;
 
 public class CMDCamClient {
     
@@ -41,7 +32,7 @@ public class CMDCamClient {
     
     public static HashMap<String, CamScene> savedPaths = new HashMap<>();
     
-    private static final CamScene scene = new CamScene(10000, 0, "default", new ArrayList<>(), CamInterpolation.HERMITE);
+    private static final CamScene scene = CamScene.createDefault();
     private static CamScene playing;
     private static boolean serverAvailable = false;
     private static boolean hideGuiCache;
@@ -60,173 +51,43 @@ public class CMDCamClient {
     }
     
     public static void commands(RegisterClientCommandsEvent event) {
-        event.getDispatcher().register(LiteralArgumentBuilder.<CommandSourceStack>literal("cam").executes((x) -> {
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam add [number] " + ChatFormatting.RED + "register a point at the current position"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam clear " + ChatFormatting.RED + "delete all registered points"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam start [time|ms|s|m|h|d] [loops (-1 -> endless)] " + ChatFormatting.RED + "starts the animation"), false);
-            x.getSource().sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam stop " + ChatFormatting.RED + "stops the animation"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam goto <index> " + ChatFormatting.RED + "tp to the given point"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam set <index> " + ChatFormatting.RED + "updates point to current location"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam remove <index> " + ChatFormatting.RED + "removes the given point"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam target <none:self:player:entity:pos:select> " + ChatFormatting.RED + "set the camera target"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam mode <default:outside> " + ChatFormatting.RED + "set current mode"), false);
-            x.getSource().sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam interpolation <" + String
-                    .join(":", CamInterpolation.REGISTRY.keys()) + "> " + ChatFormatting.RED + "set the camera interpolation"), false);
-            x.getSource().sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam show <all:" + String
-                    .join(":", CamInterpolation.REGISTRY.keys()) + "> " + ChatFormatting.RED + "shows the path using the given interpolation"), false);
-            x.getSource().sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam hide <all:" + String
-                    .join(":", CamInterpolation.REGISTRY.keys()) + "> " + ChatFormatting.RED + "hides the path using the given interpolation"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam save <name> " + ChatFormatting.RED + "saves the current path (including settings) with the given name"), false);
-            x.getSource()
-                    .sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam load <name> " + ChatFormatting.RED + "tries to load the saved path with the given name"), false);
-            x.getSource().sendSuccess(new TextComponent("" + ChatFormatting.BOLD + ChatFormatting.YELLOW + "/cam list " + ChatFormatting.RED + "lists all saved paths"), false);
-            return 0;
-        }).then(Commands.literal("clear").executes((x) -> { // cam clear
-            x.getSource().sendSuccess(new TextComponent("Cleared all registered points!"), false);
-            CMDCamClient.getPoints().clear();
-            return 0;
-        })).then(Commands.literal("add").executes((x) -> { // cam add
-            CMDCamClient.getPoints().add(CamPoint.createLocal());
-            x.getSource().sendSuccess(new TextComponent("Registered " + CMDCamClient.getPoints().size() + ". Point!"), false);
-            return 0;
-        }).then(RequiredArgumentBuilder.<CommandSourceStack, Integer>argument("index", IntegerArgumentType.integer()).executes((x) -> { // cam add <index>
-            Integer index = IntegerArgumentType.getInteger(x, "index");
-            index--;
-            if (index >= 0 && index < CMDCamClient.getPoints().size()) {
-                CMDCamClient.getPoints().add(index, CamPoint.createLocal());
-                x.getSource().sendSuccess(new TextComponent("Inserted " + index + ". Point!"), false);
-            } else
-                x.getSource().sendFailure(new TextComponent("The given index '" + index + "' is too high/low!"));
-            return 0;
-        }))).then(LiteralArgumentBuilder.<CommandSourceStack>literal("start").executes((x) -> { // cam start
-            try {
-                CMDCamClient.start(CMDCamClient.createScene());
-            } catch (PathParseException e) {
-                x.getSource().sendFailure(new TextComponent(e.getMessage()));
-            }
-            return 0;
-        }).then(RequiredArgumentBuilder.<CommandSourceStack, Long>argument("duration", DurationArgument.duration()).executes((x) -> {
-            try {
-                long duration = DurationArgument.getDuration(x, "duration");
-                if (duration > 0)
-                    CMDCamClient.getConfigScene().duration = duration;
-                CMDCamClient.start(CMDCamClient.createScene());
-            } catch (PathParseException e) {
-                x.getSource().sendFailure(new TextComponent(e.getMessage()));
-            }
-            return 0;
-        }).then(RequiredArgumentBuilder.<CommandSourceStack, Integer>argument("loop", IntegerArgumentType.integer(-1)).executes((x) -> {
-            try {
-                long duration = DurationArgument.getDuration(x, "duration");
-                if (duration > 0)
-                    CMDCamClient.getConfigScene().duration = duration;
-                
-                CMDCamClient.getConfigScene().loop = IntegerArgumentType.getInteger(x, "loop");
-                CMDCamClient.start(CMDCamClient.createScene());
-            } catch (PathParseException e) {
-                x.getSource().sendFailure(new TextComponent(e.getMessage()));
-            }
-            return 0;
-        })))).then(LiteralArgumentBuilder.<CommandSourceStack>literal("stop").executes((x) -> {
-            CMDCamClient.stop();
-            return 0;
-        })).then(LiteralArgumentBuilder.<CommandSourceStack>literal("remove")
-                .then(RequiredArgumentBuilder.<CommandSourceStack, Integer>argument("index", IntegerArgumentType.integer()).executes((x) -> {
-                    Integer index = IntegerArgumentType.getInteger(x, "index");
-                    index--;
-                    if (index >= 0 && index < CMDCamClient.getPoints().size()) {
-                        CMDCamClient.getPoints().remove((int) index);
-                        x.getSource().sendSuccess(new TextComponent("Removed " + (index + 1) + ". point!"), false);
-                    } else
-                        x.getSource().sendFailure(new TextComponent("The given index '" + index + "' is too high/low!"));
+        LiteralArgumentBuilder<CommandSourceStack> cam = Commands.literal("cam");
+        
+        SceneCommandBuilder.scene(cam, processor);
+        
+        event.getDispatcher().register(cam.then(LiteralArgumentBuilder.<CommandSourceStack>literal("show")
+                .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
+                    String interpolation = StringArgumentType.getString(x, "interpolation");
+                    CamInterpolation move = CamInterpolation.REGISTRY.get(interpolation);
+                    if (move != null) {
+                        move.isRenderingEnabled = true;
+                        x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.show", interpolation), false);
+                    } else if (interpolation.equalsIgnoreCase("all")) {
+                        for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
+                            movement.isRenderingEnabled = true;
+                        x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.show_all"), false);
+                    }
                     return 0;
-                }))).then(LiteralArgumentBuilder.<CommandSourceStack>literal("set")
-                        .then(RequiredArgumentBuilder.<CommandSourceStack, Integer>argument("index", IntegerArgumentType.integer()).executes((x) -> {
-                            Integer index = IntegerArgumentType.getInteger(x, "index");
-                            index--;
-                            if (index >= 0 && index < CMDCamClient.getPoints().size()) {
-                                CMDCamClient.getPoints().set(index, CamPoint.createLocal());
-                                x.getSource().sendSuccess(new TextComponent("Updated " + (index + 1) + ". point!"), false);
-                            } else
-                                x.getSource().sendFailure(new TextComponent("The given index '" + index + "' is too high/low!"));
-                            return 0;
-                        })))
-                .then(LiteralArgumentBuilder.<CommandSourceStack>literal("goto")
-                        .then(RequiredArgumentBuilder.<CommandSourceStack, Integer>argument("index", IntegerArgumentType.integer()).executes((x) -> {
-                            Integer index = IntegerArgumentType.getInteger(x, "index");
-                            index--;
-                            if (index >= 0 && index < CMDCamClient.getPoints().size()) {
-                                CamPoint point = CMDCamClient.getPoints().get(index);
-                                mc.player.getAbilities().flying = true;
-                                
-                                CamEventHandlerClient.roll = (float) point.roll;
-                                mc.options.fov = (float) point.zoom;
-                                mc.player.absMoveTo(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
-                                mc.player.absMoveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
-                            } else
-                                x.getSource().sendFailure(new TextComponent("The given index '" + (index + 1) + "' is too high/low!"));
-                            return 0;
-                        })))
-                .then(LiteralArgumentBuilder.<CommandSourceStack>literal("mode")
-                        .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("mode", CamModeArgument.mode()).executes((x) -> {
-                            String mode = StringArgumentType.getString(x, "mode");
-                            CMDCamClient.getConfigScene().mode = CamMode.REGISTRY.createSafe(DefaultMode.class, mode, CMDCamClient.getConfigScene());
-                            x.getSource().sendSuccess(new TextComponent("Changed to " + mode + " path!"), false);
-                            return 0;
-                        })))
-                .then(new TargetArgumentBuilder("target", processor)).then(new FollowArgumentBuilder(CamAttribute.PITCH, processor))
-                .then(new FollowArgumentBuilder(CamAttribute.YAW, processor)).then(new FollowArgumentBuilder(CamAttribute.POSITION, processor))
-                .then(LiteralArgumentBuilder.<CommandSourceStack>literal("interpolation")
-                        .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("interpolation", InterpolationArgument.interpolation()).executes((x) -> {
-                            String interpolation = StringArgumentType.getString(x, "interpolation");
-                            CMDCamClient.getConfigScene().interpolation = CamInterpolation.REGISTRY.get(interpolation);
-                            x.getSource().sendSuccess(new TextComponent("Interpolation is set to '" + interpolation + "'!"), false);
-                            return 0;
-                        })))
-                .then(LiteralArgumentBuilder.<CommandSourceStack>literal("show")
-                        .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
-                            String interpolation = StringArgumentType.getString(x, "interpolation");
-                            CamInterpolation move = CamInterpolation.REGISTRY.get(interpolation);
-                            if (move != null) {
-                                move.isRenderingEnabled = true;
-                                x.getSource().sendSuccess(new TextComponent("Showing '" + interpolation + "' interpolation path!"), false);
-                            } else if (interpolation.equalsIgnoreCase("all")) {
-                                for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
-                                    movement.isRenderingEnabled = true;
-                                x.getSource().sendSuccess(new TextComponent("Showing all interpolation paths!"), false);
-                            }
-                            return 0;
-                        })))
-                .then(LiteralArgumentBuilder.<CommandSourceStack>literal("hide")
+                }))).then(LiteralArgumentBuilder.<CommandSourceStack>literal("hide")
                         .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
                             String interpolation = StringArgumentType.getString(x, "interpolation");
                             CamInterpolation move = CamInterpolation.REGISTRY.get(interpolation);
                             if (move != null) {
                                 move.isRenderingEnabled = false;
-                                x.getSource().sendSuccess(new TextComponent("Hiding '" + interpolation + "' interpolation path!"), false);
+                                x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.hide", interpolation), false);
                             } else if (interpolation.equalsIgnoreCase("all")) {
                                 for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
                                     movement.isRenderingEnabled = false;
-                                x.getSource().sendSuccess(new TextComponent("Hiding all interpolation paths!"), false);
+                                x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.hide_all"), false);
                             }
                             return 0;
                         })))
                 .then(LiteralArgumentBuilder.<CommandSourceStack>literal("list").executes((x) -> {
                     if (CMDCamClient.serverAvailable) {
-                        x.getSource().sendSuccess(new TextComponent("Use /cam-server list instead!"), false);
+                        x.getSource().sendFailure(new TranslatableComponent("scenes.list_fail"));
                         return 0;
                     }
-                    x.getSource().sendSuccess(new TextComponent("There are " + CMDCamClient.savedPaths.size() + " path(s) in total. " + String
-                            .join(", ", CMDCamClient.savedPaths.keySet())), false);
+                    x.getSource().sendSuccess(new TranslatableComponent("scenes.list", savedPaths.size(), String.join(", ", savedPaths.keySet())), true);
                     return 0;
                 })).then(LiteralArgumentBuilder.<CommandSourceStack>literal("load")
                         .then(RequiredArgumentBuilder.<CommandSourceStack, String>argument("path", StringArgumentType.string()).executes((x) -> {
@@ -237,9 +98,9 @@ public class CMDCamClient {
                                 CamScene scene = CMDCamClient.savedPaths.get(pathArg);
                                 if (scene != null) {
                                     set(scene);
-                                    x.getSource().sendSuccess(new TextComponent("Loaded path '" + pathArg + "' successfully!"), false);
+                                    x.getSource().sendSuccess(new TranslatableComponent("scenes.load", pathArg), false);
                                 } else
-                                    x.getSource().sendFailure(new TextComponent("Could not find path '" + pathArg + "'!"));
+                                    x.getSource().sendFailure(new TranslatableComponent("scenes.load_fail", pathArg));
                             }
                             return 0;
                         })))
@@ -253,10 +114,10 @@ public class CMDCamClient {
                                     CMDCam.NETWORK.sendToServer(new SetPathPacket(pathArg, scene));
                                 else {
                                     CMDCamClient.savedPaths.put(pathArg, scene);
-                                    x.getSource().sendSuccess(new TextComponent("Saved path '" + pathArg + "' successfully!"), false);
+                                    x.getSource().sendSuccess(new TranslatableComponent("scenes.save", pathArg), false);
                                 }
                             } catch (PathParseException e) {
-                                x.getSource().sendFailure(new TextComponent(e.getMessage()));
+                                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
                             }
                             return 0;
                         }))));
@@ -331,12 +192,22 @@ public class CMDCamClient {
     
     public static CamScene createScene() throws PathParseException {
         if (scene.points.size() < 1)
-            throw new PathParseException("You have to register at least 1 point!");
+            throw new PathParseException("scene.create_fail");
         
         CamScene newScene = scene.copy();
         if (newScene.points.size() == 1)
             newScene.points.add(newScene.points.get(0));
         return newScene;
+    }
+    
+    public static void teleportTo(CamPoint point) {
+        Minecraft mc = Minecraft.getInstance();
+        mc.player.getAbilities().flying = true;
+        
+        CamEventHandlerClient.roll = (float) point.roll;
+        mc.options.fov = (float) point.zoom;
+        mc.player.absMoveTo(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
+        mc.player.absMoveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
     }
     
 }

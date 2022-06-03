@@ -2,7 +2,7 @@ package team.creative.cmdcam.common.packet;
 
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import team.creative.cmdcam.client.CMDCamClient;
@@ -32,7 +32,7 @@ public class SetPathPacket extends CreativePacket {
         try {
             CamScene scene = new CamScene(nbt);
             CMDCamClient.set(scene);
-            player.sendMessage(new TextComponent("Loaded path '" + id + "' successfully!"), Util.NIL_UUID);
+            player.sendMessage(new TranslatableComponent("scene.load", id), Util.NIL_UUID);
         } catch (RegistryException e) {
             e.printStackTrace();
         }
@@ -45,12 +45,12 @@ public class SetPathPacket extends CreativePacket {
             CamScene path = new CamScene(nbt);
             if (player.hasPermissions(4)) {
                 CMDCamServer.set(player.level, id, path);
-                player.sendMessage(new TextComponent("Saved path '" + id + "' successfully!"), Util.NIL_UUID);
+                player.sendMessage(new TranslatableComponent("scene.save", id), Util.NIL_UUID);
             } else
-                player.sendMessage(new TextComponent("You do not have the permission to edit the path list!"), Util.NIL_UUID);
+                player.sendMessage(new TranslatableComponent("scene.save_perm", id), Util.NIL_UUID);
         } catch (RegistryException e) {
             e.printStackTrace();
-            player.sendMessage(new TextComponent("Something went wrog when parsing the scene"), Util.NIL_UUID);
+            player.sendMessage(new TranslatableComponent("scenes.save_fail"), Util.NIL_UUID);
         }
         
     }

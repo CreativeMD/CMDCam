@@ -13,7 +13,7 @@ import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.debug.DebugRenderer;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
@@ -47,6 +47,8 @@ public class CamEventHandlerClient {
     public static long lastRenderTime;
     
     private static boolean selectEntityMode = false;
+    
+    public static Entity camera = null;
     
     public static void startSelectionMode() {
         selectEntityMode = true;
@@ -97,7 +99,7 @@ public class CamEventHandlerClient {
                     
                     if (KeyHandler.pointKey.consumeClick()) {
                         CMDCamClient.getPoints().add(CamPoint.createLocal());
-                        mc.player.sendMessage(new TextComponent("Registered " + CMDCamClient.getPoints().size() + ". Point!"), Util.NIL_UUID);
+                        mc.player.sendMessage(new TranslatableComponent("scene.add", CMDCamClient.getPoints().size()), Util.NIL_UUID);
                     }
                     
                 }
@@ -109,13 +111,13 @@ public class CamEventHandlerClient {
                         try {
                             CMDCamClient.start(CMDCamClient.createScene());
                         } catch (PathParseException e) {
-                            mc.player.sendMessage(new TextComponent(e.getMessage()), Util.NIL_UUID);
+                            mc.player.sendMessage(new TranslatableComponent(e.getMessage()), Util.NIL_UUID);
                         }
                 }
                 
                 while (KeyHandler.clearPoint.consumeClick()) {
                     CMDCamClient.getPoints().clear();
-                    mc.player.sendMessage(new TextComponent("Cleared all registered points!"), Util.NIL_UUID);
+                    mc.player.sendMessage(new TranslatableComponent("scene.clear"), Util.NIL_UUID);
                 }
             }
             mc.options.fov = currentFOV;
@@ -216,18 +218,16 @@ public class CamEventHandlerClient {
         
         if (event instanceof EntityInteract) {
             CMDCamClient.getScene().lookTarget = new CamTarget.EntityTarget(((EntityInteract) event).getTarget());
-            event.getPlayer().sendMessage(new TextComponent("Target is set to " + ((EntityInteract) event).getTarget().getStringUUID() + "."), Util.NIL_UUID);
+            event.getPlayer().sendMessage(new TranslatableComponent("scene.look.target.entity", ((EntityInteract) event).getTarget().getStringUUID()), Util.NIL_UUID);
             selectEntityMode = false;
         }
         
         if (event instanceof RightClickBlock) {
             CMDCamClient.getScene().lookTarget = new CamTarget.BlockTarget(event.getPos());
-            event.getPlayer().sendMessage(new TextComponent("Target is set to " + event.getPos() + "."), Util.NIL_UUID);
+            event.getPlayer().sendMessage(new TranslatableComponent("scene.look.target.pos", event.getPos().toShortString()), Util.NIL_UUID);
             selectEntityMode = false;
         }
     }
-    
-    public static Entity camera = null;
     
     public static void setupMouseHandlerBefore() {
         if (CMDCamClient.isPlaying() && CMDCamClient.getScene().mode instanceof OutsideMode) {

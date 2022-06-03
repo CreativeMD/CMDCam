@@ -14,29 +14,34 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.TranslatableComponent;
+import team.creative.cmdcam.common.math.interpolation.CamPitchMode;
 import team.creative.cmdcam.common.scene.mode.CamMode;
 
-public class CamModeArgument implements ArgumentType<String> {
+public class CamPitchModeArgument implements ArgumentType<CamPitchMode> {
     
-    public static CamModeArgument mode() {
-        return new CamModeArgument();
+    public static CamPitchModeArgument pitchMode() {
+        return new CamPitchModeArgument();
+    }
+    
+    public static CamPitchMode getMode(final CommandContext<?> context, final String name) {
+        return context.getArgument(name, CamPitchMode.class);
     }
     
     @Override
-    public String parse(StringReader reader) throws CommandSyntaxException {
+    public CamPitchMode parse(StringReader reader) throws CommandSyntaxException {
         final int start = reader.getCursor();
         final String result = reader.readString();
-        if (CamMode.REGISTRY.get(result) == null) {
+        try {
+            return CamPitchMode.valueOf(result);
+        } catch (IllegalArgumentException e) {
             reader.setCursor(start);
             throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid mode")), new TranslatableComponent("invalid_mode"));
         }
-        
-        return result;
     }
     
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return context.getSource() instanceof SharedSuggestionProvider ? SharedSuggestionProvider.suggest(CamMode.REGISTRY.keys(), builder) : Suggestions.empty();
+        return context.getSource() instanceof SharedSuggestionProvider ? SharedSuggestionProvider.suggest(CamPitchMode.NAMES, builder) : Suggestions.empty();
     }
     
     @Override

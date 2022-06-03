@@ -26,6 +26,10 @@ import team.creative.creativecore.common.util.registry.exception.RegistryExcepti
 
 public class CamScene {
     
+    public static CamScene createDefault() {
+        return new CamScene(10000, 0, "default", new ArrayList<>(), CamInterpolation.HERMITE);
+    }
+    
     private boolean started = false;
     
     private boolean serverSynced = false;
@@ -58,7 +62,7 @@ public class CamScene {
     
     public CamScene(long duration, int loop, String mode, List<CamPoint> points, CamInterpolation interpolation) {
         this.duration = duration;
-        this.mode = CamMode.REGISTRY.createSafe(DefaultMode.class, mode, this);
+        setMode(mode);
         this.points = points;
         this.interpolation = interpolation;
     }
@@ -67,7 +71,7 @@ public class CamScene {
         this.duration = nbt.getLong("duration");
         this.loop = nbt.getInt("loop");
         
-        this.mode = CamMode.REGISTRY.createSafe(DefaultMode.class, nbt.getString("mode"), this);
+        setMode(nbt.getString("mode"));
         this.interpolation = CamInterpolation.REGISTRY.get(nbt.getString("inter"));
         
         this.lookTarget = nbt.contains("look_target") ? CamTarget.load(nbt.getCompound("look_target")) : null;
@@ -185,7 +189,7 @@ public class CamScene {
     public void set(CamScene scene) {
         this.duration = scene.duration;
         this.loop = scene.loop;
-        this.mode = CamMode.REGISTRY.createSafe(DefaultMode.class, CamMode.REGISTRY.getId(scene.mode), this);
+        setMode(CamMode.REGISTRY.getId(scene.mode));
         this.points = copyPoints();
         this.interpolation = scene.interpolation;
         this.serverSynced = scene.serverSynced;
@@ -197,6 +201,10 @@ public class CamScene {
         this.smoothBeginning = scene.smoothBeginning;
         this.pitchMode = scene.pitchMode;
         this.distanceBasedTiming = scene.distanceBasedTiming;
+    }
+    
+    public void setMode(String mode) {
+        this.mode = CamMode.REGISTRY.createSafe(DefaultMode.class, mode, this);
     }
     
     private List<CamPoint> copyPoints() {

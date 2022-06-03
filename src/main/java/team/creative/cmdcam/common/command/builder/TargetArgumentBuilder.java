@@ -9,7 +9,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -65,7 +64,7 @@ public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, T
         if (processor.canSelectTarget())
             builder.then(Commands.literal("select").executes(x -> {
                 processor.selectTarget();
-                x.getSource().sendSuccess(new TextComponent("scene.look.target.select"), false);
+                x.getSource().sendSuccess(new TranslatableComponent("scene.look.target.select"), false);
                 return 0;
             }));
         
