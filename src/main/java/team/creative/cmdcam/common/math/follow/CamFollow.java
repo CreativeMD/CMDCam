@@ -30,9 +30,13 @@ public abstract class CamFollow<T extends VecNd> {
             if (value >= min && value <= max)
                 continue;
             
-            value += min;
-            value %= max - min;
             value -= min;
+            value %= max - min;
+            if (value < 0)
+                value += max - min;
+            value += min;
+            
+            vec.set(i, value);
         }
     }
     
@@ -49,10 +53,10 @@ public abstract class CamFollow<T extends VecNd> {
                 double max = config.attribute.getMax().get(i);
                 
                 if (valueC > valueT) {
-                    if (valueC - valueT > (max - min) - valueC + min - valueT)
+                    if (valueC - valueT > max - valueC + valueT - min)
                         valueT += max - min;
                 } else if (valueC < valueT) {
-                    if (valueT - valueC > (max - min) - valueT + min - valueC)
+                    if (valueT - valueC > max - valueT + valueC - min)
                         valueT -= max - min;
                 }
                 
