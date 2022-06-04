@@ -39,7 +39,7 @@ public class CamEventHandlerClient {
     public static Minecraft mc = Minecraft.getInstance();
     
     public static final float amountZoom = 0.1F;
-    public static final float amountroll = 0.5F;
+    public static final float amountroll = 1.5F;
     
     public static double defaultFOV = 70;
     public static double currentFOV;
@@ -77,28 +77,29 @@ public class CamEventHandlerClient {
                     CMDCamClient.tickPath(mc.level, event.renderTickTime);
                 } else {
                     CMDCamClient.noTickPath(mc.level, event.renderTickTime);
+                    double timeFactor = (System.nanoTime() - lastRenderTime) / 10000000D;
                     if (KeyHandler.zoomIn.isDown()) {
                         if (mc.player.isCrouching())
-                            currentFOV -= amountZoom * 10;
+                            currentFOV -= timeFactor * amountZoom * 10;
                         else
-                            currentFOV -= amountZoom;
+                            currentFOV -= timeFactor * amountZoom;
                     }
                     
                     if (KeyHandler.zoomOut.isDown()) {
                         if (mc.player.isCrouching())
-                            currentFOV += amountZoom * 10;
+                            currentFOV += timeFactor * amountZoom * 10;
                         else
-                            currentFOV += amountZoom;
+                            currentFOV += timeFactor * amountZoom;
                     }
                     
                     if (KeyHandler.zoomCenter.isDown())
                         currentFOV = defaultFOV;
                     
                     if (KeyHandler.rollLeft.isDown())
-                        roll -= amountroll;
+                        roll -= timeFactor * amountroll;
                     
                     if (KeyHandler.rollRight.isDown())
-                        roll += amountroll;
+                        roll += timeFactor * amountroll;
                     
                     if (KeyHandler.rollCenter.isDown())
                         roll = 0;
