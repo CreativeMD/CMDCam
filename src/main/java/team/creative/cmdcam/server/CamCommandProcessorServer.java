@@ -12,7 +12,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import team.creative.cmdcam.CMDCam;
-import team.creative.cmdcam.client.PathParseException;
+import team.creative.cmdcam.client.SceneException;
 import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.packet.StartPathPacket;
@@ -35,7 +35,7 @@ public class CamCommandProcessorServer implements CamCommandProcessor {
     }
     
     @Override
-    public void selectTarget() {}
+    public void selectTarget(CommandContext<CommandSourceStack> context, boolean look) {}
     
     @Override
     public boolean canCreatePoint(CommandContext<CommandSourceStack> context) {
@@ -66,7 +66,7 @@ public class CamCommandProcessorServer implements CamCommandProcessor {
     }
     
     @Override
-    public void start(CommandContext<CommandSourceStack> context) throws PathParseException {
+    public void start(CommandContext<CommandSourceStack> context) throws SceneException {
         CamScene scene = getScene(context);
         if (scene.points.isEmpty()) {
             context.getSource().sendFailure(new TranslatableComponent("scene.create_fail"));

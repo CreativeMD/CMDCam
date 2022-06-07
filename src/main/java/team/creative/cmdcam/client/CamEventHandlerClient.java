@@ -1,6 +1,7 @@
 package team.creative.cmdcam.client;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -8,13 +9,19 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
+import com.mojang.math.Matrix3f;
+import com.mojang.math.Matrix4f;
 
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
@@ -47,18 +54,20 @@ public class CamEventHandlerClient {
     
     public static long lastRenderTime;
     
-    private static boolean selectEntityMode = false;
+    private static Consumer<CamTarget> selectingTarget = null;
     
     public static Entity camera = null;
     
-    public static void startSelectionMode() {
-        selectEntityMode = true;
+    public static void startSelectionMode(Consumer<CamTarget> selectingTarget) {
+        CamEventHandlerClient.selectingTarget = selectingTarget;
     }
     
     @SubscribeEvent
     public void onRenderTick(RenderTickEvent event) {
-        if (mc.level == null)
+        if (mc.level == null) {
             CMDCamClient.resetServerAvailability();
+            CMDCamClient.resetTargetMarker();
+        }
         if (event.phase == Phase.END)
             return;
         
@@ -105,7 +114,16 @@ public class CamEventHandlerClient {
                         roll = 0;
                     
                     while (KeyHandler.pointKey.consumeClick()) {
-                        CMDCamClient.getPoints().add(CamPoint.createLocal());
+                        CamPoint point = CamPoint.createLocal();
+                        if (CMDCamClient.getScene().posTarget != null) {
+                            Vec3d vec = CMDCamClient.getTargetMarker();
+                            if (vec == null) {
+                                mc.player.sendMessage(new TranslatableComponent("scene.follow.no_marker", CMDCamClient.getPoints().size()), Util.NIL_UUID);
+                                continue;
+                            }
+                            point.sub(vec);
+                        }
+                        CMDCamClient.getPoints().add(point);
                         mc.player.sendMessage(new TranslatableComponent("scene.add", CMDCamClient.getPoints().size()), Util.NIL_UUID);
                     }
                 }
@@ -116,7 +134,7 @@ public class CamEventHandlerClient {
                     else
                         try {
                             CMDCamClient.start(CMDCamClient.createScene());
-                        } catch (PathParseException e) {
+                        } catch (SceneException e) {
                             mc.player.sendMessage(new TranslatableComponent(e.getMessage()), Util.NIL_UUID);
                         }
                 }
@@ -133,6 +151,36 @@ public class CamEventHandlerClient {
     
     @SubscribeEvent
     public void worldRender(RenderLevelLastEvent event) {
+        if (CMDCamClient.isPlaying())
+            return;
+        RenderSystem.enableBlend();
+        RenderSystem
+                .blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.disableTexture();
+        RenderSystem.depthMask(false);
+        RenderSystem.enableDepthTest();
+        
+        Vec3 view = mc.gameRenderer.getMainCamera().getPosition();
+        
+        RenderSystem.setProjectionMatrix(event.getProjectionMatrix());
+        PoseStack mat = RenderSystem.getModelViewStack();
+        mat.pushPose();
+        mat.setIdentity();
+        mat.mulPoseMatrix(event.getPoseStack().last().pose());
+        mat.translate(-view.x(), -view.y(), -view.z());
+        
+        RenderSystem.applyModelViewMatrix();
+        
+        RenderSystem.depthMask(false);
+        RenderSystem.disableTexture();
+        
+        if (CMDCamClient.hasTargetMarker()) {
+            CamPoint point = CMDCamClient.getTargetMarker();
+            renderHitbox(mat, mc.renderBuffers().bufferSource()
+                    .getBuffer(RenderType.lines()), new AABB(point.x - 0.3, point.y - 1.62, point.z - 0.3, point.x + 0.3, point.y + 0.18, point.z + 0.3), mc.player
+                            .getEyeHeight(), point, point.calculateViewVector());
+        }
+        
         boolean shouldRender = false;
         for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
             if (movement.isRenderingEnabled) {
@@ -140,27 +188,13 @@ public class CamEventHandlerClient {
                 break;
             }
         
-        if (!CMDCamClient.isPlaying() && shouldRender && CMDCamClient.getPoints().size() > 0) {
-            RenderSystem.enableBlend();
-            RenderSystem
-                    .blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            RenderSystem.disableTexture();
-            RenderSystem.depthMask(false);
-            RenderSystem.enableDepthTest();
-            
-            Vec3 view = mc.gameRenderer.getMainCamera().getPosition();
-            
-            RenderSystem.setProjectionMatrix(event.getProjectionMatrix());
-            PoseStack mat = RenderSystem.getModelViewStack();
-            mat.pushPose();
-            mat.setIdentity();
-            mat.mulPoseMatrix(event.getPoseStack().last().pose());
-            mat.translate(-view.x(), -view.y(), -view.z());
-            
-            RenderSystem.applyModelViewMatrix();
-            
+        if (shouldRender && CMDCamClient.getPoints().size() > 0) {
             for (int i = 0; i < CMDCamClient.getPoints().size(); i++) {
                 CamPoint point = CMDCamClient.getPoints().get(i);
+                if (CMDCamClient.hasTargetMarker()) {
+                    point = point.copy();
+                    point.add(CMDCamClient.getTargetMarker());
+                }
                 
                 DebugRenderer.renderFloatingText((i + 1) + "", point.x + view.x, point.y + 0.2 + view.y, point.z + view.z, -1);
                 DebugRenderer.renderFilledBox(point.x - 0.05, point.y - 0.05, point.z - 0.05, point.x + 0.05, point.y + 0.05, point.z + 0.05, 1, 1, 1, 1);
@@ -170,20 +204,26 @@ public class CamEventHandlerClient {
             }
             
             try {
+                mat.pushPose();
+                //if (CMDCamClient.hasTargetMarker())
+                //mat.translate(CMDCamClient.getTargetMarker().x, CMDCamClient.getTargetMarker().y, CMDCamClient.getTargetMarker().z);
                 CamScene scene = CMDCamClient.createScene();
                 for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
                     if (movement.isRenderingEnabled)
                         renderPath(mat, movement, scene);
-            } catch (PathParseException e) {}
-            
-            mat.popPose();
-            
-            RenderSystem.applyModelViewMatrix();
-            RenderSystem.depthMask(true);
-            RenderSystem.enableTexture();
-            RenderSystem.enableBlend();
+                    
+                mat.popPose();
+            } catch (SceneException e) {}
             
         }
+        
+        mat.popPose();
+        
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableTexture();
+        RenderSystem.enableBlend();
+        
     }
     
     public void renderPath(PoseStack mat, CamInterpolation inter, CamScene scene) {
@@ -205,12 +245,31 @@ public class CamEventHandlerClient {
         Interpolation<Vec3d> interpolation = inter.create(times, scene, null, new ArrayList<Vec3d>(scene.points), null, CamAttribute.POSITION);
         for (int i = 0; i < steps; i++) {
             Vec3d pos = interpolation.valueAt(i / steps);
+            if (CMDCamClient.hasTargetMarker())
+                pos.add(CMDCamClient.getTargetMarker());
             bufferbuilder.vertex((float) pos.x, (float) pos.y, (float) pos.z).color((float) color.x, (float) color.y, (float) color.z, 1).endVertex();
         }
-        bufferbuilder.vertex((float) scene.points.get(scene.points.size() - 1).x, (float) scene.points.get(scene.points.size() - 1).y, (float) scene.points
-                .get(scene.points.size() - 1).z).color((float) color.x, (float) color.y, (float) color.z, 1).endVertex();
+        Vec3d last = scene.points.get(scene.points.size() - 1).copy();
+        if (CMDCamClient.hasTargetMarker())
+            last.add(CMDCamClient.getTargetMarker());
+        bufferbuilder.vertex((float) last.x, (float) last.y, (float) last.z).color((float) color.x, (float) color.y, (float) color.z, 1).endVertex();
         
         tessellator.end();
+    }
+    
+    private static void renderHitbox(PoseStack pMatrixStack, VertexConsumer pBuffer, AABB aabb, float eyeHeight, Vec3d origin, Vec3d view) {
+        LevelRenderer.renderLineBox(pMatrixStack, pBuffer, aabb, 1.0F, 1.0F, 1.0F, 1.0F);
+        
+        float f = 0.01F;
+        LevelRenderer
+                .renderLineBox(pMatrixStack, pBuffer, aabb.minX, aabb.minY + (eyeHeight - f), aabb.minZ, aabb.maxX, aabb.minY + (eyeHeight + f), aabb.maxZ, 1.0F, 0.0F, 0.0F, 1.0F);
+        
+        Matrix4f matrix4f = pMatrixStack.last().pose();
+        Matrix3f matrix3f = pMatrixStack.last().normal();
+        pBuffer.vertex(matrix4f, (float) origin.x, (float) origin.y, (float) origin.z).color(0, 0, 255, 255).normal(matrix3f, (float) view.x, (float) view.y, (float) view.z)
+                .endVertex();
+        pBuffer.vertex(matrix4f, (float) (origin.x + view.x * 2), (float) (origin.y + view.y * 2), (float) (origin.z + view.z * 2)).color(0, 0, 255, 255)
+                .normal(matrix3f, (float) view.x, (float) view.y, (float) view.z).endVertex();
     }
     
     @SubscribeEvent
@@ -220,19 +279,19 @@ public class CamEventHandlerClient {
     
     @SubscribeEvent
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!selectEntityMode || !event.getWorld().isClientSide)
+        if (selectingTarget != null || !event.getWorld().isClientSide)
             return;
         
         if (event instanceof EntityInteract) {
-            CMDCamClient.getScene().lookTarget = new CamTarget.EntityTarget(((EntityInteract) event).getTarget());
+            selectingTarget.accept(new CamTarget.EntityTarget(((EntityInteract) event).getTarget()));
             event.getPlayer().sendMessage(new TranslatableComponent("scene.look.target.entity", ((EntityInteract) event).getTarget().getStringUUID()), Util.NIL_UUID);
-            selectEntityMode = false;
+            selectingTarget = null;
         }
         
         if (event instanceof RightClickBlock) {
-            CMDCamClient.getScene().lookTarget = new CamTarget.BlockTarget(event.getPos());
+            selectingTarget.accept(new CamTarget.BlockTarget(event.getPos()));
             event.getPlayer().sendMessage(new TranslatableComponent("scene.look.target.pos", event.getPos().toShortString()), Util.NIL_UUID);
-            selectEntityMode = false;
+            selectingTarget = null;
         }
     }
     

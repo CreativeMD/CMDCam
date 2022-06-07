@@ -19,6 +19,7 @@ import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import team.creative.cmdcam.client.SceneException;
 import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.scene.CamScene;
@@ -54,6 +55,7 @@ public class PointArgumentBuilder extends ArgumentBuilder<CommandSourceStack, Po
     }
     
     private void processPoint(CommandContext<CommandSourceStack> x, CamPoint point) {
+        
         if (indexConsumer != null) {
             int index = IntegerArgumentType.getInteger(x, "index") - 1;
             CamScene scene = processor.getScene(x);
@@ -67,18 +69,36 @@ public class PointArgumentBuilder extends ArgumentBuilder<CommandSourceStack, Po
     
     @Override
     public CommandNode<CommandSourceStack> build() {
-        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("add");
+        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal(literal);
         
         if (indexConsumer != null)
             builder.then(RequiredArgumentBuilder.<CommandSourceStack, Integer>argument("index", IntegerArgumentType.integer()).executes((x) -> {
-                if (processor.canCreatePoint(x))
-                    processPoint(x, processor.createPoint(x));
+                if (processor.canCreatePoint(x)) {
+                    CamPoint point = processor.createPoint(x);
+                    CamScene scene = processor.getScene(x);
+                    if (scene.posTarget != null)
+                        try {
+                            processor.makeRelative(processor.getScene(x), x.getSource().getUnsidedLevel(), point);
+                        } catch (SceneException e) {
+                            x.getSource().sendFailure(e.getComponent());
+                        }
+                    processPoint(x, point);
+                }
                 return 0;
             }));
         else
             builder.executes((x) -> {
-                if (processor.canCreatePoint(x))
-                    processPoint(x, processor.createPoint(x));
+                if (processor.canCreatePoint(x)) {
+                    CamPoint point = processor.createPoint(x);
+                    CamScene scene = processor.getScene(x);
+                    if (scene.posTarget != null)
+                        try {
+                            processor.makeRelative(processor.getScene(x), x.getSource().getUnsidedLevel(), point);
+                        } catch (SceneException e) {
+                            x.getSource().sendFailure(e.getComponent());
+                        }
+                    processPoint(x, point);
+                }
                 return 0;
             });
         

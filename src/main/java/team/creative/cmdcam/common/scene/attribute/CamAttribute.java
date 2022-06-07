@@ -134,4 +134,9 @@ public abstract class CamAttribute<T extends VecNd> {
     
     public abstract String name();
     
+    @Override
+    public String toString() {
+        return name();
+    }
+    
 }

@@ -12,16 +12,19 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import team.creative.cmdcam.client.SceneException;
 import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.target.CamTarget;
 
 public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, TargetArgumentBuilder> {
     
     private final String literal;
+    private final boolean look;
     private final CamCommandProcessor processor;
     
-    public TargetArgumentBuilder(final String literal, CamCommandProcessor processor) {
+    public TargetArgumentBuilder(final String literal, boolean look, CamCommandProcessor processor) {
         this.literal = literal;
+        this.look = look;
         this.processor = processor;
     }
     
@@ -34,42 +37,72 @@ public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, T
         return this;
     }
     
+    private String translatePrefix() {
+        if (look)
+            return "scene.look.target.";
+        return "scene.follow.target.";
+    }
+    
     @Override
     public CommandNode<CommandSourceStack> build() {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal(literal).then(Commands.literal("none").executes(x -> {
-            processor.getScene(x).lookTarget = null;
+            try {
+                processor.setTarget(x, null, look);
+            } catch (SceneException e) {
+                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
+            }
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.look.target.remove"), false);
+            x.getSource().sendSuccess(new TranslatableComponent(translatePrefix() + "remove"), false);
             return 0;
         })).then(Commands.literal("self").executes(x -> {
-            processor.getScene(x).lookTarget = new CamTarget.SelfTarget();
+            try {
+                processor.setTarget(x, new CamTarget.SelfTarget(), look);
+            } catch (SceneException e) {
+                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
+            }
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.look.target.self"), false);
+            x.getSource().sendSuccess(new TranslatableComponent(translatePrefix() + "self"), false);
             return 0;
         })).then(Commands.literal("player").then(Commands.argument("player", EntityArgument.player()).executes(x -> {
             Player player = EntityArgument.getPlayer(x, "player");
-            processor.getScene(x).lookTarget = new CamTarget.PlayerTarget(player);
+            try {
+                processor.setTarget(x, new CamTarget.PlayerTarget(player), look);
+            } catch (SceneException e) {
+                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
+            }
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.look.target.player", player.getScoreboardName()), false);
+            x.getSource().sendSuccess(new TranslatableComponent(translatePrefix() + "player", player.getScoreboardName()), false);
             return 0;
         }))).then(Commands.literal("entity").then(Commands.argument("entity", EntityArgument.entity()).executes(x -> {
             Entity entity = EntityArgument.getEntity(x, "entity");
-            processor.getScene(x).lookTarget = new CamTarget.EntityTarget(entity);
+            try {
+                processor.setTarget(x, new CamTarget.EntityTarget(entity), look);
+            } catch (SceneException e) {
+                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
+            }
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.look.target.entity", entity.getStringUUID()), false);
+            x.getSource().sendSuccess(new TranslatableComponent(translatePrefix() + "entity", entity.getStringUUID()), false);
             return 0;
         }))).then(Commands.literal("pos").then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(x -> {
             BlockPos pos = BlockPosArgument.getLoadedBlockPos(x, "pos");
-            processor.getScene(x).lookTarget = new CamTarget.BlockTarget(pos);
+            try {
+                processor.setTarget(x, new CamTarget.BlockTarget(pos), look);
+            } catch (SceneException e) {
+                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
+            }
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.look.target.pos", pos.toShortString()), false);
+            x.getSource().sendSuccess(new TranslatableComponent(translatePrefix() + "pos", pos.toShortString()), false);
             return 0;
         })));
         
         if (processor.canSelectTarget())
             builder.then(Commands.literal("select").executes(x -> {
-                processor.selectTarget();
-                x.getSource().sendSuccess(new TranslatableComponent("scene.look.target.select"), false);
+                try {
+                    processor.selectTarget(x, look);
+                } catch (SceneException e) {
+                    x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
+                }
+                x.getSource().sendSuccess(new TranslatableComponent(translatePrefix() + "select"), false);
                 return 0;
             }));
         

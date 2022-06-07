@@ -10,7 +10,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.TranslatableComponent;
-import team.creative.cmdcam.client.PathParseException;
+import team.creative.cmdcam.client.SceneException;
 import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.command.argument.CamModeArgument;
 import team.creative.cmdcam.common.command.argument.CamPitchModeArgument;
@@ -73,7 +73,7 @@ public class SceneCommandBuilder {
         start.executes((x) -> {
             try {
                 processor.start(x);
-            } catch (PathParseException e) {
+            } catch (SceneException e) {
                 x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
             }
             return 0;
@@ -84,7 +84,7 @@ public class SceneCommandBuilder {
                     processor.getScene(x).duration = duration;
                 processor.markDirty(x);
                 processor.start(x);
-            } catch (PathParseException e) {
+            } catch (SceneException e) {
                 x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
             }
             return 0;
@@ -97,7 +97,7 @@ public class SceneCommandBuilder {
                 scene.loop = IntegerArgumentType.getInteger(x, "loop");
                 processor.markDirty(x);
                 processor.start(x);
-            } catch (PathParseException e) {
+            } catch (SceneException e) {
                 x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
             }
             return 0;
@@ -153,7 +153,9 @@ public class SceneCommandBuilder {
             return 0;
         })));
         
-        origin.then(new TargetArgumentBuilder("target", processor));
+        origin.then(new TargetArgumentBuilder("target", true, processor));
+        origin.then(new TargetArgumentBuilder("follow", false, processor));
+        
         origin.then(new FollowArgumentBuilder(CamAttribute.PITCH, processor)).then(new FollowArgumentBuilder(CamAttribute.YAW, processor))
                 .then(new FollowArgumentBuilder(CamAttribute.POSITION, processor));
         

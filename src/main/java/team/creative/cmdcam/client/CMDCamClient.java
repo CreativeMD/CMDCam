@@ -17,6 +17,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
+import team.creative.cmdcam.common.command.builder.PointArgumentBuilder;
 import team.creative.cmdcam.common.command.builder.SceneCommandBuilder;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.point.CamPoint;
@@ -27,14 +28,15 @@ import team.creative.cmdcam.common.scene.CamScene;
 public class CMDCamClient {
     
     public final static Minecraft mc = Minecraft.getInstance();
-    private static final CamCommandProcessorClient processor = new CamCommandProcessorClient();
-    
-    public static HashMap<String, CamScene> savedPaths = new HashMap<>();
+    public static final CamCommandProcessorClient PROCESSOR = new CamCommandProcessorClient();
+    public static final HashMap<String, CamScene> SCENES = new HashMap<>();
     
     private static final CamScene scene = CamScene.createDefault();
     private static CamScene playing;
     private static boolean serverAvailable = false;
     private static boolean hideGuiCache;
+    private static boolean hasTargetMarker;
+    private static CamPoint targetMarker;
     
     public static void resetServerAvailability() {
         serverAvailable = false;
@@ -52,7 +54,7 @@ public class CMDCamClient {
     public static void commands(RegisterClientCommandsEvent event) {
         LiteralArgumentBuilder<CommandSourceStack> cam = Commands.literal("cam");
         
-        SceneCommandBuilder.scene(cam, processor);
+        SceneCommandBuilder.scene(cam, PROCESSOR);
         
         event.getDispatcher().register(cam.then(Commands.literal("stop").executes(x -> {
             CMDCamClient.stop();
@@ -90,14 +92,14 @@ public class CMDCamClient {
                 x.getSource().sendFailure(new TranslatableComponent("scenes.list_fail"));
                 return 0;
             }
-            x.getSource().sendSuccess(new TranslatableComponent("scenes.list", savedPaths.size(), String.join(", ", savedPaths.keySet())), true);
+            x.getSource().sendSuccess(new TranslatableComponent("scenes.list", SCENES.size(), String.join(", ", SCENES.keySet())), true);
             return 0;
         })).then(Commands.literal("load").then(Commands.argument("path", StringArgumentType.string()).executes((x) -> {
             String pathArg = StringArgumentType.getString(x, "path");
             if (CMDCamClient.serverAvailable)
                 CMDCam.NETWORK.sendToServer(new GetPathPacket(pathArg));
             else {
-                CamScene scene = CMDCamClient.savedPaths.get(pathArg);
+                CamScene scene = CMDCamClient.SCENES.get(pathArg);
                 if (scene != null) {
                     set(scene);
                     x.getSource().sendSuccess(new TranslatableComponent("scenes.load", pathArg), false);
@@ -113,14 +115,18 @@ public class CMDCamClient {
                 if (CMDCamClient.serverAvailable)
                     CMDCam.NETWORK.sendToServer(new SetPathPacket(pathArg, scene));
                 else {
-                    CMDCamClient.savedPaths.put(pathArg, scene);
+                    CMDCamClient.SCENES.put(pathArg, scene);
                     x.getSource().sendSuccess(new TranslatableComponent("scenes.save", pathArg), false);
                 }
-            } catch (PathParseException e) {
+            } catch (SceneException e) {
                 x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
             }
             return 0;
-        }))));
+        }))).then(new PointArgumentBuilder("follow_center", (x, y) -> targetMarker = y, PROCESSOR).executes(x -> {
+            targetMarker = CamPoint.createLocal();
+            return 0;
+        })));
+        
     }
     
     public static void renderBefore(RenderPlayerEvent.Pre event) {}
@@ -145,6 +151,13 @@ public class CMDCamClient {
     
     public static void set(CamScene scene) {
         CMDCamClient.scene.set(scene);
+        checkTargetMarker();
+    }
+    
+    public static void checkTargetMarker() {
+        hasTargetMarker = scene.posTarget != null;
+        if (hasTargetMarker && targetMarker == null)
+            targetMarker = CamPoint.createLocal();
     }
     
     public static void start(CamScene scene) {
@@ -194,9 +207,21 @@ public class CMDCamClient {
         }
     }
     
-    public static CamScene createScene() throws PathParseException {
+    public static void resetTargetMarker() {
+        targetMarker = null;
+    }
+    
+    public static boolean hasTargetMarker() {
+        return hasTargetMarker && targetMarker != null && scene.posTarget != null;
+    }
+    
+    public static CamPoint getTargetMarker() {
+        return targetMarker;
+    }
+    
+    public static CamScene createScene() throws SceneException {
         if (scene.points.size() < 1)
-            throw new PathParseException("scene.create_fail");
+            throw new SceneException("scene.create_fail");
         
         CamScene newScene = scene.copy();
         if (newScene.points.size() == 1)

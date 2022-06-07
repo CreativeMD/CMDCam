@@ -20,8 +20,14 @@ public class CamCommandProcessorClient implements CamCommandProcessor {
     }
     
     @Override
-    public void selectTarget() {
-        CamEventHandlerClient.startSelectionMode();
+    public void selectTarget(CommandContext<CommandSourceStack> context, boolean look) throws SceneException {
+        if (look)
+            checkFollowTarget(context, true);
+        CamEventHandlerClient.startSelectionMode(x -> {
+            try {
+                setTarget(context, x, look);
+            } catch (SceneException e) {}
+        });
     }
     
     @Override
@@ -45,7 +51,7 @@ public class CamCommandProcessorClient implements CamCommandProcessor {
     }
     
     @Override
-    public void start(CommandContext<CommandSourceStack> context) throws PathParseException {
+    public void start(CommandContext<CommandSourceStack> context) throws SceneException {
         CMDCamClient.start(CMDCamClient.createScene());
     }
     
@@ -55,6 +61,8 @@ public class CamCommandProcessorClient implements CamCommandProcessor {
     }
     
     @Override
-    public void markDirty(CommandContext<CommandSourceStack> context) {}
+    public void markDirty(CommandContext<CommandSourceStack> context) {
+        CMDCamClient.checkTargetMarker();
+    }
     
 }
