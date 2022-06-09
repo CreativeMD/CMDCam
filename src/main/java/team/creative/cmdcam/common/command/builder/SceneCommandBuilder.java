@@ -167,7 +167,7 @@ public class SceneCommandBuilder {
             return 0;
         })));
         
-        origin.then(Commands.literal("smoot_start").then(Commands.argument("value", BoolArgumentType.bool()).executes((x) -> {
+        origin.then(Commands.literal("smooth_start").then(Commands.argument("value", BoolArgumentType.bool()).executes((x) -> {
             boolean value = BoolArgumentType.getBool(x, "value");
             processor.getScene(x).smoothBeginning = value;
             processor.markDirty(x);
