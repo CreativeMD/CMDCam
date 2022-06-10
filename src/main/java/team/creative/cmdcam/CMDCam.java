@@ -11,9 +11,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.synchronization.ArgumentTypes;
-import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -80,10 +80,11 @@ public class CMDCam {
         NETWORK.registerType(PausePathPacket.class, PausePathPacket::new);
         NETWORK.registerType(ResumePathPacket.class, ResumePathPacket::new);
         
-        ArgumentTypes.register("duration", DurationArgument.class, new EmptyArgumentSerializer<>(() -> DurationArgument.duration()));
-        ArgumentTypes.register("cameramode", CamModeArgument.class, new EmptyArgumentSerializer<>(() -> CamModeArgument.mode()));
-        ArgumentTypes.register("interpolation", InterpolationArgument.class, new EmptyArgumentSerializer<>(() -> InterpolationArgument.interpolation()));
-        ArgumentTypes.register("allinterpolation", AllInterpolationArgument.class, new EmptyArgumentSerializer<>(() -> InterpolationArgument.interpolationAll()));
+        ArgumentTypeInfos.registerByClass(DurationArgument.class, SingletonArgumentInfo.<DurationArgument>contextFree(() -> DurationArgument.duration()));
+        ArgumentTypeInfos.registerByClass(CamModeArgument.class, SingletonArgumentInfo.<CamModeArgument>contextFree(() -> CamModeArgument.mode()));
+        ArgumentTypeInfos.registerByClass(InterpolationArgument.class, SingletonArgumentInfo.<InterpolationArgument>contextFree(() -> InterpolationArgument.interpolation()));
+        ArgumentTypeInfos
+                .registerByClass(AllInterpolationArgument.class, SingletonArgumentInfo.<AllInterpolationArgument>contextFree(() -> InterpolationArgument.interpolationAll()));
         
         MinecraftForge.EVENT_BUS.register(new CamEventHandler());
     }
@@ -112,26 +113,26 @@ public class CMDCam {
             return 0;
         }))).then(Commands.literal("list").executes((x) -> {
             Collection<String> names = CMDCamServer.getSavedPaths(x.getSource().getLevel());
-            x.getSource().sendSuccess(new TranslatableComponent("scenes.list", names.size(), String.join(", ", names)), true);
+            x.getSource().sendSuccess(Component.translatable("scenes.list", names.size(), String.join(", ", names)), true);
             return 0;
         })).then(Commands.literal("clear").executes((x) -> {
             CMDCamServer.clearPaths(x.getSource().getLevel());
-            x.getSource().sendSuccess(new TranslatableComponent("scenes.clear"), true);
+            x.getSource().sendSuccess(Component.translatable("scenes.clear"), true);
             return 0;
         })).then(Commands.literal("remove").then(Commands.argument("name", StringArgumentType.string()).executes((x) -> {
             String name = StringArgumentType.getString(x, "name");
             if (CMDCamServer.removePath(x.getSource().getLevel(), name))
-                x.getSource().sendSuccess(new TranslatableComponent("scene.remove", name), true);
+                x.getSource().sendSuccess(Component.translatable("scene.remove", name), true);
             else
-                x.getSource().sendFailure(new TranslatableComponent("scene.remove_fail", name));
+                x.getSource().sendFailure(Component.translatable("scene.remove_fail", name));
             return 0;
         }))).then(Commands.literal("create").then(Commands.argument("name", StringArgumentType.string()).executes((x) -> {
             String name = StringArgumentType.getString(x, "name");
             if (CMDCamServer.get(x.getSource().getLevel(), name) != null)
-                x.getSource().sendSuccess(new TranslatableComponent("scene.exists", name), true);
+                x.getSource().sendSuccess(Component.translatable("scene.exists", name), true);
             else {
                 CMDCamServer.set(x.getSource().getLevel(), name, CamScene.createDefault());
-                x.getSource().sendSuccess(new TranslatableComponent("scene.create", name), true);
+                x.getSource().sendSuccess(Component.translatable("scene.create", name), true);
             }
             return 0;
         }))));

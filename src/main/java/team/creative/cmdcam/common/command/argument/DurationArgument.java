@@ -11,7 +11,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 public class DurationArgument implements ArgumentType<Long> {
     
@@ -43,7 +43,7 @@ public class DurationArgument implements ArgumentType<Long> {
             factor = 1000 * 60 * 60 * 24;
         else {
             reader.setCursor(start);
-            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid time format")), new TranslatableComponent("invalid_mode"));
+            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid time format")), Component.translatable("invalid_mode"));
         }
         
         return time * factor;

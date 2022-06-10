@@ -1,7 +1,6 @@
 package team.creative.cmdcam.common.packet;
 
-import net.minecraft.Util;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import team.creative.cmdcam.CMDCam;
@@ -28,7 +27,7 @@ public class GetPathPacket extends CreativePacket {
         if (path != null)
             CMDCam.NETWORK.sendToClient(new SetPathPacket(id, path), player);
         else
-            player.sendMessage(new TranslatableComponent("scene.load_fail", id), Util.NIL_UUID);
+            player.sendSystemMessage(Component.translatable("scene.load_fail", id));
     }
     
 }

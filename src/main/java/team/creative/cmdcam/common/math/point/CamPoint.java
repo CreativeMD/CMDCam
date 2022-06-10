@@ -34,7 +34,7 @@ public class CamPoint extends Vec3d {
             return new CamPoint(vec.x, vec.y, vec.z, entity.getViewYRot(partialTicks), entity
                     .getViewXRot(partialTicks), CamEventHandlerClient.roll, CamEventHandlerClient.currentFOV);
         else
-            return new CamPoint(vec.x, vec.y, vec.z, entity.getViewYRot(partialTicks), entity.getViewXRot(partialTicks), 0, CamEventHandlerClient.defaultFOV);
+            return new CamPoint(vec.x, vec.y, vec.z, entity.getViewYRot(partialTicks), entity.getViewXRot(partialTicks), 0, 70);
     }
     
     public double rotationYaw;

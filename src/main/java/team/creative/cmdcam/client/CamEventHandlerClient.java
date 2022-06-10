@@ -14,16 +14,16 @@ import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.debug.DebugRenderer;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
+import net.minecraftforge.client.event.EntityViewRenderEvent.FieldOfView;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.RenderTickEvent;
@@ -48,7 +48,7 @@ public class CamEventHandlerClient {
     public static final float amountZoom = 0.1F;
     public static final float amountroll = 1.5F;
     
-    public static double defaultFOV = 70;
+    private static int previousFOV = mc.options.fov().get();
     public static double currentFOV;
     public static float roll = 0;
     
@@ -62,6 +62,10 @@ public class CamEventHandlerClient {
         CamEventHandlerClient.selectingTarget = selectingTarget;
     }
     
+    public static void resetFOV() {
+        currentFOV = previousFOV;
+    }
+    
     @SubscribeEvent
     public void onRenderTick(RenderTickEvent event) {
         if (mc.level == null) {
@@ -71,9 +75,8 @@ public class CamEventHandlerClient {
         if (event.phase == Phase.END)
             return;
         
-        if (currentFOV != mc.options.fov) {
-            currentFOV = defaultFOV = mc.options.fov;
-        }
+        if (previousFOV != mc.options.fov().get())
+            currentFOV = previousFOV = mc.options.fov().get();
         
         if (mc.player != null && mc.level != null) {
             if (!mc.isPaused()) {
@@ -102,7 +105,7 @@ public class CamEventHandlerClient {
                     }
                     
                     if (KeyHandler.zoomCenter.isDown())
-                        currentFOV = defaultFOV;
+                        currentFOV = previousFOV;
                     
                     if (KeyHandler.rollLeft.isDown())
                         roll -= timeFactor * amountroll;
@@ -118,13 +121,13 @@ public class CamEventHandlerClient {
                         if (CMDCamClient.getScene().posTarget != null) {
                             Vec3d vec = CMDCamClient.getTargetMarker();
                             if (vec == null) {
-                                mc.player.sendMessage(new TranslatableComponent("scene.follow.no_marker", CMDCamClient.getPoints().size()), Util.NIL_UUID);
+                                mc.player.sendSystemMessage(Component.translatable("scene.follow.no_marker", CMDCamClient.getPoints().size()));
                                 continue;
                             }
                             point.sub(vec);
                         }
                         CMDCamClient.getPoints().add(point);
-                        mc.player.sendMessage(new TranslatableComponent("scene.add", CMDCamClient.getPoints().size()), Util.NIL_UUID);
+                        mc.player.sendSystemMessage(Component.translatable("scene.add", CMDCamClient.getPoints().size()));
                     }
                 }
                 
@@ -135,18 +138,22 @@ public class CamEventHandlerClient {
                         try {
                             CMDCamClient.start(CMDCamClient.createScene());
                         } catch (SceneException e) {
-                            mc.player.sendMessage(new TranslatableComponent(e.getMessage()), Util.NIL_UUID);
+                            mc.player.sendSystemMessage(Component.translatable(e.getMessage()));
                         }
                 }
                 
                 while (KeyHandler.clearPoint.consumeClick()) {
                     CMDCamClient.getPoints().clear();
-                    mc.player.sendMessage(new TranslatableComponent("scene.clear"), Util.NIL_UUID);
+                    mc.player.sendSystemMessage(Component.translatable("scene.clear"));
                 }
             }
-            mc.options.fov = currentFOV;
         }
         lastRenderTime = System.nanoTime();
+    }
+    
+    @SubscribeEvent
+    public void fov(FieldOfView event) {
+        event.setFOV(currentFOV);
     }
     
     @SubscribeEvent
@@ -284,13 +291,13 @@ public class CamEventHandlerClient {
         
         if (event instanceof EntityInteract) {
             selectingTarget.accept(new CamTarget.EntityTarget(((EntityInteract) event).getTarget()));
-            event.getPlayer().sendMessage(new TranslatableComponent("scene.look.target.entity", ((EntityInteract) event).getTarget().getStringUUID()), Util.NIL_UUID);
+            event.getPlayer().sendSystemMessage(Component.translatable("scene.look.target.entity", ((EntityInteract) event).getTarget().getStringUUID()));
             selectingTarget = null;
         }
         
         if (event instanceof RightClickBlock) {
             selectingTarget.accept(new CamTarget.BlockTarget(event.getPos()));
-            event.getPlayer().sendMessage(new TranslatableComponent("scene.look.target.pos", event.getPos().toShortString()), Util.NIL_UUID);
+            event.getPlayer().sendSystemMessage(Component.translatable("scene.look.target.pos", event.getPos().toShortString()));
             selectingTarget = null;
         }
     }

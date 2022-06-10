@@ -1,6 +1,5 @@
 package team.creative.cmdcam.common.scene.mode;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -28,7 +27,7 @@ public abstract class CamMode {
     
     @OnlyIn(Dist.CLIENT)
     public void finished(CamRun run) {
-        Minecraft.getInstance().options.fov = CamEventHandlerClient.currentFOV = CamEventHandlerClient.defaultFOV;
+        CamEventHandlerClient.resetFOV();
         CamEventHandlerClient.roll = 0;
     }
     

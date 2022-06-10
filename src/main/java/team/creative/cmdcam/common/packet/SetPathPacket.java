@@ -1,8 +1,7 @@
 package team.creative.cmdcam.common.packet;
 
-import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import team.creative.cmdcam.client.CMDCamClient;
@@ -30,7 +29,7 @@ public class SetPathPacket extends CreativePacket {
         try {
             CamScene scene = new CamScene(nbt);
             CMDCamClient.set(scene);
-            player.sendMessage(new TranslatableComponent("scene.load", id), Util.NIL_UUID);
+            player.sendSystemMessage(Component.translatable("scene.load", id));
         } catch (RegistryException e) {
             e.printStackTrace();
         }
@@ -43,12 +42,12 @@ public class SetPathPacket extends CreativePacket {
             CamScene path = new CamScene(nbt);
             if (player.hasPermissions(4)) {
                 CMDCamServer.set(player.level, id, path);
-                player.sendMessage(new TranslatableComponent("scene.save", id), Util.NIL_UUID);
+                player.sendSystemMessage(Component.translatable("scene.save", id));
             } else
-                player.sendMessage(new TranslatableComponent("scene.save_perm", id), Util.NIL_UUID);
+                player.sendSystemMessage(Component.translatable("scene.save_perm", id));
         } catch (RegistryException e) {
             e.printStackTrace();
-            player.sendMessage(new TranslatableComponent("scenes.save_fail"), Util.NIL_UUID);
+            player.sendSystemMessage(Component.translatable("scenes.save_fail"));
         }
         
     }

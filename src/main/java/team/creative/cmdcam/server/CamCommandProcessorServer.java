@@ -9,7 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.client.SceneException;
@@ -69,7 +69,7 @@ public class CamCommandProcessorServer implements CamCommandProcessor {
     public void start(CommandContext<CommandSourceStack> context) throws SceneException {
         CamScene scene = getScene(context);
         if (scene.points.isEmpty()) {
-            context.getSource().sendFailure(new TranslatableComponent("scene.create_fail"));
+            context.getSource().sendFailure(Component.translatable("scene.create_fail"));
             return;
         }
         CreativePacket packet = new StartPathPacket(scene);

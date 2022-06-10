@@ -1,6 +1,6 @@
 package team.creative.cmdcam.client;
 
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 public class SceneException extends Exception {
     
@@ -8,8 +8,8 @@ public class SceneException extends Exception {
         super(msg);
     }
     
-    public TranslatableComponent getComponent() {
-        return new TranslatableComponent(getMessage());
+    public Component getComponent() {
+        return Component.translatable(getMessage());
     }
     
 }

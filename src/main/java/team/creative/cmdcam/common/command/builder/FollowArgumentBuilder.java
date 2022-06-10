@@ -7,7 +7,7 @@ import com.mojang.brigadier.tree.CommandNode;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.scene.attribute.CamAttribute;
 
@@ -33,7 +33,7 @@ public class FollowArgumentBuilder extends ArgumentBuilder<CommandSourceStack, F
                     double div = DoubleArgumentType.getDouble(x, "div");
                     processor.getScene(x).getConfig(attribute).div = div;
                     processor.markDirty(x);
-                    x.getSource().sendSuccess(new TranslatableComponent("scene.follow.div", attribute.name(), div), false);
+                    x.getSource().sendSuccess(Component.translatable("scene.follow.div", attribute.name(), div), false);
                     return 0;
                 })));
         

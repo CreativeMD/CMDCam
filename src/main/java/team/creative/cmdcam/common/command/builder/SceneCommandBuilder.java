@@ -9,7 +9,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import team.creative.cmdcam.client.SceneException;
 import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.command.argument.CamModeArgument;
@@ -32,26 +32,26 @@ public class SceneCommandBuilder {
         origin.then(Commands.literal("clear").executes((x) -> {
             processor.getScene(x).points.clear();
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.clear"), false);
+            x.getSource().sendSuccess(Component.translatable("scene.clear"), false);
             return 0;
         }));
         
         origin.then(new PointArgumentBuilder("add", (x, point) -> {
             processor.getScene(x).points.add(point);
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.add", processor.getScene(x).points.size()), false);
+            x.getSource().sendSuccess(Component.translatable("scene.add", processor.getScene(x).points.size()), false);
         }, processor));
         
         origin.then(new PointArgumentBuilder("insert", (x, point, index) -> {
             processor.getScene(x).points.add(index, point);
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.insert", index), false);
+            x.getSource().sendSuccess(Component.translatable("scene.insert", index), false);
         }, processor));
         
         origin.then(new PointArgumentBuilder("set", (x, point, index) -> {
             processor.getScene(x).points.set(index, point);
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.set", index), false);
+            x.getSource().sendSuccess(Component.translatable("scene.set", index), false);
         }, processor));
         
         origin.then(Commands.literal("remove").then(Commands.argument("index", IntegerArgumentType.integer()).executes((x) -> {
@@ -60,7 +60,7 @@ public class SceneCommandBuilder {
             if (index >= 0 && index < scene.points.size())
                 scene.points.remove(index);
             else
-                x.getSource().sendFailure(new TranslatableComponent("scene.index", index + 1));
+                x.getSource().sendFailure(Component.translatable("scene.index", index + 1));
             processor.markDirty(x);
             return 0;
         })));
@@ -74,7 +74,7 @@ public class SceneCommandBuilder {
             try {
                 processor.start(x);
             } catch (SceneException e) {
-                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
+                x.getSource().sendFailure(Component.translatable(e.getMessage()));
             }
             return 0;
         }).then(RequiredArgumentBuilder.<CommandSourceStack, Long>argument("duration", DurationArgument.duration()).executes((x) -> {
@@ -85,7 +85,7 @@ public class SceneCommandBuilder {
                 processor.markDirty(x);
                 processor.start(x);
             } catch (SceneException e) {
-                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
+                x.getSource().sendFailure(Component.translatable(e.getMessage()));
             }
             return 0;
         }).then(RequiredArgumentBuilder.<CommandSourceStack, Integer>argument("loop", IntegerArgumentType.integer(-1)).executes((x) -> {
@@ -98,7 +98,7 @@ public class SceneCommandBuilder {
                 processor.markDirty(x);
                 processor.start(x);
             } catch (SceneException e) {
-                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
+                x.getSource().sendFailure(Component.translatable(e.getMessage()));
             }
             return 0;
         })));
@@ -112,7 +112,7 @@ public class SceneCommandBuilder {
             if (duration > 0)
                 processor.getScene(x).duration = duration;
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.duration", duration), false);
+            x.getSource().sendSuccess(Component.translatable("scene.duration", duration), false);
             return 0;
         })));
         
@@ -121,11 +121,11 @@ public class SceneCommandBuilder {
             processor.getScene(x).loop = loop;
             processor.markDirty(x);
             if (loop == 0)
-                x.getSource().sendSuccess(new TranslatableComponent("scene.add", processor.getScene(x).points.size()), false);
+                x.getSource().sendSuccess(Component.translatable("scene.add", processor.getScene(x).points.size()), false);
             else if (loop < 0)
-                x.getSource().sendSuccess(new TranslatableComponent("scene.loops.endless"), false);
+                x.getSource().sendSuccess(Component.translatable("scene.loops.endless"), false);
             else
-                x.getSource().sendSuccess(new TranslatableComponent("scene.loops", loop), false);
+                x.getSource().sendSuccess(Component.translatable("scene.loops", loop), false);
             return 0;
         })));
         
@@ -140,7 +140,7 @@ public class SceneCommandBuilder {
             if (index >= 0 && index < scene.points.size())
                 processor.teleport(x, index);
             else
-                x.getSource().sendFailure(new TranslatableComponent("scene.index", index + 1));
+                x.getSource().sendFailure(Component.translatable("scene.index", index + 1));
             return 0;
         }));
         if (processor.requiresPlayer())
@@ -163,7 +163,7 @@ public class SceneCommandBuilder {
             String interpolation = StringArgumentType.getString(x, "interpolation");
             processor.getScene(x).interpolation = CamInterpolation.REGISTRY.get(interpolation);
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation", interpolation), false);
+            x.getSource().sendSuccess(Component.translatable("scene.interpolation", interpolation), false);
             return 0;
         })));
         
@@ -171,7 +171,7 @@ public class SceneCommandBuilder {
             boolean value = BoolArgumentType.getBool(x, "value");
             processor.getScene(x).smoothBeginning = value;
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.smooth_beginning", value), false);
+            x.getSource().sendSuccess(Component.translatable("scene.smooth_beginning", value), false);
             return 0;
         })));
         
@@ -179,7 +179,7 @@ public class SceneCommandBuilder {
             CamPitchMode mode = CamPitchModeArgument.getMode(x, "mode");
             processor.getScene(x).pitchMode = mode;
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.pitch_mode", mode), false);
+            x.getSource().sendSuccess(Component.translatable("scene.pitch_mode", mode), false);
             return 0;
         })));
         
@@ -187,7 +187,7 @@ public class SceneCommandBuilder {
             boolean value = BoolArgumentType.getBool(x, "value");
             processor.getScene(x).distanceBasedTiming = value;
             processor.markDirty(x);
-            x.getSource().sendSuccess(new TranslatableComponent("scene.distance_timing", value), false);
+            x.getSource().sendSuccess(Component.translatable("scene.distance_timing", value), false);
             return 0;
         })));
         

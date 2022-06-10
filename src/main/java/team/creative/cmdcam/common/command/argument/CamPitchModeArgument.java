@@ -13,7 +13,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import team.creative.cmdcam.common.math.interpolation.CamPitchMode;
 import team.creative.cmdcam.common.scene.mode.CamMode;
 
@@ -35,7 +35,7 @@ public class CamPitchModeArgument implements ArgumentType<CamPitchMode> {
             return CamPitchMode.valueOf(result);
         } catch (IllegalArgumentException e) {
             reader.setCursor(start);
-            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid mode")), new TranslatableComponent("invalid_mode"));
+            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid mode")), Component.translatable("invalid_mode"));
         }
     }
     

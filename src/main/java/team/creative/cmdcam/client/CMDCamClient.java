@@ -9,7 +9,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -69,30 +69,30 @@ public class CMDCamClient {
             String interpolation = StringArgumentType.getString(x, "interpolation");
             if (!interpolation.equalsIgnoreCase("all")) {
                 CamInterpolation.REGISTRY.get(interpolation).isRenderingEnabled = true;
-                x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.show", interpolation), false);
+                x.getSource().sendSuccess(Component.translatable("scene.interpolation.show", interpolation), false);
             } else {
                 for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
                     movement.isRenderingEnabled = true;
-                x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.show_all"), false);
+                x.getSource().sendSuccess(Component.translatable("scene.interpolation.show_all"), false);
             }
             return 0;
         }))).then(Commands.literal("hide").then(Commands.argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
             String interpolation = StringArgumentType.getString(x, "interpolation");
             if (!interpolation.equalsIgnoreCase("all")) {
                 CamInterpolation.REGISTRY.get(interpolation).isRenderingEnabled = false;
-                x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.hide", interpolation), false);
+                x.getSource().sendSuccess(Component.translatable("scene.interpolation.hide", interpolation), false);
             } else {
                 for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
                     movement.isRenderingEnabled = false;
-                x.getSource().sendSuccess(new TranslatableComponent("scene.interpolation.hide_all"), false);
+                x.getSource().sendSuccess(Component.translatable("scene.interpolation.hide_all"), false);
             }
             return 0;
         }))).then(Commands.literal("list").executes((x) -> {
             if (CMDCamClient.serverAvailable) {
-                x.getSource().sendFailure(new TranslatableComponent("scenes.list_fail"));
+                x.getSource().sendFailure(Component.translatable("scenes.list_fail"));
                 return 0;
             }
-            x.getSource().sendSuccess(new TranslatableComponent("scenes.list", SCENES.size(), String.join(", ", SCENES.keySet())), true);
+            x.getSource().sendSuccess(Component.translatable("scenes.list", SCENES.size(), String.join(", ", SCENES.keySet())), true);
             return 0;
         })).then(Commands.literal("load").then(Commands.argument("path", StringArgumentType.string()).executes((x) -> {
             String pathArg = StringArgumentType.getString(x, "path");
@@ -102,9 +102,9 @@ public class CMDCamClient {
                 CamScene scene = CMDCamClient.SCENES.get(pathArg);
                 if (scene != null) {
                     set(scene);
-                    x.getSource().sendSuccess(new TranslatableComponent("scenes.load", pathArg), false);
+                    x.getSource().sendSuccess(Component.translatable("scenes.load", pathArg), false);
                 } else
-                    x.getSource().sendFailure(new TranslatableComponent("scenes.load_fail", pathArg));
+                    x.getSource().sendFailure(Component.translatable("scenes.load_fail", pathArg));
             }
             return 0;
         }))).then(Commands.literal("save").then(Commands.argument("path", StringArgumentType.string()).executes((x) -> {
@@ -116,10 +116,10 @@ public class CMDCamClient {
                     CMDCam.NETWORK.sendToServer(new SetPathPacket(pathArg, scene));
                 else {
                     CMDCamClient.SCENES.put(pathArg, scene);
-                    x.getSource().sendSuccess(new TranslatableComponent("scenes.save", pathArg), false);
+                    x.getSource().sendSuccess(Component.translatable("scenes.save", pathArg), false);
                 }
             } catch (SceneException e) {
-                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
+                x.getSource().sendFailure(Component.translatable(e.getMessage()));
             }
             return 0;
         }))).then(new PointArgumentBuilder("follow_center", (x, y) -> targetMarker = y, PROCESSOR).executes(x -> {
@@ -234,7 +234,7 @@ public class CMDCamClient {
         mc.player.getAbilities().flying = true;
         
         CamEventHandlerClient.roll = (float) point.roll;
-        mc.options.fov = (float) point.zoom;
+        CamEventHandlerClient.currentFOV = (float) point.zoom;
         mc.player.absMoveTo(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
         mc.player.absMoveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
     }

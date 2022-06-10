@@ -15,7 +15,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 
 public class InterpolationArgument implements ArgumentType<String> {
@@ -34,7 +34,7 @@ public class InterpolationArgument implements ArgumentType<String> {
         final String result = reader.readString();
         if (!isAllowed(result)) {
             reader.setCursor(start);
-            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid interpolation")), new TranslatableComponent("invalid_mode"));
+            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid interpolation")), Component.translatable("invalid_mode"));
         }
         
         return result;

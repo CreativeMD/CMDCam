@@ -16,7 +16,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.RotationArgument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import team.creative.cmdcam.client.SceneException;
@@ -62,7 +62,7 @@ public class PointArgumentBuilder extends ArgumentBuilder<CommandSourceStack, Po
             if (index >= 0 && index < scene.points.size())
                 indexConsumer.accept(x, point, index);
             else
-                x.getSource().sendFailure(new TranslatableComponent("scene.index", index + 1));
+                x.getSource().sendFailure(Component.translatable("scene.index", index + 1));
         } else
             consumer.accept(x, point);
     }
