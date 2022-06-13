@@ -25,6 +25,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.event.EntityViewRenderEvent.FieldOfView;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
+import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.RenderTickEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -64,6 +65,14 @@ public class CamEventHandlerClient {
     
     public static void resetFOV() {
         currentFOV = previousFOV;
+    }
+    
+    @SubscribeEvent
+    public void onClientTick(ClientTickEvent event) {
+        if (event.phase == Phase.END)
+            return;
+        if (mc.player != null && mc.level != null && !mc.isPaused() && CMDCamClient.isPlaying())
+            CMDCamClient.mcTickPath(mc.level);
     }
     
     @SubscribeEvent

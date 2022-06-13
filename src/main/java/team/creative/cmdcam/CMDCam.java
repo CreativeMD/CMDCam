@@ -48,6 +48,7 @@ import team.creative.cmdcam.common.packet.TeleportPathPacket;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.server.CMDCamServer;
 import team.creative.cmdcam.server.CamEventHandler;
+import team.creative.creativecore.common.config.holder.CreativeConfigRegistry;
 import team.creative.creativecore.common.network.CreativeNetwork;
 import team.creative.creativecore.common.network.CreativePacket;
 
@@ -58,7 +59,7 @@ public class CMDCam {
     
     private static final Logger LOGGER = LogManager.getLogger(CMDCam.MODID);
     public static final CreativeNetwork NETWORK = new CreativeNetwork("1.0", LOGGER, new ResourceLocation(CMDCam.MODID, "main"));
-    
+    public static final CMDCamConfig CONFIG = new CMDCamConfig();
     public static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registry.COMMAND_ARGUMENT_TYPE_REGISTRY, MODID);
     
     public CMDCam() {
@@ -96,6 +97,8 @@ public class CMDCam {
         NETWORK.registerType(ResumePathPacket.class, ResumePathPacket::new);
         
         MinecraftForge.EVENT_BUS.register(new CamEventHandler());
+        
+        CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG);
     }
     
     private void serverStarting(final ServerStartingEvent event) {

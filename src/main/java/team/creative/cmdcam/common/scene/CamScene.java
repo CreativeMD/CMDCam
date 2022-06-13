@@ -198,6 +198,15 @@ public class CamScene {
         run.tick(level, deltaTime);
     }
     
+    public void mcTick(Level level) {
+        if (started) {
+            started = false;
+            started(level);
+        }
+        
+        run.mcTick(level);
+    }
+    
     public void set(CamScene scene) {
         this.duration = scene.duration;
         this.loop = scene.loop;

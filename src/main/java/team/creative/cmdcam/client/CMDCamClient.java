@@ -24,6 +24,7 @@ import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
 import team.creative.cmdcam.common.scene.CamScene;
+import team.creative.creativecore.client.CreativeCoreClient;
 
 public class CMDCamClient {
     
@@ -49,6 +50,7 @@ public class CMDCamClient {
     public static void init(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(new CamEventHandlerClient());
         KeyHandler.initKeys();
+        CreativeCoreClient.registerClientConfig(CMDCam.MODID);
     }
     
     public static void commands(RegisterClientCommandsEvent event) {
@@ -197,6 +199,10 @@ public class CMDCamClient {
     
     public static void noTickPath(Level level, float renderTickTime) {
         hideGuiCache = mc.options.hideGui;
+    }
+    
+    public static void mcTickPath(Level level) {
+        playing.mcTick(level);
     }
     
     public static void tickPath(Level level, float renderTickTime) {
