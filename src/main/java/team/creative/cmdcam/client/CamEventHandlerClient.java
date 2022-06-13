@@ -50,7 +50,7 @@ public class CamEventHandlerClient {
     public static final float amountroll = 1.5F;
     
     private static int previousFOV = mc.options.fov().get();
-    public static double currentFOV;
+    public static double currentFOV = previousFOV;
     public static float roll = 0;
     
     public static long lastRenderTime;
