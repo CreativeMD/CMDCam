@@ -11,8 +11,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,6 +30,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkConstants;
+import net.minecraftforge.registries.DeferredRegister;
 import team.creative.cmdcam.client.CMDCamClient;
 import team.creative.cmdcam.common.command.argument.CamModeArgument;
 import team.creative.cmdcam.common.command.argument.DurationArgument;
@@ -56,11 +59,23 @@ public class CMDCam {
     private static final Logger LOGGER = LogManager.getLogger(CMDCam.MODID);
     public static final CreativeNetwork NETWORK = new CreativeNetwork("1.0", LOGGER, new ResourceLocation(CMDCam.MODID, "main"));
     
+    public static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registry.COMMAND_ARGUMENT_TYPE_REGISTRY, MODID);
+    
     public CMDCam() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client));
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.addListener(CMDCamClient::commands));
         MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
+        
+        COMMAND_ARGUMENT_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        COMMAND_ARGUMENT_TYPES.register("duration", () -> ArgumentTypeInfos
+                .registerByClass(DurationArgument.class, SingletonArgumentInfo.<DurationArgument>contextFree(() -> DurationArgument.duration())));
+        COMMAND_ARGUMENT_TYPES.register("cam_mode", () -> ArgumentTypeInfos
+                .registerByClass(CamModeArgument.class, SingletonArgumentInfo.<CamModeArgument>contextFree(() -> CamModeArgument.mode())));
+        COMMAND_ARGUMENT_TYPES.register("interpolation", () -> ArgumentTypeInfos
+                .registerByClass(InterpolationArgument.class, SingletonArgumentInfo.<InterpolationArgument>contextFree(() -> InterpolationArgument.interpolation())));
+        COMMAND_ARGUMENT_TYPES.register("all_interpolation", () -> ArgumentTypeInfos
+                .registerByClass(AllInterpolationArgument.class, SingletonArgumentInfo.<AllInterpolationArgument>contextFree(() -> InterpolationArgument.interpolationAll())));
     }
     
     @OnlyIn(value = Dist.CLIENT)
@@ -79,12 +94,6 @@ public class CMDCam {
         NETWORK.registerType(TeleportPathPacket.class, TeleportPathPacket::new);
         NETWORK.registerType(PausePathPacket.class, PausePathPacket::new);
         NETWORK.registerType(ResumePathPacket.class, ResumePathPacket::new);
-        
-        ArgumentTypeInfos.registerByClass(DurationArgument.class, SingletonArgumentInfo.<DurationArgument>contextFree(() -> DurationArgument.duration()));
-        ArgumentTypeInfos.registerByClass(CamModeArgument.class, SingletonArgumentInfo.<CamModeArgument>contextFree(() -> CamModeArgument.mode()));
-        ArgumentTypeInfos.registerByClass(InterpolationArgument.class, SingletonArgumentInfo.<InterpolationArgument>contextFree(() -> InterpolationArgument.interpolation()));
-        ArgumentTypeInfos
-                .registerByClass(AllInterpolationArgument.class, SingletonArgumentInfo.<AllInterpolationArgument>contextFree(() -> InterpolationArgument.interpolationAll()));
         
         MinecraftForge.EVENT_BUS.register(new CamEventHandler());
     }
