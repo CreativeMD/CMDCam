@@ -33,6 +33,7 @@ import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.registries.DeferredRegister;
 import team.creative.cmdcam.client.CMDCamClient;
 import team.creative.cmdcam.common.command.argument.CamModeArgument;
+import team.creative.cmdcam.common.command.argument.CamPitchModeArgument;
 import team.creative.cmdcam.common.command.argument.DurationArgument;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument.AllInterpolationArgument;
@@ -77,6 +78,8 @@ public class CMDCam {
                 .registerByClass(InterpolationArgument.class, SingletonArgumentInfo.<InterpolationArgument>contextFree(() -> InterpolationArgument.interpolation())));
         COMMAND_ARGUMENT_TYPES.register("all_interpolation", () -> ArgumentTypeInfos
                 .registerByClass(AllInterpolationArgument.class, SingletonArgumentInfo.<AllInterpolationArgument>contextFree(() -> InterpolationArgument.interpolationAll())));
+        COMMAND_ARGUMENT_TYPES.register("pitch_mode", () -> ArgumentTypeInfos
+                .registerByClass(CamPitchModeArgument.class, SingletonArgumentInfo.<CamPitchModeArgument>contextFree(() -> CamPitchModeArgument.pitchMode())));
     }
     
     @OnlyIn(value = Dist.CLIENT)
