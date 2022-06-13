@@ -30,6 +30,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkConstants;
 import team.creative.cmdcam.client.CMDCamClient;
 import team.creative.cmdcam.common.command.argument.CamModeArgument;
+import team.creative.cmdcam.common.command.argument.CamPitchModeArgument;
 import team.creative.cmdcam.common.command.argument.DurationArgument;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument.AllInterpolationArgument;
@@ -86,7 +87,8 @@ public class CMDCam {
         ArgumentTypes.register("cameramode", CamModeArgument.class, new EmptyArgumentSerializer<>(() -> CamModeArgument.mode()));
         ArgumentTypes.register("interpolation", InterpolationArgument.class, new EmptyArgumentSerializer<>(() -> InterpolationArgument.interpolation()));
         ArgumentTypes.register("allinterpolation", AllInterpolationArgument.class, new EmptyArgumentSerializer<>(() -> InterpolationArgument.interpolationAll()));
-        
+        ArgumentTypes.register("pitch_mode", CamPitchModeArgument.class, new EmptyArgumentSerializer<>(() -> CamPitchModeArgument.pitchMode()));
+
         MinecraftForge.EVENT_BUS.register(new CamEventHandler());
         
         CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG);
