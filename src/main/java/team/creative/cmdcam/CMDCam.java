@@ -45,6 +45,7 @@ import team.creative.cmdcam.common.packet.TeleportPathPacket;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.server.CMDCamServer;
 import team.creative.cmdcam.server.CamEventHandler;
+import team.creative.creativecore.common.config.holder.CreativeConfigRegistry;
 import team.creative.creativecore.common.network.CreativeNetwork;
 import team.creative.creativecore.common.network.CreativePacket;
 
@@ -55,6 +56,7 @@ public class CMDCam {
     
     private static final Logger LOGGER = LogManager.getLogger(CMDCam.MODID);
     public static final CreativeNetwork NETWORK = new CreativeNetwork("1.0", LOGGER, new ResourceLocation(CMDCam.MODID, "main"));
+    public static final CMDCamConfig CONFIG = new CMDCamConfig();
     
     public CMDCam() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
@@ -86,6 +88,8 @@ public class CMDCam {
         ArgumentTypes.register("allinterpolation", AllInterpolationArgument.class, new EmptyArgumentSerializer<>(() -> InterpolationArgument.interpolationAll()));
         
         MinecraftForge.EVENT_BUS.register(new CamEventHandler());
+        
+        CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG);
     }
     
     private void serverStarting(final ServerStartingEvent event) {
