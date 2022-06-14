@@ -30,7 +30,7 @@ public class MinemaAddon {
                 stopCaptureMethod = ReflectionHelper.findMethod(captureSessionClass, "stopCapture");
                 Class modClass = Class.forName("info.ata4.minecraft.minema.Minema");
                 Object config = ReflectionHelper.findField(modClass, "config").get(ReflectionHelper.findField(modClass, "instance").get(null));
-                configFrameLimit = ReflectionHelper.findField(config.getClass(), "frameLimit");
+                configFrameLimit = ReflectionHelper.findField(config.getClass(), "frameLimit").get(config);
                 getInt = ReflectionHelper.findMethod(configFrameLimit.getClass(), "get");
                 setInt = ReflectionHelper.findMethod(configFrameLimit.getClass(), "set", int.class);
             } catch (IllegalArgumentException | IllegalAccessException | ClassNotFoundException e) {
