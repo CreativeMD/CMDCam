@@ -288,7 +288,7 @@ public class CamEventHandlerClient {
     
     @SubscribeEvent
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (selectingTarget != null || !event.getWorld().isClientSide)
+        if (selectingTarget == null || !event.getWorld().isClientSide)
             return;
         
         if (event instanceof EntityInteract) {
