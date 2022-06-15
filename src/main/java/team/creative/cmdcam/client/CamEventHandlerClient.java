@@ -59,6 +59,8 @@ public class CamEventHandlerClient {
     
     public static Entity camera = null;
     
+    private static boolean renderingHand = false;
+    
     public static void startSelectionMode(Consumer<CamTarget> selectingTarget) {
         CamEventHandlerClient.selectingTarget = selectingTarget;
     }
@@ -83,6 +85,8 @@ public class CamEventHandlerClient {
         }
         if (event.phase == Phase.END)
             return;
+        
+        renderingHand = false;
         
         if (previousFOV != mc.options.fov().get())
             currentFOV = previousFOV = mc.options.fov().get();
@@ -162,7 +166,9 @@ public class CamEventHandlerClient {
     
     @SubscribeEvent
     public void fov(FieldOfView event) {
-        event.setFOV(currentFOV);
+        if (!renderingHand)
+            event.setFOV(currentFOV);
+        renderingHand = !renderingHand;
     }
     
     @SubscribeEvent
