@@ -50,7 +50,7 @@ public class CamEventHandlerClient {
     public static final float amountroll = 1.5F;
     
     public static double defaultFOV = 70;
-    public static double currentFOV = previousFOV;
+    public static double currentFOV;
     public static float roll = 0;
     
     public static long lastRenderTime;

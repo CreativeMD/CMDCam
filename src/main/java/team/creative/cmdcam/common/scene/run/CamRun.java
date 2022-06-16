@@ -14,8 +14,12 @@ import team.creative.cmdcam.client.SceneException;
 import team.creative.cmdcam.common.math.interpolation.CamPitchMode;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.math.point.CamPoints;
+import team.creative.cmdcam.common.mod.minema.MinemaAddon;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.attribute.CamAttribute;
+import team.creative.cmdcam.common.scene.timer.RealTimeTimer;
+import team.creative.cmdcam.common.scene.timer.RunTimer;
+import team.creative.cmdcam.common.scene.timer.TickerTimer;
 
 @OnlyIn(Dist.CLIENT)
 public class CamRun {
@@ -29,8 +33,7 @@ public class CamRun {
     
     public double sizeOfIteration;
     
-    private long lastResumed;
-    private long timePlayed;
+    private RunTimer timer;
     private boolean running;
     private int currentStage;
     private boolean finished;
@@ -87,7 +90,9 @@ public class CamRun {
         }
         
         this.currentStage = 0;
-        this.lastResumed = System.currentTimeMillis();
+        this.timer = MinemaAddon.installed() ? new TickerTimer() : new RealTimeTimer();
+        if (MinemaAddon.installed())
+            MinemaAddon.startCapture();
         this.finished = false;
         this.running = true;
     }
@@ -98,10 +103,10 @@ public class CamRun {
         if (!stage.hasStarted())
             stage.start();
         
-        long time = position();
+        long time = position(deltaTime);
         if (!stage.endless() && time >= stage.duration) {
             
-            updateLastResumedTime();
+            timer.stageCompleted();
             
             if (stage.looped < scene.loop || scene.loop < 0)
                 stage.looped++;
@@ -122,21 +127,21 @@ public class CamRun {
         scene.mode.process(stage.calculatePoint(level, time, deltaTime));
     }
     
+    public void mcTick(Level level) {
+        timer.tick(running);
+    }
+    
     public CamAttribute[] attributes() {
         return PATH_ATTRIBUTES;
     }
     
-    private void updateLastResumedTime() {
-        lastResumed = System.currentTimeMillis();
+    public void finish() {
+        if (MinemaAddon.installed())
+            MinemaAddon.stopCapture();
     }
     
-    public void finish() {}
-    
-    public long position() {
-        if (running)
-            return timePlayed + (System.currentTimeMillis() - lastResumed);
-        else
-            return timePlayed;
+    public long position(float partialTick) {
+        return timer.position(running, partialTick);
     }
     
     public boolean playing() {
@@ -149,12 +154,12 @@ public class CamRun {
     
     public void pause() {
         running = false;
-        timePlayed += System.currentTimeMillis() - lastResumed;
+        timer.pause();
     }
     
     public void resume() {
         running = true;
-        updateLastResumedTime();
+        timer.resume();
     }
     
     public void stop() {
