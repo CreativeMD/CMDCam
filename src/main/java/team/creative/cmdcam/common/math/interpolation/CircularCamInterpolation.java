@@ -79,7 +79,7 @@ public class CircularCamInterpolation extends CamInterpolation {
                 times.add(1D);
                 vecs.add(new Vec1d(firstPoint.y));
                 
-                return (Interpolation<T>) new CircularInterpolation(scene.lookTarget, sphereOrigin, radius, new HermiteInterpolation<>(ArrayUtils
+                return (Interpolation<T>) new CircularInterpolation((List<Vec3d>) points, scene.lookTarget, sphereOrigin, radius, new HermiteInterpolation<>(ArrayUtils
                         .toPrimitive(times.toArray(new Double[0])), vecs.toArray(new Vec1d[0])));
             }
         }
@@ -93,7 +93,8 @@ public class CircularCamInterpolation extends CamInterpolation {
         public CamTarget target;
         public HermiteInterpolation<Vec1d> yAxis;
         
-        public CircularInterpolation(CamTarget target, Vec3d sphereOrigin, double radius, HermiteInterpolation<Vec1d> yAxis) {
+        public CircularInterpolation(List<Vec3d> points, CamTarget target, Vec3d sphereOrigin, double radius, HermiteInterpolation<Vec1d> yAxis) {
+            super(points);
             this.target = target;
             this.sphereOrigin = sphereOrigin;
             this.radius = radius;

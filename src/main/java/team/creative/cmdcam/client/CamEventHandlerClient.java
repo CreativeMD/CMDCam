@@ -263,6 +263,12 @@ public class CamEventHandlerClient {
         Vec3d color = inter.color.toVec();
         bufferbuilder.begin(Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         CamPoints points = new CamPoints(scene.points);
+        
+        if (scene.lookTarget != null)
+            scene.lookTarget.start(mc.level);
+        if (scene.posTarget != null)
+            scene.posTarget.start(mc.level);
+        
         double[] times = points.createTimes(scene);
         Interpolation<Vec3d> interpolation = inter.create(times, scene, null, new ArrayList<Vec3d>(scene.points), null, CamAttribute.POSITION);
         for (int i = 0; i < steps; i++) {
@@ -277,6 +283,11 @@ public class CamEventHandlerClient {
         bufferbuilder.vertex((float) last.x, (float) last.y, (float) last.z).color((float) color.x, (float) color.y, (float) color.z, 1).endVertex();
         
         tessellator.end();
+        
+        if (scene.lookTarget != null)
+            scene.lookTarget.finish();
+        if (scene.posTarget != null)
+            scene.posTarget.finish();
     }
     
     private static void renderHitbox(PoseStack pMatrixStack, VertexConsumer pBuffer, AABB aabb, float eyeHeight, Vec3d origin, Vec3d view) {
