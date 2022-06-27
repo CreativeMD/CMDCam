@@ -43,7 +43,7 @@ public class DurationArgument implements ArgumentType<Long> {
             factor = 1000 * 60 * 60 * 24;
         else {
             reader.setCursor(start);
-            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid time format")), Component.translatable("invalid_mode"));
+            throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid time format")), Component.translatable("invalid_time_format"));
         }
         
         return time * factor;
