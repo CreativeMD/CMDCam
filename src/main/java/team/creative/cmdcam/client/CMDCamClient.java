@@ -19,6 +19,7 @@ import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
 import team.creative.cmdcam.common.command.builder.PointArgumentBuilder;
 import team.creative.cmdcam.common.command.builder.SceneCommandBuilder;
+import team.creative.cmdcam.common.command.builder.SceneStartCommandBuilder;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.packet.GetPathPacket;
@@ -55,6 +56,8 @@ public class CMDCamClient {
     
     public static void commands(RegisterClientCommandsEvent event) {
         LiteralArgumentBuilder<CommandSourceStack> cam = Commands.literal("cam");
+        
+        SceneStartCommandBuilder.start(cam, PROCESSOR);
         
         SceneCommandBuilder.scene(cam, PROCESSOR);
         

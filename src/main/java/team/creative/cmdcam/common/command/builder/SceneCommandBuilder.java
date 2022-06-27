@@ -4,13 +4,11 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.TranslatableComponent;
-import team.creative.cmdcam.client.SceneException;
 import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.command.argument.CamModeArgument;
 import team.creative.cmdcam.common.command.argument.CamPitchModeArgument;
@@ -64,48 +62,6 @@ public class SceneCommandBuilder {
             processor.markDirty(x);
             return 0;
         })));
-        
-        ArgumentBuilder<CommandSourceStack, ?> startO = Commands.literal("start");
-        ArgumentBuilder<CommandSourceStack, ?> start = startO;
-        if (processor.requiresPlayer())
-            start = Commands.argument("players", EntityArgument.players());
-        
-        start.executes((x) -> {
-            try {
-                processor.start(x);
-            } catch (SceneException e) {
-                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
-            }
-            return 0;
-        }).then(RequiredArgumentBuilder.<CommandSourceStack, Long>argument("duration", DurationArgument.duration()).executes((x) -> {
-            try {
-                long duration = DurationArgument.getDuration(x, "duration");
-                if (duration > 0)
-                    processor.getScene(x).duration = duration;
-                processor.markDirty(x);
-                processor.start(x);
-            } catch (SceneException e) {
-                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
-            }
-            return 0;
-        }).then(RequiredArgumentBuilder.<CommandSourceStack, Integer>argument("loop", IntegerArgumentType.integer(-1)).executes((x) -> {
-            try {
-                CamScene scene = processor.getScene(x);
-                long duration = DurationArgument.getDuration(x, "duration");
-                if (duration > 0)
-                    scene.duration = duration;
-                scene.loop = IntegerArgumentType.getInteger(x, "loop");
-                processor.markDirty(x);
-                processor.start(x);
-            } catch (SceneException e) {
-                x.getSource().sendFailure(new TranslatableComponent(e.getMessage()));
-            }
-            return 0;
-        })));
-        if (processor.requiresPlayer())
-            origin.then(startO.then(start));
-        else
-            origin.then(startO);
         
         origin.then(Commands.literal("duration").then(Commands.argument("duration", DurationArgument.duration()).executes(x -> {
             long duration = DurationArgument.getDuration(x, "duration");

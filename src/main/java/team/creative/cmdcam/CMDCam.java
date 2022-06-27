@@ -35,6 +35,7 @@ import team.creative.cmdcam.common.command.argument.DurationArgument;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument.AllInterpolationArgument;
 import team.creative.cmdcam.common.command.builder.SceneCommandBuilder;
+import team.creative.cmdcam.common.command.builder.SceneStartCommandBuilder;
 import team.creative.cmdcam.common.packet.ConnectPacket;
 import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.PausePathPacket;
@@ -96,6 +97,8 @@ public class CMDCam {
     
     private void serverStarting(final ServerStartingEvent event) {
         LiteralArgumentBuilder<CommandSourceStack> camServer = Commands.literal("cam-server");
+        
+        SceneStartCommandBuilder.start(camServer, CMDCamServer.PROCESSOR);
         
         LiteralArgumentBuilder<CommandSourceStack> get = Commands.literal("get");
         SceneCommandBuilder.scene(get, CMDCamServer.PROCESSOR);
