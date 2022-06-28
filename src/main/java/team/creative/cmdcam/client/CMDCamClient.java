@@ -177,6 +177,7 @@ public class CMDCamClient {
     public static void pause() {
         if (playing != null)
             playing.pause();
+        mc.options.hideGui = hideGuiCache;
     }
     
     public static void resume() {
@@ -191,6 +192,7 @@ public class CMDCamClient {
             return;
         playing.finish(mc.level);
         playing = null;
+        mc.options.hideGui = hideGuiCache;
     }
     
     public static void stopServer() {
@@ -198,6 +200,7 @@ public class CMDCamClient {
             return;
         playing.finish(mc.level);
         playing = null;
+        mc.options.hideGui = hideGuiCache;
     }
     
     public static void noTickPath(Level level, float renderTickTime) {
