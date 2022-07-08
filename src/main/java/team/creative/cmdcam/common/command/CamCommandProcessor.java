@@ -44,7 +44,7 @@ public interface CamCommandProcessor {
     
     public default void makeRelative(CamScene scene, Level level, CamPoint point) throws SceneException {
         if (scene.posTarget != null) {
-            Vec3d vec = scene.posTarget.position(level, TickUtils.getDeltaFrameTime(level));
+            Vec3d vec = scene.posTarget.position(level, TickUtils.getFrameTime(level));
             if (vec == null)
                 throw new SceneException("scene.follow.not_found");
             point.sub(vec);
