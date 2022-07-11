@@ -19,17 +19,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.registries.DeferredRegister;
 import team.creative.cmdcam.client.CMDCamClient;
 import team.creative.cmdcam.common.command.argument.CamModeArgument;
@@ -66,8 +61,7 @@ public class CMDCam {
     
     public CMDCam() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client));
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.addListener(CMDCamClient::commands));
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> CMDCamClient.load(FMLJavaModLoadingContext.get().getModEventBus()));
         MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
         
         COMMAND_ARGUMENT_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -81,13 +75,6 @@ public class CMDCam {
                 .registerByClass(AllInterpolationArgument.class, SingletonArgumentInfo.<AllInterpolationArgument>contextFree(() -> InterpolationArgument.interpolationAll())));
         COMMAND_ARGUMENT_TYPES.register("pitch_mode", () -> ArgumentTypeInfos
                 .registerByClass(CamPitchModeArgument.class, SingletonArgumentInfo.<CamPitchModeArgument>contextFree(() -> CamPitchModeArgument.pitchMode())));
-    }
-    
-    @OnlyIn(value = Dist.CLIENT)
-    private void client(final FMLClientSetupEvent event) {
-        ModLoadingContext.get()
-                .registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
-        CMDCamClient.init(event);
     }
     
     private void init(final FMLCommonSetupEvent event) {

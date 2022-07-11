@@ -3,7 +3,7 @@ package team.creative.cmdcam.client;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 
 public class KeyHandler {
     
@@ -20,18 +20,18 @@ public class KeyHandler {
     
     public static KeyMapping clearPoint = new KeyMapping("key.clearPoint", GLFW.GLFW_KEY_DELETE, "key.categories.cmdcam");
     
-    public static void initKeys() {
-        ClientRegistry.registerKeyBinding(zoomIn);
-        ClientRegistry.registerKeyBinding(zoomCenter);
-        ClientRegistry.registerKeyBinding(zoomOut);
+    public static void registerKeys(RegisterKeyMappingsEvent event) {
+        event.register(zoomIn);
+        event.register(zoomCenter);
+        event.register(zoomOut);
         
-        ClientRegistry.registerKeyBinding(rollLeft);
-        ClientRegistry.registerKeyBinding(rollCenter);
-        ClientRegistry.registerKeyBinding(rollRight);
+        event.register(rollLeft);
+        event.register(rollCenter);
+        event.register(rollRight);
         
-        ClientRegistry.registerKeyBinding(pointKey);
-        ClientRegistry.registerKeyBinding(startStop);
+        event.register(pointKey);
+        event.register(startStop);
         
-        ClientRegistry.registerKeyBinding(clearPoint);
+        event.register(clearPoint);
     }
 }

@@ -14,7 +14,11 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.IExtensionPoint;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.network.NetworkConstants;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
 import team.creative.cmdcam.common.command.builder.PointArgumentBuilder;
@@ -50,8 +54,16 @@ public class CMDCamClient {
     
     public static void init(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(new CamEventHandlerClient());
-        KeyHandler.initKeys();
         CreativeCoreClient.registerClientConfig(CMDCam.MODID);
+        ModLoadingContext.get()
+                .registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+        CMDCamClient.init(event);
+    }
+    
+    public static void load(IEventBus bus) {
+        bus.addListener(CMDCamClient::init);
+        bus.addListener(CMDCamClient::commands);
+        bus.addListener(KeyHandler::registerKeys);
     }
     
     public static void commands(RegisterClientCommandsEvent event) {

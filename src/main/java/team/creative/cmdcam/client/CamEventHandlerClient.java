@@ -22,9 +22,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
-import net.minecraftforge.client.event.EntityViewRenderEvent.FieldOfView;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
+import net.minecraftforge.client.event.ViewportEvent.ComputeCameraAngles;
+import net.minecraftforge.client.event.ViewportEvent.ComputeFov;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.RenderTickEvent;
@@ -165,7 +165,7 @@ public class CamEventHandlerClient {
     }
     
     @SubscribeEvent
-    public void fov(FieldOfView event) {
+    public void fov(ComputeFov event) {
         if (!renderingHand)
             event.setFOV(currentFOV);
         renderingHand = !renderingHand;
@@ -306,7 +306,7 @@ public class CamEventHandlerClient {
     }
     
     @SubscribeEvent
-    public void cameraRoll(CameraSetup event) {
+    public void cameraRoll(ComputeCameraAngles event) {
         event.setRoll(roll);
     }
     
