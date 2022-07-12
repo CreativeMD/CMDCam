@@ -10,7 +10,7 @@ public class CamEventHandler {
     
     @SubscribeEvent
     public void onPlayerConnect(PlayerLoggedInEvent event) {
-        CMDCam.NETWORK.sendToClient(new ConnectPacket(), (ServerPlayer) event.getPlayer());
+        CMDCam.NETWORK.sendToClient(new ConnectPacket(), (ServerPlayer) event.getEntity());
     }
     
 }

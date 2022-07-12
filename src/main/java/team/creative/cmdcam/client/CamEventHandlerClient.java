@@ -312,18 +312,18 @@ public class CamEventHandlerClient {
     
     @SubscribeEvent
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (selectingTarget == null || !event.getWorld().isClientSide)
+        if (selectingTarget == null || !event.getLevel().isClientSide)
             return;
         
         if (event instanceof EntityInteract) {
             selectingTarget.accept(new CamTarget.EntityTarget(((EntityInteract) event).getTarget()));
-            event.getPlayer().sendSystemMessage(Component.translatable("scene.look.target.entity", ((EntityInteract) event).getTarget().getStringUUID()));
+            event.getEntity().sendSystemMessage(Component.translatable("scene.look.target.entity", ((EntityInteract) event).getTarget().getStringUUID()));
             selectingTarget = null;
         }
         
         if (event instanceof RightClickBlock) {
             selectingTarget.accept(new CamTarget.BlockTarget(event.getPos()));
-            event.getPlayer().sendSystemMessage(Component.translatable("scene.look.target.pos", event.getPos().toShortString()));
+            event.getEntity().sendSystemMessage(Component.translatable("scene.look.target.pos", event.getPos().toShortString()));
             selectingTarget = null;
         }
     }
