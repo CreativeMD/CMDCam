@@ -62,7 +62,7 @@ public class CMDCamClient {
     
     public static void load(IEventBus bus) {
         bus.addListener(CMDCamClient::init);
-        bus.addListener(CMDCamClient::commands);
+        MinecraftForge.EVENT_BUS.addListener(CMDCamClient::commands);
         bus.addListener(KeyHandler::registerKeys);
     }
     
