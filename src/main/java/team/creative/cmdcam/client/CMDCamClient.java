@@ -57,7 +57,6 @@ public class CMDCamClient {
         CreativeCoreClient.registerClientConfig(CMDCam.MODID);
         ModLoadingContext.get()
                 .registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
-        CMDCamClient.init(event);
     }
     
     public static void load(IEventBus bus) {
