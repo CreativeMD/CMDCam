@@ -58,7 +58,7 @@ dependencies {
     // Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     
-    implementation project(':CreativeCore')
+    implementation project(':CreativeLoaderForge')
 }
 
 jar {
