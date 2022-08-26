@@ -45,4 +45,9 @@ public class OutsideMode extends CamMode {
         Minecraft.getInstance().cameraEntity = camPlayer;
     }
     
+    @Override
+    public boolean outside() {
+        return true;
+    }
+    
 }

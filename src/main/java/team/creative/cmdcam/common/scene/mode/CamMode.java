@@ -49,4 +49,6 @@ public abstract class CamMode {
         camera.moveTo(point.x, point.y - camera.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
     }
     
+    public abstract boolean outside();
+    
 }
