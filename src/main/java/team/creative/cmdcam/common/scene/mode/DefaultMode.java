@@ -41,4 +41,9 @@ public class DefaultMode extends CamMode {
         return Minecraft.getInstance().player;
     }
     
+    @Override
+    public boolean outside() {
+        return false;
+    }
+    
 }

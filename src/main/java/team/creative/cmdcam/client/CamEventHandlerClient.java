@@ -88,7 +88,7 @@ public class CamEventHandlerClient {
             if (!mc.isPaused()) {
                 if (CMDCamClient.isPlaying()) {
                     while (mc.options.keyJump.consumeClick()) {
-                        if (CMDCamClient.isPlaying())
+                        if (CMDCamClient.isPlaying() && !CMDCamClient.getScene().mode.outside())
                             CMDCamClient.getScene().togglePause();
                     }
                     
