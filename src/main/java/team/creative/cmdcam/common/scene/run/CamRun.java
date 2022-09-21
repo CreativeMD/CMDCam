@@ -57,7 +57,7 @@ public class CamRun {
         { // First sequence
             CamPoints points = new CamPoints(scene.points);
             
-            if (scene.loop != 0) {
+            if (scene.loop != 0 && scene.points.size() > 1) {
                 points.add(scene.points.get(0).copy());
                 points.after(scene.points.get(1).copy());
             }
@@ -67,7 +67,7 @@ public class CamRun {
             stages.add(new CamRunStage(this, scene.duration, 0, points));
         }
         
-        if (scene.loop != 0) { // actual loop
+        if (scene.loop != 0 && scene.loop != 1) { // actual loop
             CamPoints points = new CamPoints(scene.points);
             points.before(scene.points.get(scene.points.size() - 1).copy());
             
@@ -76,7 +76,7 @@ public class CamRun {
             
             points.fixSpinning(scene.pitchMode);
             
-            stages.add(new CamRunStage(this, scene.duration, scene.loop, points));
+            stages.add(new CamRunStage(this, scene.duration, scene.loop > 0 ? scene.loop - 1 : scene.loop, points));
         }
         
         if (scene.loop > 0) { // end loop
@@ -107,8 +107,7 @@ public class CamRun {
         if (!stage.endless() && time >= stage.duration) {
             
             timer.stageCompleted();
-            
-            if (stage.looped < scene.loop || scene.loop < 0)
+            if (stage.looped < stage.loops || stage.loops < 0)
                 stage.looped++;
             else {
                 currentStage++;
