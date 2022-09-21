@@ -11,6 +11,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.client.SceneException;
 import team.creative.cmdcam.common.command.CamCommandProcessor;
@@ -87,6 +89,16 @@ public class CamCommandProcessorServer implements CamCommandProcessor {
     @Override
     public void markDirty(CommandContext<CommandSourceStack> context) {
         CMDCamServer.markDirty(context.getSource().getLevel());
+    }
+    
+    @Override
+    public Player getPlayer(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
+        return EntityArgument.getPlayer(context, "player");
+    }
+    
+    @Override
+    public Entity getEntity(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
+        return EntityArgument.getEntity(context, name);
     }
     
 }

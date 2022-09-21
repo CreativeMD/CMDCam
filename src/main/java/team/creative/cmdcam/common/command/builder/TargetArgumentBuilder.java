@@ -64,7 +64,7 @@ public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, T
             x.getSource().sendSuccess(Component.translatable(translatePrefix() + "self"), false);
             return 0;
         })).then(Commands.literal("player").then(Commands.argument("player", EntityArgument.player()).executes(x -> {
-            Player player = EntityArgument.getPlayer(x, "player");
+            Player player = processor.getPlayer(x, "player");
             try {
                 processor.setTarget(x, new CamTarget.PlayerTarget(player), look);
             } catch (SceneException e) {
@@ -74,7 +74,7 @@ public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, T
             x.getSource().sendSuccess(Component.translatable(translatePrefix() + "player", player.getScoreboardName()), false);
             return 0;
         }))).then(Commands.literal("entity").then(Commands.argument("entity", EntityArgument.entity()).executes(x -> {
-            Entity entity = EntityArgument.getEntity(x, "entity");
+            Entity entity = processor.getEntity(x, "entity");
             try {
                 processor.setTarget(x, new CamTarget.EntityTarget(entity), look);
             } catch (SceneException e) {
