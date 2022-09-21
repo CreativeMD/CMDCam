@@ -10,7 +10,8 @@
     "client": [
         "MouseOverMixin",
         "CurrentViewEntityMixin",
-        "CameraMixin"
+        "CameraMixin",
+        "EntitySelectorMixin"
     ],
     "minVersion": "0.8"
 }

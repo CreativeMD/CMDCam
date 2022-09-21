@@ -1,8 +1,11 @@
 package team.creative.cmdcam.common.command;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import team.creative.cmdcam.client.SceneException;
 import team.creative.cmdcam.common.math.point.CamPoint;
@@ -60,5 +63,9 @@ public interface CamCommandProcessor {
     public void teleport(CommandContext<CommandSourceStack> context, int index);
     
     public void markDirty(CommandContext<CommandSourceStack> context);
+    
+    public Player getPlayer(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException;
+    
+    public Entity getEntity(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException;
     
 }

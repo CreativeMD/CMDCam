@@ -1,8 +1,12 @@
 package team.creative.cmdcam.client;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.scene.CamScene;
@@ -63,6 +67,18 @@ public class CamCommandProcessorClient implements CamCommandProcessor {
     @Override
     public void markDirty(CommandContext<CommandSourceStack> context) {
         CMDCamClient.checkTargetMarker();
+    }
+    
+    @Override
+    public Player getPlayer(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
+        EntitySelectorClient selector = (EntitySelectorClient) context.getArgument(name, EntitySelector.class);
+        return selector.findSinglePlayerClient(context.getSource());
+    }
+    
+    @Override
+    public Entity getEntity(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
+        EntitySelectorClient selector = (EntitySelectorClient) context.getArgument(name, EntitySelector.class);
+        return selector.findSingleEntityClient(context.getSource());
     }
     
 }
