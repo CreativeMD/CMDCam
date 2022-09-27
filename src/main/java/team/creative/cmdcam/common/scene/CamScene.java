@@ -3,7 +3,6 @@ package team.creative.cmdcam.common.scene;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -170,7 +169,7 @@ public class CamScene {
             posTarget.start(level);
         
         if (level.isClientSide)
-            run = new CamRun(level, Minecraft.getInstance().player, this);
+            run = new CamRun(level, this);
     }
     
     public void finish(Level level) {
