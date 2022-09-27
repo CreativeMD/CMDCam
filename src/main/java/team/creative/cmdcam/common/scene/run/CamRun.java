@@ -38,7 +38,8 @@ public class CamRun {
     private int currentStage;
     private boolean finished;
     
-    public CamRun(Level level, Entity camera, CamScene scene) {
+    public CamRun(Level level, CamScene scene) {
+        Entity camera = Minecraft.getInstance().player;
         this.scene = scene;
         
         if (scene.smoothBeginning) { // Smooth start from current player position

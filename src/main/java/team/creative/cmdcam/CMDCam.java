@@ -89,7 +89,7 @@ public class CMDCam {
         ArgumentTypes.register("interpolation", InterpolationArgument.class, new EmptyArgumentSerializer<>(() -> InterpolationArgument.interpolation()));
         ArgumentTypes.register("allinterpolation", AllInterpolationArgument.class, new EmptyArgumentSerializer<>(() -> InterpolationArgument.interpolationAll()));
         ArgumentTypes.register("pitch_mode", CamPitchModeArgument.class, new EmptyArgumentSerializer<>(() -> CamPitchModeArgument.pitchMode()));
-
+        
         MinecraftForge.EVENT_BUS.register(new CamEventHandler());
         
         CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG);
@@ -139,8 +139,12 @@ public class CMDCam {
             if (CMDCamServer.get(x.getSource().getLevel(), name) != null)
                 x.getSource().sendSuccess(new TranslatableComponent("scene.exists", name), true);
             else {
-                CMDCamServer.set(x.getSource().getLevel(), name, CamScene.createDefault());
-                x.getSource().sendSuccess(new TranslatableComponent("scene.create", name), true);
+                try {
+                    CMDCamServer.set(x.getSource().getLevel(), name, CamScene.createDefault());
+                    x.getSource().sendSuccess(new TranslatableComponent("scene.create", name), true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             return 0;
         }))));
