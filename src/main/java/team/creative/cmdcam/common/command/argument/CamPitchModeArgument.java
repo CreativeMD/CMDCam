@@ -32,7 +32,7 @@ public class CamPitchModeArgument implements ArgumentType<CamPitchMode> {
         final int start = reader.getCursor();
         final String result = reader.readString();
         try {
-            return CamPitchMode.valueOf(result);
+            return CamPitchMode.of(result);
         } catch (IllegalArgumentException e) {
             reader.setCursor(start);
             throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Invalid mode")), new TranslatableComponent("invalid_mode"));

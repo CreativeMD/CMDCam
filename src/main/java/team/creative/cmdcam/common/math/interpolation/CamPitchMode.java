@@ -14,4 +14,11 @@ public enum CamPitchMode {
             NAMES[i] = values()[i].name().toLowerCase();
     }
     
+    public static CamPitchMode of(String name) {
+        for (int i = 0; i < NAMES.length; i++)
+            if (name.equals(NAMES[i]))
+                return values()[i];
+        throw new IllegalArgumentException(name);
+    }
+    
 }
