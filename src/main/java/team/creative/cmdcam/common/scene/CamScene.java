@@ -210,7 +210,7 @@ public class CamScene {
         this.duration = scene.duration;
         this.loop = scene.loop;
         setMode(CamMode.REGISTRY.getId(scene.mode));
-        this.points = copyPoints();
+        this.points = scene.copyPoints();
         this.interpolation = scene.interpolation;
         this.serverSynced = scene.serverSynced;
         this.lookTarget = scene.lookTarget;
