@@ -121,7 +121,7 @@ public class CMDCam {
             return 0;
         }))).then(Commands.literal("list").executes((x) -> {
             Collection<String> names = CMDCamServer.getSavedPaths(x.getSource().getLevel());
-            x.getSource().sendSuccess(new TranslatableComponent("scenes.list", names.size(), String.join(", ", names)), true);
+            x.getSource().sendSystemMessage(new TranslatableComponent("scenes.list", names.size(), String.join(", ", names)));
             return 0;
         })).then(Commands.literal("clear").executes((x) -> {
             CMDCamServer.clearPaths(x.getSource().getLevel());
