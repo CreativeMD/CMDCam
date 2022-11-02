@@ -25,7 +25,7 @@ public class CamCommandProcessorClient implements CamCommandProcessor {
     
     @Override
     public void selectTarget(CommandContext<CommandSourceStack> context, boolean look) throws SceneException {
-        if (look)
+        if (!look)
             checkFollowTarget(context, true);
         CamEventHandlerClient.startSelectionMode(x -> {
             try {
