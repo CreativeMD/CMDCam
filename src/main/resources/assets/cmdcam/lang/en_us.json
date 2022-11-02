@@ -50,6 +50,8 @@
     "scene.follow.target.pos": "Selected block %s",
     "scene.follow.not_found": "Follow target not found",
     "scene.follow.div": "Set step of %s to %s",
+    "scene.follow.absolute_fail": "Scene is absolute and contains points. Clear the points first to make it relative.",
+    "scene.follow.relative_fail": "Scene is relative and contains points. Clear the points first to make it absolute.",
     "scene.interpolation.show_all": "Showing all interpolations",
     "scene.interpolation.show": "Showing %s interpolation",
     "scene.interpolation.hide_all": "Hiding all interpolations",
