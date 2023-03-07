@@ -10,6 +10,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.creativecore.common.util.math.vec.Vec3d;
 import team.creative.creativecore.common.util.registry.NamedTypeRegistry;
 import team.creative.creativecore.common.util.registry.exception.RegistryException;
@@ -93,6 +95,7 @@ public abstract class CamTarget {
         }
         
         @Override
+        @OnlyIn(Dist.CLIENT)
         public void start(Level level) {
             if (level instanceof ServerLevel)
                 cachedEntity = ((ServerLevel) level).getEntities().get(uuid);
@@ -143,6 +146,7 @@ public abstract class CamTarget {
         protected void loadExtra(CompoundTag nbt) {}
         
         @Override
+        @OnlyIn(Dist.CLIENT)
         public Vec3d position(Level level, float partialTicks) {
             return new Vec3d(Minecraft.getInstance().player.getEyePosition(partialTicks));
         }

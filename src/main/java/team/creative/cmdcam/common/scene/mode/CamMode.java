@@ -26,6 +26,9 @@ public abstract class CamMode {
     }
     
     @OnlyIn(Dist.CLIENT)
+    public void started(CamRun run) {}
+    
+    @OnlyIn(Dist.CLIENT)
     public void finished(CamRun run) {
         CamEventHandlerClient.resetFOV();
         CamEventHandlerClient.roll = 0;
