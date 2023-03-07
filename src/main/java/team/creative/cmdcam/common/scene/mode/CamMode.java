@@ -27,6 +27,9 @@ public abstract class CamMode {
     }
     
     @OnlyIn(Dist.CLIENT)
+    public void started(CamRun run) {}
+    
+    @OnlyIn(Dist.CLIENT)
     public void finished(CamRun run) {
         Minecraft.getInstance().options.fov = CamEventHandlerClient.currentFOV = CamEventHandlerClient.defaultFOV;
         CamEventHandlerClient.roll = 0;

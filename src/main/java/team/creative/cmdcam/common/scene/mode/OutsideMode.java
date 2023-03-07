@@ -18,6 +18,11 @@ public class OutsideMode extends CamMode {
     
     public OutsideMode(CamScene scene) {
         super(scene);
+    }
+    
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void started(CamRun run) {
         Minecraft mc = Minecraft.getInstance();
         Vec3 vec = mc.player.getEyePosition(TickUtils.getDeltaFrameTime(mc.level));
         this.camPlayer = new ItemEntity(mc.level, vec.x, vec.y, vec.z, ItemStack.EMPTY);
