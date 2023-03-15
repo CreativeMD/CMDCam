@@ -16,6 +16,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.debug.DebugRenderer;
@@ -179,7 +180,6 @@ public class CamEventHandlerClient {
         RenderSystem.enableBlend();
         RenderSystem
                 .blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.disableTexture();
         RenderSystem.depthMask(false);
         RenderSystem.enableDepthTest();
         
@@ -195,7 +195,6 @@ public class CamEventHandlerClient {
         RenderSystem.applyModelViewMatrix();
         
         RenderSystem.depthMask(false);
-        RenderSystem.disableTexture();
         
         if (CMDCamClient.hasTargetMarker()) {
             CamPoint point = CMDCamClient.getTargetMarker();
@@ -211,6 +210,8 @@ public class CamEventHandlerClient {
                 break;
             }
         
+        PoseStack pose = new PoseStack();
+        
         if (shouldRender && CMDCamClient.getPoints().size() > 0) {
             for (int i = 0; i < CMDCamClient.getPoints().size(); i++) {
                 CamPoint point = CMDCamClient.getPoints().get(i);
@@ -219,12 +220,14 @@ public class CamEventHandlerClient {
                     point.add(CMDCamClient.getTargetMarker());
                 }
                 
-                DebugRenderer.renderFloatingText((i + 1) + "", point.x + view.x, point.y + 0.2 + view.y, point.z + view.z, -1);
-                DebugRenderer.renderFilledBox(point.x - 0.05, point.y - 0.05, point.z - 0.05, point.x + 0.05, point.y + 0.05, point.z + 0.05, 1, 1, 1, 1);
+                DebugRenderer.renderFilledBox(pose, mc.renderBuffers()
+                        .bufferSource(), point.x - 0.05, point.y - 0.05, point.z - 0.05, point.x + 0.05, point.y + 0.05, point.z + 0.05, 1, 1, 1, 1);
+                DebugRenderer.renderFloatingText(pose, mc.renderBuffers().bufferSource(), (i + 1) + "", point.x + view.x, point.y + 0.2 + view.y, point.z + view.z, -1);
                 
                 RenderSystem.depthMask(false);
-                RenderSystem.disableTexture();
             }
+            
+            mc.renderBuffers().bufferSource().endLastBatch();
             
             try {
                 mat.pushPose();
@@ -233,7 +236,7 @@ public class CamEventHandlerClient {
                 CamScene scene = CMDCamClient.createScene();
                 for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
                     if (movement.isRenderingEnabled)
-                        renderPath(mat, movement, scene);
+                        renderPath(pose, movement, scene);
                     
                 mat.popPose();
             } catch (SceneException e) {}
@@ -244,7 +247,6 @@ public class CamEventHandlerClient {
         
         RenderSystem.applyModelViewMatrix();
         RenderSystem.depthMask(true);
-        RenderSystem.enableTexture();
         RenderSystem.enableBlend();
         
     }
@@ -255,7 +257,8 @@ public class CamEventHandlerClient {
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.disableTexture();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuilder();
