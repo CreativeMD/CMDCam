@@ -20,7 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -62,7 +62,7 @@ public class CMDCam {
     public CMDCam() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> CMDCamClient.load(FMLJavaModLoadingContext.get().getModEventBus()));
-        MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
+        MinecraftForge.EVENT_BUS.addListener(this::commands);
         
         COMMAND_ARGUMENT_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
         COMMAND_ARGUMENT_TYPES.register("duration", () -> ArgumentTypeInfos
@@ -92,7 +92,7 @@ public class CMDCam {
         CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG);
     }
     
-    private void serverStarting(final ServerStartingEvent event) {
+    private void commands(final RegisterCommandsEvent event) {
         LiteralArgumentBuilder<CommandSourceStack> camServer = Commands.literal("cam-server");
         
         SceneStartCommandBuilder.start(camServer, CMDCamServer.PROCESSOR);
@@ -101,7 +101,7 @@ public class CMDCam {
         SceneCommandBuilder.scene(get, CMDCamServer.PROCESSOR);
         camServer.then(get);
         
-        event.getServer().getCommands().getDispatcher().register(camServer.then(Commands.literal("stop").then(Commands.argument("players", EntityArgument.players()).executes(x -> {
+        event.getDispatcher().register(camServer.then(Commands.literal("stop").then(Commands.argument("players", EntityArgument.players()).executes(x -> {
             CreativePacket packet = new StopPathPacket();
             for (ServerPlayer player : EntityArgument.getPlayers(x, "players"))
                 CMDCam.NETWORK.sendToClient(packet, player);
