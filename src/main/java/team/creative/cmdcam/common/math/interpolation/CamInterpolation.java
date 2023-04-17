@@ -20,7 +20,8 @@ public abstract class CamInterpolation {
         REGISTRY.register("cubic", new CubicCamInterpolation());
         REGISTRY.registerDefault("hermite", HERMITE = new HermiteCamInterpolation());
         REGISTRY.register("cosine", new SmoothCamInterpolation());
-        REGISTRY.register("circular", new CircularCamInterpolation());
+        REGISTRY.register("circular", new CircularCamInterpolation(true));
+        REGISTRY.register("invcircular", new CircularCamInterpolation(false));
     }
     
     public boolean isRenderingEnabled = false;

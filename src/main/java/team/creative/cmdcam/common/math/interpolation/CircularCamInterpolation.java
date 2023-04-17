@@ -21,8 +21,11 @@ import team.creative.creativecore.common.util.type.Color;
 
 public class CircularCamInterpolation extends CamInterpolation {
     
-    public CircularCamInterpolation() {
+    public final boolean clockwise;
+    
+    public CircularCamInterpolation(boolean clockwise) {
         super(new Color(255, 255, 0));
+        this.clockwise = clockwise;
     }
     
     @OnlyIn(Dist.CLIENT)
@@ -61,6 +64,8 @@ public class CircularCamInterpolation extends CamInterpolation {
                     angle += 360;
                 
                 double time = angle / 360;
+                if (!clockwise)
+                    time = 1 - time;
                 for (int j = 0; j < times.size(); j++) {
                     if (times.get(j) > time) {
                         times.add(j, time);
@@ -80,7 +85,7 @@ public class CircularCamInterpolation extends CamInterpolation {
             times.add(1D);
             vecs.add(new Vec1d(firstPoint.y));
             
-            return (Interpolation<T>) new CircularInterpolation((List<Vec3d>) points, scene.lookTarget, sphereOrigin, radius, new HermiteInterpolation<>(ArrayUtils
+            return (Interpolation<T>) new CircularInterpolation(clockwise, (List<Vec3d>) points, scene.lookTarget, sphereOrigin, radius, new HermiteInterpolation<>(ArrayUtils
                     .toPrimitive(times.toArray(new Double[0])), vecs.toArray(new Vec1d[0])));
         }
         return null;
@@ -102,9 +107,11 @@ public class CircularCamInterpolation extends CamInterpolation {
         public double radius;
         public CamTarget target;
         public HermiteInterpolation<Vec1d> yAxis;
+        public final boolean clockwise;
         
-        public CircularInterpolation(List<Vec3d> points, CamTarget target, Vec3d sphereOrigin, double radius, HermiteInterpolation<Vec1d> yAxis) {
+        public CircularInterpolation(boolean clockwise, List<Vec3d> points, CamTarget target, Vec3d sphereOrigin, double radius, HermiteInterpolation<Vec1d> yAxis) {
             super(points);
+            this.clockwise = clockwise;
             this.target = target;
             this.sphereOrigin = sphereOrigin;
             this.radius = radius;
@@ -118,6 +125,8 @@ public class CircularCamInterpolation extends CamInterpolation {
             if (center != null) {
                 Vec3d centerPoint = new Vec3d(center.x, center.y, center.z);
                 
+                if (!clockwise)
+                    t = 1 - t;
                 double angle = t * 360;
                 
                 Vec3d newPoint = new Vec3d(sphereOrigin);
