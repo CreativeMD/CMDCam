@@ -10,7 +10,6 @@ group= "team.creative" // http://maven.apache.org/guides/mini/guide-naming-conve
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 project.evaluationDependsOn(":CreativeCore")
-project.evaluationDependsOn(":CreativeLoaderForge")
 
 minecraft {
     mappings channel: 'official', version: "${project.property 'minecraft_version'}"
@@ -26,7 +25,7 @@ minecraft {
 
             mods {
                 creativecore {
-                    source project(':CreativeLoaderForge').sourceSets.main
+                    source project(':CreativeCore').sourceSets.main
                 }
                 cmdcam {
                     source sourceSets.main
@@ -42,7 +41,7 @@ minecraft {
 
             mods {
                 creativecore {
-                    source project(':CreativeLoaderForge').sourceSets.main
+                    source project(':CreativeCore').sourceSets.main
                 }
                 cmdcam {
                     source sourceSets.main
@@ -58,7 +57,7 @@ dependencies {
     // Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     
-    implementation project(':CreativeLoaderForge')
+    implementation project(':CreativeCore')
 }
 
 jar {
