@@ -8,6 +8,7 @@ import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.run.CamRun;
 import team.creative.cmdcam.common.target.CamTarget.SelfTarget;
+import team.creative.creativecore.common.util.math.vec.Vec3d;
 
 public class DefaultMode extends CamMode {
     
@@ -39,6 +40,12 @@ public class DefaultMode extends CamMode {
     @OnlyIn(Dist.CLIENT)
     public Entity getCamera() {
         return Minecraft.getInstance().player;
+    }
+    
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void correctTargetPosition(Vec3d vec) {
+        vec.y -= Minecraft.getInstance().player.getEyeHeight();
     }
     
     @Override

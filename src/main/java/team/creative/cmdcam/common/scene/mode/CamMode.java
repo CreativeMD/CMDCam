@@ -8,6 +8,7 @@ import team.creative.cmdcam.client.CamEventHandlerClient;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.run.CamRun;
+import team.creative.creativecore.common.util.math.vec.Vec3d;
 import team.creative.creativecore.common.util.registry.NamedTypeRegistry;
 
 public abstract class CamMode {
@@ -53,5 +54,8 @@ public abstract class CamMode {
     }
     
     public abstract boolean outside();
+    
+    @OnlyIn(Dist.CLIENT)
+    public void correctTargetPosition(Vec3d vec) {}
     
 }
