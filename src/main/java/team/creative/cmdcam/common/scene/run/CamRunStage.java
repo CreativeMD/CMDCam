@@ -83,6 +83,8 @@ public class CamRunStage {
             Vec3d vec = run.scene.lookTarget.position(level, partialTicks);
             
             if (vec != null) {
+                run.scene.mode.correctTargetPosition(vec);
+                
                 double d0 = vec.x - camPos.x;
                 double d1 = vec.y - camPos.y;
                 double d2 = vec.z - camPos.z;
@@ -95,7 +97,9 @@ public class CamRunStage {
         
         if (run.scene.posTarget != null) {
             targetPoint.set(point);
-            targetPoint.add(new Vec3d(run.scene.posTarget.position(level, partialTicks)));
+            Vec3d vec = new Vec3d(run.scene.posTarget.position(level, partialTicks));
+            run.scene.mode.correctTargetPosition(vec);
+            targetPoint.add(vec);
         }
         
         for (Entry<CamAttribute, CamFollow> entry : followAttributes.entrySet())
