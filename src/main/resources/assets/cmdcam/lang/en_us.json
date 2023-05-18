@@ -10,7 +10,7 @@
     "key.centerzoom": "Reset Zoom",
     "key.clearPoint": "Clear Points",
     "invalid_mode": "Invalid mode",
-    "invalid_time_format": "Invalid time format",
+    "invalid_time_format": "Invalid time format! Try out 10s (for 10 seconds).",
     "mode.default.desc": "the player acts as the camera",
     "mode.outside.desc": "the player is not the camera, but you are still in control",
     "scene.create": "Created empty scene %s",
