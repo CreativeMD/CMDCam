@@ -122,22 +122,22 @@ public class CMDCam {
             return 0;
         })).then(Commands.literal("clear").executes((x) -> {
             CMDCamServer.clearPaths(x.getSource().getLevel());
-            x.getSource().sendSuccess(Component.translatable("scenes.clear"), true);
+            x.getSource().sendSuccess(() -> Component.translatable("scenes.clear"), true);
             return 0;
         })).then(Commands.literal("remove").then(Commands.argument("name", StringArgumentType.string()).executes((x) -> {
             String name = StringArgumentType.getString(x, "name");
             if (CMDCamServer.removePath(x.getSource().getLevel(), name))
-                x.getSource().sendSuccess(Component.translatable("scene.remove", name), true);
+                x.getSource().sendSuccess(() -> Component.translatable("scene.remove", name), true);
             else
                 x.getSource().sendFailure(Component.translatable("scene.remove_fail", name));
             return 0;
         }))).then(Commands.literal("create").then(Commands.argument("name", StringArgumentType.string()).executes((x) -> {
             String name = StringArgumentType.getString(x, "name");
             if (CMDCamServer.get(x.getSource().getLevel(), name) != null)
-                x.getSource().sendSuccess(Component.translatable("scene.exists", name), true);
+                x.getSource().sendSuccess(() -> Component.translatable("scene.exists", name), true);
             else {
                 CMDCamServer.set(x.getSource().getLevel(), name, CamScene.createDefault());
-                x.getSource().sendSuccess(Component.translatable("scene.create", name), true);
+                x.getSource().sendSuccess(() -> Component.translatable("scene.create", name), true);
             }
             return 0;
         }))));

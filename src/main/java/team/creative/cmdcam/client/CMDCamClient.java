@@ -85,22 +85,22 @@ public class CMDCamClient {
             String interpolation = StringArgumentType.getString(x, "interpolation");
             if (!interpolation.equalsIgnoreCase("all")) {
                 CamInterpolation.REGISTRY.get(interpolation).isRenderingEnabled = true;
-                x.getSource().sendSuccess(Component.translatable("scene.interpolation.show", interpolation), false);
+                x.getSource().sendSuccess(() -> Component.translatable("scene.interpolation.show", interpolation), false);
             } else {
                 for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
                     movement.isRenderingEnabled = true;
-                x.getSource().sendSuccess(Component.translatable("scene.interpolation.show_all"), false);
+                x.getSource().sendSuccess(() -> Component.translatable("scene.interpolation.show_all"), false);
             }
             return 0;
         }))).then(Commands.literal("hide").then(Commands.argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
             String interpolation = StringArgumentType.getString(x, "interpolation");
             if (!interpolation.equalsIgnoreCase("all")) {
                 CamInterpolation.REGISTRY.get(interpolation).isRenderingEnabled = false;
-                x.getSource().sendSuccess(Component.translatable("scene.interpolation.hide", interpolation), false);
+                x.getSource().sendSuccess(() -> Component.translatable("scene.interpolation.hide", interpolation), false);
             } else {
                 for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
                     movement.isRenderingEnabled = false;
-                x.getSource().sendSuccess(Component.translatable("scene.interpolation.hide_all"), false);
+                x.getSource().sendSuccess(() -> Component.translatable("scene.interpolation.hide_all"), false);
             }
             return 0;
         }))).then(Commands.literal("list").executes((x) -> {
@@ -108,7 +108,7 @@ public class CMDCamClient {
                 x.getSource().sendFailure(Component.translatable("scenes.list_fail"));
                 return 0;
             }
-            x.getSource().sendSuccess(Component.translatable("scenes.list", SCENES.size(), String.join(", ", SCENES.keySet())), true);
+            x.getSource().sendSuccess(() -> Component.translatable("scenes.list", SCENES.size(), String.join(", ", SCENES.keySet())), true);
             return 0;
         })).then(Commands.literal("load").then(Commands.argument("path", StringArgumentType.string()).executes((x) -> {
             String pathArg = StringArgumentType.getString(x, "path");
@@ -118,7 +118,7 @@ public class CMDCamClient {
                 CamScene scene = CMDCamClient.SCENES.get(pathArg);
                 if (scene != null) {
                     set(scene);
-                    x.getSource().sendSuccess(Component.translatable("scenes.load", pathArg), false);
+                    x.getSource().sendSuccess(() -> Component.translatable("scenes.load", pathArg), false);
                 } else
                     x.getSource().sendFailure(Component.translatable("scenes.load_fail", pathArg));
             }
@@ -132,7 +132,7 @@ public class CMDCamClient {
                     CMDCam.NETWORK.sendToServer(new SetPathPacket(pathArg, scene));
                 else {
                     CMDCamClient.SCENES.put(pathArg, scene);
-                    x.getSource().sendSuccess(Component.translatable("scenes.save", pathArg), false);
+                    x.getSource().sendSuccess(() -> Component.translatable("scenes.save", pathArg), false);
                 }
             } catch (SceneException e) {
                 x.getSource().sendFailure(Component.translatable(e.getMessage()));

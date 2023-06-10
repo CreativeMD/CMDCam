@@ -52,7 +52,7 @@ public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, T
                 x.getSource().sendFailure(Component.translatable(e.getMessage()));
             }
             processor.markDirty(x);
-            x.getSource().sendSuccess(Component.translatable(translatePrefix() + "remove"), false);
+            x.getSource().sendSuccess(() -> Component.translatable(translatePrefix() + "remove"), false);
             return 0;
         })).then(Commands.literal("self").executes(x -> {
             try {
@@ -61,7 +61,7 @@ public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, T
                 x.getSource().sendFailure(Component.translatable(e.getMessage()));
             }
             processor.markDirty(x);
-            x.getSource().sendSuccess(Component.translatable(translatePrefix() + "self"), false);
+            x.getSource().sendSuccess(() -> Component.translatable(translatePrefix() + "self"), false);
             return 0;
         })).then(Commands.literal("player").then(Commands.argument("player", EntityArgument.player()).executes(x -> {
             Player player = processor.getPlayer(x, "player");
@@ -71,7 +71,7 @@ public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, T
                 x.getSource().sendFailure(Component.translatable(e.getMessage()));
             }
             processor.markDirty(x);
-            x.getSource().sendSuccess(Component.translatable(translatePrefix() + "player", player.getScoreboardName()), false);
+            x.getSource().sendSuccess(() -> Component.translatable(translatePrefix() + "player", player.getScoreboardName()), false);
             return 0;
         }))).then(Commands.literal("entity").then(Commands.argument("entity", EntityArgument.entity()).executes(x -> {
             Entity entity = processor.getEntity(x, "entity");
@@ -81,7 +81,7 @@ public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, T
                 x.getSource().sendFailure(Component.translatable(e.getMessage()));
             }
             processor.markDirty(x);
-            x.getSource().sendSuccess(Component.translatable(translatePrefix() + "entity", entity.getStringUUID()), false);
+            x.getSource().sendSuccess(() -> Component.translatable(translatePrefix() + "entity", entity.getStringUUID()), false);
             return 0;
         }))).then(Commands.literal("pos").then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(x -> {
             BlockPos pos = BlockPosArgument.getLoadedBlockPos(x, "pos");
@@ -91,7 +91,7 @@ public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, T
                 x.getSource().sendFailure(Component.translatable(e.getMessage()));
             }
             processor.markDirty(x);
-            x.getSource().sendSuccess(Component.translatable(translatePrefix() + "pos", pos.toShortString()), false);
+            x.getSource().sendSuccess(() -> Component.translatable(translatePrefix() + "pos", pos.toShortString()), false);
             return 0;
         })));
         
@@ -102,7 +102,7 @@ public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, T
                 } catch (SceneException e) {
                     x.getSource().sendFailure(Component.translatable(e.getMessage()));
                 }
-                x.getSource().sendSuccess(Component.translatable(translatePrefix() + "select"), false);
+                x.getSource().sendSuccess(() -> Component.translatable(translatePrefix() + "select"), false);
                 return 0;
             }));
         

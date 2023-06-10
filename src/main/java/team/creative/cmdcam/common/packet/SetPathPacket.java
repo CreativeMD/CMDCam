@@ -41,7 +41,7 @@ public class SetPathPacket extends CreativePacket {
         try {
             CamScene path = new CamScene(nbt);
             if (player.hasPermissions(4)) {
-                CMDCamServer.set(player.level, id, path);
+                CMDCamServer.set(player.level(), id, path);
                 player.sendSystemMessage(Component.translatable("scene.save", id));
             } else
                 player.sendSystemMessage(Component.translatable("scene.save_perm", id));

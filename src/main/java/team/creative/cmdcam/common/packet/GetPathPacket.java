@@ -23,7 +23,7 @@ public class GetPathPacket extends CreativePacket {
     
     @Override
     public void executeServer(ServerPlayer player) {
-        CamScene path = CMDCamServer.get(player.level, id);
+        CamScene path = CMDCamServer.get(player.level(), id);
         if (path != null)
             CMDCam.NETWORK.sendToClient(new SetPathPacket(id, path), player);
         else

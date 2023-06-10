@@ -14,6 +14,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
+import com.mojang.blaze3d.vertex.VertexSorting;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -24,7 +25,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent.Stage;
 import net.minecraftforge.client.event.ViewportEvent.ComputeCameraAngles;
 import net.minecraftforge.client.event.ViewportEvent.ComputeFov;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
@@ -174,8 +176,8 @@ public class CamEventHandlerClient {
     }
     
     @SubscribeEvent
-    public void worldRender(RenderLevelLastEvent event) {
-        if (CMDCamClient.isPlaying())
+    public void worldRender(RenderLevelStageEvent event) {
+        if (CMDCamClient.isPlaying() || event.getStage() != Stage.AFTER_ENTITIES)
             return;
         RenderSystem.enableBlend();
         RenderSystem
@@ -185,7 +187,7 @@ public class CamEventHandlerClient {
         
         Vec3 view = mc.gameRenderer.getMainCamera().getPosition();
         
-        RenderSystem.setProjectionMatrix(event.getProjectionMatrix());
+        RenderSystem.setProjectionMatrix(event.getProjectionMatrix(), VertexSorting.ORTHOGRAPHIC_Z);
         PoseStack mat = RenderSystem.getModelViewStack();
         mat.pushPose();
         mat.setIdentity();

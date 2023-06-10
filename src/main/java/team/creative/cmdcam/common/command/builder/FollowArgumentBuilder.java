@@ -33,7 +33,7 @@ public class FollowArgumentBuilder extends ArgumentBuilder<CommandSourceStack, F
                     double div = DoubleArgumentType.getDouble(x, "div");
                     processor.getScene(x).getConfig(attribute).div = div;
                     processor.markDirty(x);
-                    x.getSource().sendSuccess(Component.translatable("scene.follow.div", attribute.name(), div), false);
+                    x.getSource().sendSuccess(() -> Component.translatable("scene.follow.div", attribute.name(), div), false);
                     return 0;
                 })));
         
