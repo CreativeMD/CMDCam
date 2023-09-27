@@ -55,7 +55,7 @@ public class CMDCam {
     public static final String MODID = "cmdcam";
     
     private static final Logger LOGGER = LogManager.getLogger(CMDCam.MODID);
-    public static final CreativeNetwork NETWORK = new CreativeNetwork("1.0", LOGGER, new ResourceLocation(CMDCam.MODID, "main"));
+    public static final CreativeNetwork NETWORK = new CreativeNetwork(1, LOGGER, new ResourceLocation(CMDCam.MODID, "main"));
     public static final CMDCamConfig CONFIG = new CMDCamConfig();
     public static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, MODID);
     
@@ -65,16 +65,16 @@ public class CMDCam {
         MinecraftForge.EVENT_BUS.addListener(this::commands);
         
         COMMAND_ARGUMENT_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
-        COMMAND_ARGUMENT_TYPES.register("duration", () -> ArgumentTypeInfos
-                .registerByClass(DurationArgument.class, SingletonArgumentInfo.<DurationArgument>contextFree(() -> DurationArgument.duration())));
-        COMMAND_ARGUMENT_TYPES.register("cam_mode", () -> ArgumentTypeInfos
-                .registerByClass(CamModeArgument.class, SingletonArgumentInfo.<CamModeArgument>contextFree(() -> CamModeArgument.mode())));
-        COMMAND_ARGUMENT_TYPES.register("interpolation", () -> ArgumentTypeInfos
-                .registerByClass(InterpolationArgument.class, SingletonArgumentInfo.<InterpolationArgument>contextFree(() -> InterpolationArgument.interpolation())));
-        COMMAND_ARGUMENT_TYPES.register("all_interpolation", () -> ArgumentTypeInfos
-                .registerByClass(AllInterpolationArgument.class, SingletonArgumentInfo.<AllInterpolationArgument>contextFree(() -> InterpolationArgument.interpolationAll())));
-        COMMAND_ARGUMENT_TYPES.register("pitch_mode", () -> ArgumentTypeInfos
-                .registerByClass(CamPitchModeArgument.class, SingletonArgumentInfo.<CamPitchModeArgument>contextFree(() -> CamPitchModeArgument.pitchMode())));
+        COMMAND_ARGUMENT_TYPES.register("duration", () -> ArgumentTypeInfos.registerByClass(DurationArgument.class, SingletonArgumentInfo.<DurationArgument>contextFree(
+            () -> DurationArgument.duration())));
+        COMMAND_ARGUMENT_TYPES.register("cam_mode", () -> ArgumentTypeInfos.registerByClass(CamModeArgument.class, SingletonArgumentInfo.<CamModeArgument>contextFree(
+            () -> CamModeArgument.mode())));
+        COMMAND_ARGUMENT_TYPES.register("interpolation", () -> ArgumentTypeInfos.registerByClass(InterpolationArgument.class, SingletonArgumentInfo
+                .<InterpolationArgument>contextFree(() -> InterpolationArgument.interpolation())));
+        COMMAND_ARGUMENT_TYPES.register("all_interpolation", () -> ArgumentTypeInfos.registerByClass(AllInterpolationArgument.class, SingletonArgumentInfo
+                .<AllInterpolationArgument>contextFree(() -> InterpolationArgument.interpolationAll())));
+        COMMAND_ARGUMENT_TYPES.register("pitch_mode", () -> ArgumentTypeInfos.registerByClass(CamPitchModeArgument.class, SingletonArgumentInfo.<CamPitchModeArgument>contextFree(
+            () -> CamPitchModeArgument.pitchMode())));
     }
     
     private void init(final FMLCommonSetupEvent event) {
