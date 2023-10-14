@@ -16,8 +16,6 @@ public class CamSaveData extends SavedData {
     
     private HashMap<String, CamScene> scenes = new HashMap<>();
     
-    public CamSaveData() {}
-    
     public CamSaveData(CompoundTag nbt) {
         for (String key : nbt.getAllKeys())
             try {
