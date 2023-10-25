@@ -17,12 +17,10 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import team.creative.cmdcam.client.CMDCamClient;
@@ -59,14 +57,9 @@ public class CMDCam {
     
     public CMDCam() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> FMLJavaModLoadingContext.get().getModEventBus().addListener(this::client));
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> CMDCamClient.load(FMLJavaModLoadingContext.get().getModEventBus()));
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.addListener(CMDCamClient::commands));
         MinecraftForge.EVENT_BUS.addListener(this::commands);
-    }
-    
-    @OnlyIn(value = Dist.CLIENT)
-    private void client(final FMLClientSetupEvent event) {
-        CMDCamClient.init(event);
     }
     
     private void init(final FMLCommonSetupEvent event) {

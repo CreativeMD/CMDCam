@@ -14,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
@@ -50,8 +51,12 @@ public class CMDCamClient {
     
     public static void init(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(new CamEventHandlerClient());
-        KeyHandler.initKeys();
         CreativeCoreClient.registerClientConfig(CMDCam.MODID);
+    }
+    
+    public static void load(IEventBus bus) {
+        bus.addListener(CMDCamClient::init);
+        KeyHandler.initKeys();
     }
     
     public static void commands(RegisterClientCommandsEvent event) {
@@ -245,8 +250,8 @@ public class CMDCamClient {
         Minecraft mc = Minecraft.getInstance();
         mc.player.getAbilities().flying = true;
         
-        CamEventHandlerClient.roll = (float) point.roll;
-        mc.options.fov = (float) point.zoom;
+        CamEventHandlerClient.roll((float) point.roll);
+        CamEventHandlerClient.fov(point.zoom);
         mc.player.absMoveTo(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
         mc.player.absMoveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
     }
