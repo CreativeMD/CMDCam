@@ -32,7 +32,7 @@ public abstract class CamMode {
     @OnlyIn(Dist.CLIENT)
     public void finished(CamRun run) {
         CamEventHandlerClient.resetFOV();
-        CamEventHandlerClient.roll = 0;
+        CamEventHandlerClient.resetRoll();
     }
     
     @OnlyIn(Dist.CLIENT)
@@ -40,8 +40,8 @@ public abstract class CamMode {
     
     @OnlyIn(Dist.CLIENT)
     public void process(CamPoint point) {
-        CamEventHandlerClient.roll = (float) point.roll;
-        CamEventHandlerClient.currentFOV = (float) point.zoom;
+        CamEventHandlerClient.roll((float) point.roll);
+        CamEventHandlerClient.fov(point.zoom);
         
         Entity camera = getCamera();
         if (camera instanceof Player)

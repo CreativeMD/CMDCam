@@ -55,8 +55,8 @@ public class CMDCamClient {
     public static void init(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(new CamEventHandlerClient());
         CreativeCoreClient.registerClientConfig(CMDCam.MODID);
-        ModLoadingContext.get()
-                .registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
+            () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
     }
     
     public static void load(IEventBus bus) {
@@ -256,8 +256,8 @@ public class CMDCamClient {
         Minecraft mc = Minecraft.getInstance();
         mc.player.getAbilities().flying = true;
         
-        CamEventHandlerClient.roll = (float) point.roll;
-        CamEventHandlerClient.currentFOV = (float) point.zoom;
+        CamEventHandlerClient.roll((float) point.roll);
+        CamEventHandlerClient.fov(point.zoom);
         mc.player.absMoveTo(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
         mc.player.absMoveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
     }

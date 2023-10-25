@@ -23,16 +23,16 @@ public class CamPoint extends Vec3d {
         Minecraft mc = Minecraft.getInstance();
         float partialTicks = TickUtils.getFrameTime(mc.level);
         Vec3 vec = mc.player.getEyePosition(partialTicks);
-        return new CamPoint(vec.x, vec.y, vec.z, mc.player.getViewYRot(partialTicks), mc.player
-                .getViewXRot(partialTicks), CamEventHandlerClient.roll, CamEventHandlerClient.currentFOV);
+        return new CamPoint(vec.x, vec.y, vec.z, mc.player.getViewYRot(partialTicks), mc.player.getViewXRot(partialTicks), CamEventHandlerClient.roll(), CamEventHandlerClient
+                .fovExact(partialTicks));
     }
     
     public static CamPoint create(Entity entity) {
         float partialTicks = TickUtils.getFrameTime(entity.level());
         Vec3 vec = entity.getEyePosition(partialTicks);
         if (entity.level().isClientSide)
-            return new CamPoint(vec.x, vec.y, vec.z, entity.getViewYRot(partialTicks), entity
-                    .getViewXRot(partialTicks), CamEventHandlerClient.roll, CamEventHandlerClient.currentFOV);
+            return new CamPoint(vec.x, vec.y, vec.z, entity.getViewYRot(partialTicks), entity.getViewXRot(partialTicks), CamEventHandlerClient.roll(), CamEventHandlerClient
+                    .fovExact(partialTicks));
         else
             return new CamPoint(vec.x, vec.y, vec.z, entity.getViewYRot(partialTicks), entity.getViewXRot(partialTicks), 0, 70);
     }

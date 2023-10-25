@@ -11,7 +11,8 @@
         "MouseOverMixin",
         "CurrentViewEntityMixin",
         "CameraMixin",
-        "EntitySelectorMixin"
+        "EntitySelectorMixin",
+        "GameRendererAccessor"
     ],
     "minVersion": "0.8"
 }
