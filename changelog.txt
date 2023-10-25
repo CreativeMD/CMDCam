@@ -1,0 +1,4 @@
+2.0.22
+Reworked how fov is applied
+Added bounds for maximum and minimum fov
+Added smooth interpolation for fov setting (to make it easier to work with high zooms)
