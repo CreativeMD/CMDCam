@@ -43,13 +43,13 @@ public class SceneCommandBuilder {
         origin.then(new PointArgumentBuilder("insert", (x, point, index) -> {
             processor.getScene(x).points.add(index, point);
             processor.markDirty(x);
-            x.getSource().sendSuccess(() -> Component.translatable("scene.insert", index), false);
+            x.getSource().sendSuccess(() -> Component.translatable("scene.insert", index + 1), false);
         }, processor));
         
         origin.then(new PointArgumentBuilder("set", (x, point, index) -> {
             processor.getScene(x).points.set(index, point);
             processor.markDirty(x);
-            x.getSource().sendSuccess(() -> Component.translatable("scene.set", index), false);
+            x.getSource().sendSuccess(() -> Component.translatable("scene.set", index + 1), false);
         }, processor));
         
         origin.then(Commands.literal("remove").then(Commands.argument("index", IntegerArgumentType.integer()).executes((x) -> {
@@ -112,8 +112,8 @@ public class SceneCommandBuilder {
         origin.then(new TargetArgumentBuilder("target", true, processor));
         origin.then(new TargetArgumentBuilder("follow", false, processor));
         
-        origin.then(new FollowArgumentBuilder(CamAttribute.PITCH, processor)).then(new FollowArgumentBuilder(CamAttribute.YAW, processor))
-                .then(new FollowArgumentBuilder(CamAttribute.POSITION, processor));
+        origin.then(new FollowArgumentBuilder(CamAttribute.PITCH, processor)).then(new FollowArgumentBuilder(CamAttribute.YAW, processor)).then(
+            new FollowArgumentBuilder(CamAttribute.POSITION, processor));
         
         origin.then(Commands.literal("interpolation").then(Commands.argument("interpolation", InterpolationArgument.interpolation()).executes((x) -> {
             String interpolation = StringArgumentType.getString(x, "interpolation");
