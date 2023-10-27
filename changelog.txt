@@ -1,3 +1,8 @@
+2.1.0
+Added support for Minema Resurrection 2
+Fixed goto command having weird fov values
+Fixed using insert and set command showing wrong index
+
 2.0.22
 Reworked how fov is applied
 Added bounds for maximum and minimum fov
