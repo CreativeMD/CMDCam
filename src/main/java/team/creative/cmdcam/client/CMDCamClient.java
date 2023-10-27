@@ -251,7 +251,7 @@ public class CMDCamClient {
         mc.player.getAbilities().flying = true;
         
         CamEventHandlerClient.roll((float) point.roll);
-        CamEventHandlerClient.fov(point.zoom);
+        CamEventHandlerClient.fov(point.zoom - CamEventHandlerClient.fovExactVanilla(mc.getPartialTick()));
         mc.player.absMoveTo(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
         mc.player.absMoveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
     }
