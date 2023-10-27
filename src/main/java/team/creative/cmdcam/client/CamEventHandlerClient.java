@@ -113,7 +113,7 @@ public class CamEventHandlerClient {
         if (event.phase == Phase.END)
             return;
         if (MC.player != null && MC.level != null && !MC.isPaused() && CMDCamClient.isPlaying())
-            CMDCamClient.mcTickPath(MC.level);
+            CMDCamClient.gameTickPath(MC.level);
     }
     
     private double calculatePointInCurve(double fov) {
@@ -150,7 +150,7 @@ public class CamEventHandlerClient {
                             CMDCamClient.getScene().togglePause();
                     }
                     
-                    CMDCamClient.tickPath(MC.level, event.renderTickTime);
+                    CMDCamClient.renderTickPath(MC.level, event.renderTickTime);
                 } else {
                     CMDCamClient.noTickPath(MC.level, event.renderTickTime);
                     double timeFactor = MC.getDeltaFrameTime();

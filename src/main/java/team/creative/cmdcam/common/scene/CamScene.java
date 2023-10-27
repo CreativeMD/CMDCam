@@ -190,22 +190,22 @@ public class CamScene {
         started = false;
     }
     
-    public void tick(Level level, float deltaTime) {
+    public void renderTick(Level level, float deltaTime) {
         if (started) {
             started = false;
             started(level);
         }
         
-        run.tick(level, deltaTime);
+        run.renderTick(level, deltaTime);
     }
     
-    public void mcTick(Level level) {
+    public void gameTick(Level level) {
         if (started) {
             started = false;
             started(level);
         }
         
-        run.mcTick(level);
+        run.gameTick(level);
     }
     
     public void set(CamScene scene) {

@@ -218,12 +218,12 @@ public class CMDCamClient {
         hideGuiCache = mc.options.hideGui;
     }
     
-    public static void mcTickPath(Level level) {
-        playing.mcTick(level);
+    public static void gameTickPath(Level level) {
+        playing.gameTick(level);
     }
     
-    public static void tickPath(Level level, float renderTickTime) {
-        playing.tick(level, renderTickTime);
+    public static void renderTickPath(Level level, float renderTickTime) {
+        playing.renderTick(level, renderTickTime);
         if (!playing.playing()) {
             mc.options.hideGui = hideGuiCache;
             playing = null;
@@ -257,7 +257,7 @@ public class CMDCamClient {
         mc.player.getAbilities().flying = true;
         
         CamEventHandlerClient.roll((float) point.roll);
-        CamEventHandlerClient.fov(point.zoom);
+        CamEventHandlerClient.fov(point.zoom - CamEventHandlerClient.fovExact(mc.getPartialTick()));
         mc.player.absMoveTo(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
         mc.player.absMoveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
     }

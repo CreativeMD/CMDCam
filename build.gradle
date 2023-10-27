@@ -8,6 +8,15 @@ plugins {
     id 'com.matthewprenger.cursegradle' version '1.4+'
 }
 
+repositories {
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+}
+
 group= "team.creative" + project.mod_id
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -68,6 +77,8 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     
     implementation project(':CreativeCore')
+    
+    minecraftLibrary fg.deobf("curse.maven:minema-resurrection-596719:4816846")
 }
 
 def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']

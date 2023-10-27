@@ -15,11 +15,11 @@ import team.creative.cmdcam.common.math.interpolation.CamPitchMode;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.math.point.CamPoints;
 import team.creative.cmdcam.common.mod.minema.MinemaAddon;
+import team.creative.cmdcam.common.mod.minema.MinemaTimer;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.attribute.CamAttribute;
 import team.creative.cmdcam.common.scene.timer.RealTimeTimer;
 import team.creative.cmdcam.common.scene.timer.RunTimer;
-import team.creative.cmdcam.common.scene.timer.TickerTimer;
 
 @OnlyIn(Dist.CLIENT)
 public class CamRun {
@@ -65,7 +65,16 @@ public class CamRun {
             
             points.fixSpinning(scene.pitchMode);
             
-            stages.add(new CamRunStage(this, scene.duration, 0, points));
+            stages.add(new CamRunStage(this, scene.duration, 0, points) {
+                
+                @Override
+                public void start() {
+                    super.start();
+                    if (MinemaAddon.installed())
+                        MinemaAddon.startCapture();
+                }
+                
+            });
         }
         
         if (scene.loop != 0 && scene.loop != 1) { // actual loop
@@ -91,14 +100,12 @@ public class CamRun {
         }
         
         this.currentStage = 0;
-        this.timer = MinemaAddon.installed() ? new TickerTimer() : new RealTimeTimer();
-        if (MinemaAddon.installed())
-            MinemaAddon.startCapture();
+        this.timer = MinemaAddon.installed() ? new MinemaTimer() : new RealTimeTimer();
         this.finished = false;
         this.running = true;
     }
     
-    public void tick(Level level, float deltaTime) {
+    public void renderTick(Level level, float deltaTime) {
         CamRunStage stage = stages.get(currentStage);
         
         if (!stage.hasStarted())
@@ -127,7 +134,7 @@ public class CamRun {
         scene.mode.process(stage.calculatePoint(level, time, deltaTime));
     }
     
-    public void mcTick(Level level) {
+    public void gameTick(Level level) {
         timer.tick(running);
     }
     
@@ -165,6 +172,8 @@ public class CamRun {
     public void stop() {
         finished = true;
         running = false;
+        if (MinemaAddon.installed())
+            MinemaAddon.stopCapture();
     }
     
 }
