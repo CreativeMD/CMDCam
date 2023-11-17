@@ -1,16 +1,15 @@
 package team.creative.cmdcam.server;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.common.packet.ConnectPacket;
 
 public class CamEventHandler {
-    
-    @SubscribeEvent
-    public void onPlayerConnect(PlayerLoggedInEvent event) {
-        CMDCam.NETWORK.sendToClient(new ConnectPacket(), (ServerPlayer) event.getEntity());
+
+    public CamEventHandler() {
+        ServerPlayConnectionEvents.JOIN.register(((handler, sender, server) -> {
+            CMDCam.NETWORK.sendToClient(new ConnectPacket(), handler.getPlayer());
+        }));
     }
     
 }

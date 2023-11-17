@@ -1,7 +1,5 @@
 package team.creative.cmdcam.common.target;
 
-import java.util.UUID;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -13,9 +11,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import team.creative.cmdcam.client.mixin.ServerLevelAccessor;
 import team.creative.creativecore.common.util.math.vec.Vec3d;
 import team.creative.creativecore.common.util.registry.NamedTypeRegistry;
 import team.creative.creativecore.common.util.registry.exception.RegistryException;
+
+import java.util.UUID;
 
 public abstract class CamTarget {
     
@@ -106,7 +107,7 @@ public abstract class CamTarget {
         @OnlyIn(Dist.CLIENT)
         public void start(Level level) {
             if (level instanceof ServerLevel)
-                cachedEntity = ((ServerLevel) level).getEntities().get(uuid);
+                cachedEntity = ((ServerLevelAccessor) level).callGetEntities().get(uuid);
             else
                 for (Entity entity : ((ClientLevel) level).entitiesForRendering())
                     if (entity.getUUID().equals(uuid)) {

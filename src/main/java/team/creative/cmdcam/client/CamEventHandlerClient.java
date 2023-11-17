@@ -1,21 +1,17 @@
 package team.creative.cmdcam.client;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
-
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
-
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
-import com.mojang.blaze3d.vertex.VertexSorting;
-
+import io.github.fabricators_of_create.porting_lib.client_events.event.client.FieldOfViewEvents;
+import io.github.fabricators_of_create.porting_lib.client_events.event.client.RenderTickStartCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -23,23 +19,22 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.event.RenderLevelStageEvent.Stage;
-import net.minecraftforge.client.event.ViewportEvent.ComputeCameraAngles;
-import net.minecraftforge.client.event.ViewportEvent.ComputeFov;
-import net.minecraftforge.event.TickEvent.ClientTickEvent;
-import net.minecraftforge.event.TickEvent.Phase;
-import net.minecraftforge.event.TickEvent.RenderTickEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 import team.creative.cmdcam.client.mixin.GameRendererAccessor;
+import team.creative.cmdcam.client.mixin.MinecraftAccessor;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.math.point.CamPoints;
@@ -47,8 +42,12 @@ import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.attribute.CamAttribute;
 import team.creative.cmdcam.common.scene.mode.OutsideMode;
 import team.creative.cmdcam.common.target.CamTarget;
+import team.creative.cmdcam.fabric.ComputeCameraAnglesCallback;
 import team.creative.creativecore.common.util.math.interpolation.Interpolation;
 import team.creative.creativecore.common.util.math.vec.Vec3d;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
 public class CamEventHandlerClient {
@@ -109,11 +108,20 @@ public class CamEventHandlerClient {
     public static void fov(double fov) {
         CamEventHandlerClient.fov = fov;
     }
-    
-    @SubscribeEvent
-    public void onClientTick(ClientTickEvent event) {
-        if (event.phase == Phase.END)
-            return;
+
+    public CamEventHandlerClient() {
+        ClientTickEvents.START_CLIENT_TICK.register(this::onClientTick);
+        RenderTickStartCallback.EVENT.register(this::onRenderTick);
+        FieldOfViewEvents.COMPUTE.register(this::fov);
+        WorldRenderEvents.AFTER_ENTITIES.register(this::worldRender);
+
+        ComputeCameraAnglesCallback.EVENT.register(this::cameraRoll);
+
+        UseBlockCallback.EVENT.register(this::onPlayerUseBlock);
+        UseEntityCallback.EVENT.register(this::onPlayerUseEntity);
+    }
+
+    public void onClientTick(Minecraft mc) {
         if (MC.player != null && MC.level != null && !MC.isPaused() && CMDCamClient.isPlaying())
             CMDCamClient.gameTickPath(MC.level);
     }
@@ -132,17 +140,15 @@ public class CamEventHandlerClient {
             return MAX_FOV;
         return (Math.sin((x - 0.5) * Math.PI) + 1) * FOV_RANGE_HALF + MIN_FOV;
     }
-    
-    @SubscribeEvent
-    public void onRenderTick(RenderTickEvent event) {
+
+    public void onRenderTick() {
         if (MC.level == null) {
             CMDCamClient.resetServerAvailability();
             CMDCamClient.resetTargetMarker();
         }
-        if (event.phase == Phase.END)
-            return;
         
         renderingHand = false;
+        var renderTickTime = MC.isPaused() ? ((MinecraftAccessor) MC).getPausePartialTick() : ((MinecraftAccessor) MC).getTimer().partialTick;
         
         if (MC.player != null && MC.level != null) {
             if (!MC.isPaused()) {
@@ -152,11 +158,11 @@ public class CamEventHandlerClient {
                             CMDCamClient.getScene().togglePause();
                     }
                     
-                    CMDCamClient.renderTickPath(MC.level, event.renderTickTime);
+                    CMDCamClient.renderTickPath(MC.level, renderTickTime);
                 } else {
-                    CMDCamClient.noTickPath(MC.level, event.renderTickTime);
+                    CMDCamClient.noTickPath(MC.level, renderTickTime);
                     double timeFactor = MC.getDeltaFrameTime();
-                    double vanillaFov = fovExactVanilla(event.renderTickTime);
+                    double vanillaFov = fovExactVanilla(renderTickTime);
                     double currentFov = vanillaFov + fov;
                     double x = calculatePointInCurve(currentFov);
                     double multiplier = MC.player.isCrouching() ? 5 : 1;
@@ -212,25 +218,28 @@ public class CamEventHandlerClient {
             }
         }
     }
-    
-    @SubscribeEvent
-    public void fov(ComputeFov event) {
+
+    public double fov(GameRenderer renderer, Camera camera, double partialTicks, boolean usedFovSetting, double current) {
         if (skipFov)
-            return;
-        
+            return current;
+
+        double newFov = current;
+
         if (!renderingHand) {
             if (CMDCamClient.isPlaying())
-                event.setFOV(fov);
+                newFov = fov;
             else
-                event.setFOV(event.getFOV() + fov);
-            event.setFOV(Mth.clamp(event.getFOV(), MIN_FOV, MAX_FOV));
+                newFov += fov;
+
+            newFov = (Mth.clamp(newFov, MIN_FOV, MAX_FOV));
         }
         renderingHand = !renderingHand;
+
+        return newFov;
     }
-    
-    @SubscribeEvent
-    public void worldRender(RenderLevelStageEvent event) {
-        if (CMDCamClient.isPlaying() || event.getStage() != Stage.AFTER_ENTITIES)
+
+    public void worldRender(WorldRenderContext ctx) {
+        if (CMDCamClient.isPlaying())
             return;
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
@@ -240,11 +249,11 @@ public class CamEventHandlerClient {
         
         Vec3 view = MC.gameRenderer.getMainCamera().getPosition();
         
-        RenderSystem.setProjectionMatrix(event.getProjectionMatrix(), VertexSorting.ORTHOGRAPHIC_Z);
+        RenderSystem.setProjectionMatrix(ctx.projectionMatrix(), VertexSorting.ORTHOGRAPHIC_Z);
         PoseStack mat = RenderSystem.getModelViewStack();
         mat.pushPose();
         mat.setIdentity();
-        mat.mulPoseMatrix(event.getPoseStack().last().pose());
+        mat.mulPoseMatrix(ctx.matrixStack().last().pose());
         mat.translate(-view.x(), -view.y(), -view.z());
         
         RenderSystem.applyModelViewMatrix();
@@ -362,28 +371,31 @@ public class CamEventHandlerClient {
         pBuffer.vertex(matrix4f, (float) (origin.x + view.x * 2), (float) (origin.y + view.y * 2), (float) (origin.z + view.z * 2)).color(0, 0, 255, 255).normal(matrix3f,
             (float) view.x, (float) view.y, (float) view.z).endVertex();
     }
-    
-    @SubscribeEvent
-    public void cameraRoll(ComputeCameraAngles event) {
+
+    public void cameraRoll(ComputeCameraAnglesCallback event) {
         event.setRoll(roll);
     }
-    
-    @SubscribeEvent
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (selectingTarget == null || !event.getLevel().isClientSide)
-            return;
-        
-        if (event instanceof EntityInteract) {
-            selectingTarget.accept(new CamTarget.EntityTarget(((EntityInteract) event).getTarget()));
-            event.getEntity().sendSystemMessage(Component.translatable("scene.look.target.entity", ((EntityInteract) event).getTarget().getStringUUID()));
-            selectingTarget = null;
-        }
-        
-        if (event instanceof RightClickBlock) {
-            selectingTarget.accept(new CamTarget.BlockTarget(event.getPos()));
-            event.getEntity().sendSystemMessage(Component.translatable("scene.look.target.pos", event.getPos().toShortString()));
-            selectingTarget = null;
-        }
+
+    public InteractionResult onPlayerUseBlock(Player player, Level world, InteractionHand hand, BlockHitResult hitResult) {
+        if (selectingTarget == null || !world.isClientSide)
+            return InteractionResult.PASS;
+
+        selectingTarget.accept(new CamTarget.BlockTarget(hitResult.getBlockPos()));
+        player.sendSystemMessage(Component.translatable("scene.look.target.pos", hitResult.getBlockPos().toShortString()));
+        selectingTarget = null;
+
+        return InteractionResult.PASS;
+    }
+
+    public InteractionResult onPlayerUseEntity(Player player, Level world, InteractionHand hand, Entity entity, @Nullable EntityHitResult hitResult) {
+        if (selectingTarget == null || !world.isClientSide || hitResult == null)
+            return InteractionResult.PASS;
+
+        selectingTarget.accept(new CamTarget.EntityTarget(hitResult.getEntity()));
+        player.sendSystemMessage(Component.translatable("scene.look.target.entity", hitResult.getEntity().getStringUUID()));
+        selectingTarget = null;
+
+        return InteractionResult.PASS;
     }
     
     public static void setupMouseHandlerBefore() {

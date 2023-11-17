@@ -1,8 +1,5 @@
 package team.creative.cmdcam.common.scene.run;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -21,6 +18,9 @@ import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.attribute.CamAttribute;
 import team.creative.cmdcam.common.scene.timer.RealTimeTimer;
 import team.creative.cmdcam.common.scene.timer.RunTimer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class CamRun {
@@ -47,7 +47,7 @@ public class CamRun {
             CamPoints points = new CamPoints();
             CamPoint camPoint = CamPoint.create(camera);
             try {
-                CMDCamClient.PROCESSOR.makeRelative(scene, level, camPoint);
+                CMDCamClient.PROCESSOR_CLIENT.makeRelative(scene, level, camPoint);
             } catch (SceneException e) {}
             points.add(camPoint);
             points.add(scene.points.get(0).copy());

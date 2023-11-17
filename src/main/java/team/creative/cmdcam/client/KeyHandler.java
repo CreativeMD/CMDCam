@@ -1,9 +1,8 @@
 package team.creative.cmdcam.client;
 
-import org.lwjgl.glfw.GLFW;
-
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import org.lwjgl.glfw.GLFW;
 
 public class KeyHandler {
     
@@ -19,19 +18,19 @@ public class KeyHandler {
     public static KeyMapping startStop = new KeyMapping("key.startStop", GLFW.GLFW_KEY_U, "key.categories.cmdcam");
     
     public static KeyMapping clearPoint = new KeyMapping("key.clearPoint", GLFW.GLFW_KEY_DELETE, "key.categories.cmdcam");
-    
-    public static void registerKeys(RegisterKeyMappingsEvent event) {
-        event.register(zoomIn);
-        event.register(zoomCenter);
-        event.register(zoomOut);
+
+    public static void registerKeys() {
+        KeyBindingHelper.registerKeyBinding(zoomIn);
+        KeyBindingHelper.registerKeyBinding(zoomCenter);
+        KeyBindingHelper.registerKeyBinding(zoomOut);
         
-        event.register(rollLeft);
-        event.register(rollCenter);
-        event.register(rollRight);
+        KeyBindingHelper.registerKeyBinding(rollLeft);
+        KeyBindingHelper.registerKeyBinding(rollCenter);
+        KeyBindingHelper.registerKeyBinding(rollRight);
         
-        event.register(pointKey);
-        event.register(startStop);
+        KeyBindingHelper.registerKeyBinding(pointKey);
+        KeyBindingHelper.registerKeyBinding(startStop);
         
-        event.register(clearPoint);
+        KeyBindingHelper.registerKeyBinding(clearPoint);
     }
 }

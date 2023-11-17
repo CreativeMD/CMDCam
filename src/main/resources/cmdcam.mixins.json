@@ -1,18 +1,24 @@
 {
-    "required": true,
-    "package": "team.creative.cmdcam.client.mixin",
-    "compatibilityLevel": "JAVA_17",
-    "refmap": "cmdcam.mixin.refmap.json",
-    "server": [
-    ],
-    "mixins": [
-    ],
-    "client": [
-        "MouseOverMixin",
-        "CurrentViewEntityMixin",
-        "CameraMixin",
-        "EntitySelectorMixin",
-        "GameRendererAccessor"
-    ],
-    "minVersion": "0.8"
+  "required": true,
+  "package": "team.creative.cmdcam.client.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "cmdcam.mixin.refmap.json",
+  "server": [
+  ],
+  "mixins": [
+    "ArgumentTypeInfosAccessor",
+    "LocalCoordinatesAccessor",
+    "MinecraftAccessor",
+    "ServerLevelAccessor",
+    "WorldCoordinatesAccessor"
+  ],
+  "client": [
+    "CameraMixin",
+    "CurrentViewEntityMixin",
+    "EntitySelectorMixin",
+    "GameRendererAccessor",
+    "GameRendererMixin",
+    "MouseOverMixin"
+  ],
+  "minVersion": "0.8"
 }

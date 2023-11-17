@@ -2,7 +2,6 @@ package team.creative.cmdcam.client;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.world.entity.Entity;
@@ -17,12 +16,12 @@ public class CamCommandProcessorClient implements CamCommandProcessor {
     public CamScene getScene(CommandContext<CommandSourceStack> context) {
         return CMDCamClient.getConfigScene();
     }
-    
+
     @Override
     public boolean canSelectTarget() {
         return true;
     }
-    
+
     @Override
     public void selectTarget(CommandContext<CommandSourceStack> context, boolean look) throws SceneException {
         if (!look)
@@ -53,7 +52,7 @@ public class CamCommandProcessorClient implements CamCommandProcessor {
     public boolean requiresPlayer() {
         return false;
     }
-    
+
     @Override
     public void start(CommandContext<CommandSourceStack> context) throws SceneException {
         CMDCamClient.start(CMDCamClient.createScene());
@@ -71,14 +70,14 @@ public class CamCommandProcessorClient implements CamCommandProcessor {
     
     @Override
     public Player getPlayer(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
-        EntitySelectorClient selector = (EntitySelectorClient) context.getArgument(name, EntitySelector.class);
-        return selector.findSinglePlayerClient(context.getSource());
+        var selector = context.getArgument(name, EntitySelector.class);
+        return selector.findSinglePlayer(context.getSource());
     }
     
     @Override
     public Entity getEntity(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
-        EntitySelectorClient selector = (EntitySelectorClient) context.getArgument(name, EntitySelector.class);
-        return selector.findSingleEntityClient(context.getSource());
+        var selector = context.getArgument(name, EntitySelector.class);
+        return selector.findSingleEntity(context.getSource());
     }
     
 }
