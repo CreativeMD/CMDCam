@@ -18,14 +18,14 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.DistExecutor;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import team.creative.cmdcam.client.CMDCamClient;
 import team.creative.cmdcam.common.command.argument.CamModeArgument;
 import team.creative.cmdcam.common.command.argument.CamPitchModeArgument;
@@ -62,7 +62,7 @@ public class CMDCam {
     public CMDCam() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> CMDCamClient.load(FMLJavaModLoadingContext.get().getModEventBus()));
-        MinecraftForge.EVENT_BUS.addListener(this::commands);
+        NeoForge.EVENT_BUS.addListener(this::commands);
         
         COMMAND_ARGUMENT_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
         COMMAND_ARGUMENT_TYPES.register("duration", () -> ArgumentTypeInfos.registerByClass(DurationArgument.class, SingletonArgumentInfo.<DurationArgument>contextFree(
@@ -87,7 +87,7 @@ public class CMDCam {
         NETWORK.registerType(PausePathPacket.class, PausePathPacket::new);
         NETWORK.registerType(ResumePathPacket.class, ResumePathPacket::new);
         
-        MinecraftForge.EVENT_BUS.register(new CamEventHandler());
+        NeoForge.EVENT_BUS.register(new CamEventHandler());
         
         CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG);
     }

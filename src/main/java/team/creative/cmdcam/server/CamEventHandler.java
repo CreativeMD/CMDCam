@@ -1,8 +1,8 @@
 package team.creative.cmdcam.server;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.common.packet.ConnectPacket;
 

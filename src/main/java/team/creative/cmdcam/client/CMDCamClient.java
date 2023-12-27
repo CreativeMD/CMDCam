@@ -11,14 +11,14 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.event.RegisterClientCommandsEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.network.NetworkConstants;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.NetworkConstants;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
 import team.creative.cmdcam.common.command.builder.PointArgumentBuilder;
@@ -53,7 +53,7 @@ public class CMDCamClient {
     }
     
     public static void init(FMLClientSetupEvent event) {
-        MinecraftForge.EVENT_BUS.register(new CamEventHandlerClient());
+        NeoForge.EVENT_BUS.register(new CamEventHandlerClient());
         CreativeCoreClient.registerClientConfig(CMDCam.MODID);
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
             () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
@@ -61,7 +61,7 @@ public class CMDCamClient {
     
     public static void load(IEventBus bus) {
         bus.addListener(CMDCamClient::init);
-        MinecraftForge.EVENT_BUS.addListener(CMDCamClient::commands);
+        NeoForge.EVENT_BUS.addListener(CMDCamClient::commands);
         bus.addListener(KeyHandler::registerKeys);
     }
     

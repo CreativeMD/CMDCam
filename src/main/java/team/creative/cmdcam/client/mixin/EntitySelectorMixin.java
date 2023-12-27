@@ -26,6 +26,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.entity.PartEntity;
 import team.creative.cmdcam.client.EntitySelectorClient;
 
 @Mixin(EntitySelector.class)
@@ -134,7 +135,7 @@ public abstract class EntitySelectorMixin implements EntitySelectorClient {
                 if (predicate.test(entity))
                     list.add(entity);
                 
-                for (net.minecraftforge.entity.PartEntity<?> p : level.getPartEntities()) {
+                for (PartEntity<?> p : level.getPartEntities()) {
                     Entity t = type.tryCast(p);
                     if (t != null && predicate.test(t))
                         list.add(t);
