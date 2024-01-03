@@ -84,7 +84,7 @@ public class TargetArgumentBuilder extends ArgumentBuilder<CommandSourceStack, T
             x.getSource().sendSuccess(new TranslatableComponent(translatePrefix() + "entity", entity.getStringUUID()), false);
             return 0;
         }))).then(Commands.literal("pos").then(Commands.argument("pos", BlockPosArgument.blockPos()).executes(x -> {
-            BlockPos pos = BlockPosArgument.getLoadedBlockPos(x, null, "pos");
+            BlockPos pos = BlockPosArgument.getLoadedBlockPos(x, "pos");
             try {
                 processor.setTarget(x, new CamTarget.BlockTarget(pos), look);
             } catch (SceneException e) {
