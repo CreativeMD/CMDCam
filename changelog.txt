@@ -1,3 +1,7 @@
+2.1.1
+Fixed target pos not working in singleplayer (causing an exception)
+Added compatibility with neoforge 20.4.80-beta
+
 2.1.0
 Added support for Minema Resurrection 2
 Fixed goto command having weird fov values
