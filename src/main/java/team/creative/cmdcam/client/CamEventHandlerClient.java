@@ -367,7 +367,16 @@ public class CamEventHandlerClient {
     }
     
     @SubscribeEvent
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    public void onPlayerInteract(EntityInteract event) {
+        interact(event);
+    }
+    
+    @SubscribeEvent
+    public void onPlayerInteract(RightClickBlock event) {
+        interact(event);
+    }
+    
+    public void interact(PlayerInteractEvent event) {
         if (selectingTarget == null || !event.getLevel().isClientSide)
             return;
         
