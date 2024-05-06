@@ -1,20 +1,36 @@
 modLoader="javafml"
-loaderVersion="[24,)"
+loaderVersion="[40,)"
 issueTrackerURL="https://github.com/CreativeMD/CMDCam/issues"
-logoFile="cmdcam.png"
-license="GNU General Public License v3.0"
+license="LGPL-3.0-only"
 
 [[mods]]
-	modId="cmdcam"
-	version="${file.jarVersion}"
-	displayName="CMDCam"
-	displayURL="https://minecraft.curseforge.com/projects/cmdcam"
-	authors="CreativeMD"
-	description='''Create camera paths.'''
+    modId="cmdcam"
+    logoFile="cmdcam.png"
+    version="2.0.16"
+    displayName="CMDCam"
+    displayURL="https://modrinth.com/mod/cmdcam"
+    displayTest="IGNORE_SERVER_VERSION"
+    authors="CreativeMD"
+    description='''Create camera paths.'''
 
 [[dependencies.cmdcam]]
-	modId="creativecore"
-	mandatory=true
-	ordering="NONE"
-	side="BOTH"
-	versionRange="[2.3.0,)"
+    modId="forge"
+    mandatory=true
+    versionRange="[40.2.14,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.cmdcam]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.18,1.19)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.cmdcam]]
+   modId="creativecore"
+   mandatory=true
+   ordering="NONE"
+   side="BOTH"
+   versionRange="2.11.5"
+

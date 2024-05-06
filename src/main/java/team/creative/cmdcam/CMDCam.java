@@ -57,7 +57,7 @@ public class CMDCam {
     public static final String MODID = "cmdcam";
     
     private static final Logger LOGGER = LogManager.getLogger(CMDCam.MODID);
-    public static final CreativeNetwork NETWORK = new CreativeNetwork("1.0", LOGGER, new ResourceLocation(CMDCam.MODID, "main"));
+    public static final CreativeNetwork NETWORK = new CreativeNetwork(2, LOGGER, new ResourceLocation(CMDCam.MODID, "main"));
     public static final CMDCamConfig CONFIG = new CMDCamConfig();
     
     public CMDCam() {
@@ -69,8 +69,6 @@ public class CMDCam {
     
     @OnlyIn(value = Dist.CLIENT)
     private void client(final FMLClientSetupEvent event) {
-        ModLoadingContext.get()
-                .registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
         CMDCamClient.init(event);
     }
     
