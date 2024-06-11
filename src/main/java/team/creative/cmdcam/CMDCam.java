@@ -2,6 +2,8 @@ package team.creative.cmdcam;
 
 import java.util.Collection;
 
+import net.minecraft.core.Registry;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,7 +16,6 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -55,9 +56,9 @@ public class CMDCam {
     public static final String MODID = "cmdcam";
     
     private static final Logger LOGGER = LogManager.getLogger(CMDCam.MODID);
-    public static final CreativeNetwork NETWORK = new CreativeNetwork("1.0", LOGGER, new ResourceLocation(CMDCam.MODID, "main"));
+    public static final CreativeNetwork NETWORK = new CreativeNetwork(1, LOGGER, new ResourceLocation(CMDCam.MODID, "main"));
     public static final CMDCamConfig CONFIG = new CMDCamConfig();
-    public static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, MODID);
+    public static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(ForgeRegistries.COMMAND_ARGUMENT_TYPES, MODID);
     
     public CMDCam() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
@@ -66,15 +67,15 @@ public class CMDCam {
         
         COMMAND_ARGUMENT_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
         COMMAND_ARGUMENT_TYPES.register("duration", () -> ArgumentTypeInfos
-                .registerByClass(DurationArgument.class, SingletonArgumentInfo.<DurationArgument>contextFree(() -> DurationArgument.duration())));
+                .registerByClass(DurationArgument.class, SingletonArgumentInfo.contextFree(DurationArgument::duration)));
         COMMAND_ARGUMENT_TYPES.register("cam_mode", () -> ArgumentTypeInfos
-                .registerByClass(CamModeArgument.class, SingletonArgumentInfo.<CamModeArgument>contextFree(() -> CamModeArgument.mode())));
+                .registerByClass(CamModeArgument.class, SingletonArgumentInfo.contextFree(CamModeArgument::mode)));
         COMMAND_ARGUMENT_TYPES.register("interpolation", () -> ArgumentTypeInfos
-                .registerByClass(InterpolationArgument.class, SingletonArgumentInfo.<InterpolationArgument>contextFree(() -> InterpolationArgument.interpolation())));
+                .registerByClass(InterpolationArgument.class, SingletonArgumentInfo.contextFree(InterpolationArgument::interpolation)));
         COMMAND_ARGUMENT_TYPES.register("all_interpolation", () -> ArgumentTypeInfos
-                .registerByClass(AllInterpolationArgument.class, SingletonArgumentInfo.<AllInterpolationArgument>contextFree(() -> InterpolationArgument.interpolationAll())));
+                .registerByClass(AllInterpolationArgument.class, SingletonArgumentInfo.contextFree(InterpolationArgument::interpolationAll)));
         COMMAND_ARGUMENT_TYPES.register("pitch_mode", () -> ArgumentTypeInfos
-                .registerByClass(CamPitchModeArgument.class, SingletonArgumentInfo.<CamPitchModeArgument>contextFree(() -> CamPitchModeArgument.pitchMode())));
+                .registerByClass(CamPitchModeArgument.class, SingletonArgumentInfo.contextFree(CamPitchModeArgument::pitchMode)));
     }
     
     private void init(final FMLCommonSetupEvent event) {

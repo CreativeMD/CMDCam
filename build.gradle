@@ -1,9 +1,20 @@
 plugins {
     id 'eclipse'
     id 'idea'
-    id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'com.diffplug.eclipse.apt'
     id 'org.spongepowered.mixin'
+    id 'com.modrinth.minotaur' version '2.+'
+    id 'com.matthewprenger.cursegradle' version '1.4+'
+}
+
+repositories {
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 group= "team.creative" + project.mod_id
@@ -14,9 +25,7 @@ project.evaluationDependsOn(":CreativeCore")
 
 minecraft {
     mappings channel: 'official', version: "${project.property 'minecraft_version'}"
-    
-    copyIdeResources = true
-    
+
     runs {
         client {
             taskName "cmdcam_client"
@@ -62,44 +71,30 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${project.property 'minecraft_version'}-${project.property 'forge_version'}"
-    
-    // Apply Mixin AP
+
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    
+
     implementation project(':CreativeCore')
+
+    minecraftLibrary fg.deobf("curse.maven:minema-resurrection-596719:4816846")
 }
 
-def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
-def replaceProperties = [
-        minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-        forge_version: forge_version, forge_version_range: forge_version_range,
-        loader_version_range: loader_version_range,
-        mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-        mod_authors: mod_authors, mod_description: mod_description, mod_display_url: mod_display_url,
-        creativecore_version: creativecore_version, github_project: github_project,
-        resource_pack_format: resource_pack_format, data_pack_format: data_pack_format
+modDependencies = [
+        [ modId: "creativecore", mandatory: true, ordering: "NONE", side: "BOTH", versionRange: creativecore_version ]
 ]
-processResources {
-    inputs.properties replaceProperties
-    replaceProperties.put 'project', project
-
-    filesMatching(resourceTargets) {
-        expand replaceProperties
-    }
-}
 
 jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     archiveFileName.set(project.mod_name + "_FORGE_v" + project.mod_version + "_mc" + project.minecraft_version + ".jar")
     manifest {
         attributes([
-            "Specification-Title": project.mod_name,
-            "Specification-Vendor": "CreativeMD",
-            "Specification-Version": project.mod_version,
-            "Implementation-Title": project.mod_name,
-            "Implementation-Version"  : project.mod_version,
-            "Implementation-Vendor": "CreativeMD",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Specification-Title": project.mod_name,
+                "Specification-Vendor": "CreativeMD",
+                "Specification-Version": project.mod_version,
+                "Implementation-Title": project.mod_name,
+                "Implementation-Version"  : project.mod_version,
+                "Implementation-Vendor": "CreativeMD",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
@@ -108,23 +103,80 @@ jar.finalizedBy('reobfJar')
 
 mixin {
     add sourceSets.main, 'cmdcam.mixin.refmap.json'
-     
+
     config 'cmdcam.mixins.json'
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+String getChangelogText() {
+    String result = ''
+    boolean first = true
+    file('changelog.txt').readLines().find {
+        if (first) {
+            if (it.equals(project.mod_version)) {
+                first = false
+            }
+            return false
+        } else if (!it?.trim()) {
+            return true
+        } else {
+            result += "* " + it + "\n"
+            return false
         }
     }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
+
+    return result
+}
+
+task upload(type: GradleBuild) {
+    description 'Uploads new version to modrinth and curseforge.'
+    group = 'publishing'
+    tasks = ['modrinth', 'curseforge']
+}
+
+gradle.taskGraph.whenReady {
+    if (it.hasTask(tasks.modrinth) || it.hasTask(tasks.curseforge)) {
+        if (!getChangelogText()?.trim()) {
+            throw new GradleException('No changelog provided')
         }
     }
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+tasks.modrinth.enabled = System.getenv("MODRINTH_TOKEN") != null
+tasks.modrinth.group = 'publishing'
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = project.mod_id
+    versionNumber = project.mod_version
+    versionType = project.release_type
+    uploadFile = jar
+    gameVersions = [ project.minecraft_version ]
+    changelog = getChangelogText()
+    loaders = [ "forge", "neoforge" ]
+    dependencies {
+        required.project "creativecore"
+    }
+}
+
+tasks.curseforge.enabled = System.getenv("CURSEFORGE_TOKEN") != null
+tasks.curseforge.group = 'publishing'
+curseforge {
+    apiKey = System.getenv("CURSEFORGE_TOKEN") != null ? System.getenv("CURSEFORGE_TOKEN") : "empty"
+    project {
+        id = project.curse_id
+        changelog = getChangelogText()
+        changelogType = "markdown"
+        addGameVersion project.minecraft_version
+        addGameVersion "Forge"
+        addGameVersion "NeoForge"
+        releaseType = project.release_type
+        mainArtifact(jar) {
+        }
+        relations {
+            requiredLibrary "creativecore"
+        }
+    }
 }

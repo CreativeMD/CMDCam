@@ -55,8 +55,6 @@ public class CMDCamClient {
     public static void init(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(new CamEventHandlerClient());
         CreativeCoreClient.registerClientConfig(CMDCam.MODID);
-        ModLoadingContext.get()
-                .registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
     }
     
     public static void load(IEventBus bus) {
