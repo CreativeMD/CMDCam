@@ -10,6 +10,6 @@ import net.minecraft.client.renderer.GameRenderer;
 public interface GameRendererAccessor {
     
     @Invoker
-    public double callGetFov(Camera cam, float partialTickTime, boolean renderLevel);
+    public float callGetFov(Camera cam, float partialTickTime, boolean renderLevel);
     
 }

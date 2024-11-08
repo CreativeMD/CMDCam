@@ -29,7 +29,7 @@ public class SetPathPacket extends CreativePacket {
         try {
             CamScene scene = new CamScene(nbt);
             CMDCamClient.set(scene);
-            player.sendSystemMessage(Component.translatable("scene.load", id));
+            player.displayClientMessage(Component.translatable("scene.load", id), false);
         } catch (RegistryException e) {
             e.printStackTrace();
         }

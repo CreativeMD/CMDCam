@@ -31,7 +31,7 @@ public class CircularCamInterpolation extends CamInterpolation {
     @OnlyIn(Dist.CLIENT)
     public <T extends VecNd> Interpolation<T> createClient(double[] timed, CamScene scene, T before, List<T> points, T after, CamAttribute<T> attribute) {
         Minecraft mc = Minecraft.getInstance();
-        Vec3d center = scene.lookTarget.position(mc.level, mc.getTimer().getGameTimeDeltaPartialTick(false));
+        Vec3d center = scene.lookTarget.position(mc.level, mc.getDeltaTracker().getGameTimeDeltaPartialTick(false));
         if (center != null) {
             List<Vec3d> points3 = (List<Vec3d>) points;
             points.add(points.get(0));
@@ -121,7 +121,7 @@ public class CircularCamInterpolation extends CamInterpolation {
         @Override
         public Vec3d valueAt(double t) {
             Minecraft mc = Minecraft.getInstance();
-            Vec3d center = target.position(mc.level, mc.getTimer().getGameTimeDeltaPartialTick(false));
+            Vec3d center = target.position(mc.level, mc.getDeltaTracker().getGameTimeDeltaPartialTick(false));
             if (center != null) {
                 Vec3d centerPoint = new Vec3d(center.x, center.y, center.z);
                 
