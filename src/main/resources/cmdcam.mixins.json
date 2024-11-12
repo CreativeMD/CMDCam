@@ -8,11 +8,12 @@
     "mixins": [
     ],
     "client": [
-        "MouseOverMixin",
-        "CurrentViewEntityMixin",
         "CameraMixin",
+        "CurrentViewEntityMixin",
         "EntitySelectorMixin",
-        "GameRendererAccessor"
+        "GameRendererAccessor",
+        "GuiAccessor",
+        "MouseOverMixin"
     ],
     "minVersion": "0.8"
 }

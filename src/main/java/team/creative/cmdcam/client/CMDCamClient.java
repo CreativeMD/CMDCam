@@ -10,13 +10,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 import team.creative.cmdcam.CMDCam;
+import team.creative.cmdcam.client.mixin.GuiAccessor;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
 import team.creative.cmdcam.common.command.builder.PointArgumentBuilder;
 import team.creative.cmdcam.common.command.builder.SceneCommandBuilder;
@@ -58,9 +62,17 @@ public class CMDCamClient {
         bus.addListener(CMDCamClient::init);
         NeoForge.EVENT_BUS.addListener(CMDCamClient::commands);
         bus.addListener(KeyHandler::registerKeys);
+        bus.addListener(CMDCamClient::layers);
     }
     
-    public static void commands(RegisterClientCommandsEvent event) {
+    private static void layers(RegisterGuiLayersEvent event) {
+        event.registerAbove(VanillaGuiLayers.TITLE, ResourceLocation.fromNamespaceAndPath(CMDCam.MODID, VanillaGuiLayers.TITLE.getNamespace()), (graphics, tracker) -> {
+            if (CMDCamClient.isPlaying())
+                ((GuiAccessor) Minecraft.getInstance().gui).callRenderTitle(graphics, tracker);
+        });
+    }
+    
+    private static void commands(RegisterClientCommandsEvent event) {
         LiteralArgumentBuilder<CommandSourceStack> cam = Commands.literal("cam");
         
         SceneStartCommandBuilder.start(cam, PROCESSOR);
