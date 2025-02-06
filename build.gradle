@@ -1,7 +1,7 @@
 plugins {
     id 'eclipse'
     id 'idea'
-    id 'fabric-loom' version '1.4-SNAPSHOT'
+    id 'fabric-loom' version '1.9-SNAPSHOT'
     id 'com.diffplug.eclipse.apt' version '3.43.0'
     id 'com.modrinth.minotaur' version '2.+'
     id 'com.matthewprenger.cursegradle' version '1.4+'
@@ -52,12 +52,12 @@ dependencies {
     //implementation project(':CreativeCore')
     
     //minecraftLibrary fg.deobf("curse.maven:minema-resurrection-596719:4816846")
-    modImplementation "curse.maven:creativecore-257814:4779226"
+    modImplementation "curse.maven:creativecore-257814:4800161"
 
-    def plModules = ['utility', 'client_events']
+    def plModules = ['base']
 
     for (final def module in plModules) {
-        modImplementation(include("io.github.fabricators_of_create.Porting-Lib:${module}:2.1.1154+1.20.2"))
+        modImplementation(include("io.github.fabricators_of_create.Porting-Lib:${module}:2.1.1163+1.20.1"))
     }
 }
 
