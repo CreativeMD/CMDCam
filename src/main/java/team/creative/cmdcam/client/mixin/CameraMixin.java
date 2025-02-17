@@ -2,6 +2,7 @@ package team.creative.cmdcam.client.mixin;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,5 +17,11 @@ public class CameraMixin {
         if (CMDCamClient.isPlaying() && CMDCamClient.getScene().mode.getCamera() != Minecraft.getInstance().player)
             info.setReturnValue(true);
     }
-    
+
+    @Inject(at = @At("HEAD"), method = "getEntity()Lnet/minecraft/world/entity/Entity;", cancellable = true)
+    public void getEntity(CallbackInfoReturnable<Entity> info) {
+        if (CMDCamClient.isPlaying() && CMDCamClient.getScene().mode.getCamera() != Minecraft.getInstance().player) {
+            info.setReturnValue(Minecraft.getInstance().player);
+        }
+    }
 }
