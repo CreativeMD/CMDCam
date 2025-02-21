@@ -1,11 +1,11 @@
 package team.creative.cmdcam.common.scene.run;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.cmdcam.client.CMDCamClient;
 import team.creative.cmdcam.client.SceneException;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
@@ -22,7 +22,7 @@ import team.creative.cmdcam.common.scene.timer.RunTimer;
 import java.util.ArrayList;
 import java.util.List;
 
-@OnlyIn(Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class CamRun {
     
     private static Minecraft mc = Minecraft.getInstance();

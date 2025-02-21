@@ -3,12 +3,12 @@ package team.creative.cmdcam.common.scene;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.cmdcam.common.math.follow.CamFollowConfig;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.interpolation.CamPitchMode;
@@ -55,8 +55,8 @@ public class CamScene {
     public boolean smoothBeginning = true;
     public CamPitchMode pitchMode = CamPitchMode.FIX_KEEP_DIRECTION;
     public boolean distanceBasedTiming = false;
-    
-    @OnlyIn(Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     public CamRun run;
     
     public CamScene(long duration, int loop, String mode, List<CamPoint> points, CamInterpolation interpolation) {
