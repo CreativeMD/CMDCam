@@ -18,9 +18,10 @@ public class CameraMixin {
             info.setReturnValue(true);
     }
 
-    @Inject(at = @At("HEAD"), method = "getEntity()Lnet/minecraft/world/entity/Entity;", cancellable = true)
+    @Inject(at = @At("RETURN"), method = "getEntity()Lnet/minecraft/world/entity/Entity;", cancellable = true)
     public void getEntity(CallbackInfoReturnable<Entity> info) {
-        if (CMDCamClient.isPlaying() && CMDCamClient.getScene().mode.getCamera() != Minecraft.getInstance().player) {
+        if (CMDCamClient.isPlaying() && CMDCamClient.getScene().mode.getCamera() != Minecraft.getInstance().player &&
+                CMDCamClient.getScene().mode.getCamera() == info.getReturnValue()) {
             info.setReturnValue(Minecraft.getInstance().player);
         }
     }
