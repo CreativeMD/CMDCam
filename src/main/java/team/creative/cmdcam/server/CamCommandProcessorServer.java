@@ -22,43 +22,46 @@ import team.creative.cmdcam.common.packet.TeleportPathPacket;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.creativecore.common.network.CreativePacket;
 
-public class CamCommandProcessorServer implements CamCommandProcessor {
-    
+public class CamCommandProcessorServer implements CamCommandProcessor<CommandSourceStack> {
+
     @Override
     public CamScene getScene(CommandContext<CommandSourceStack> context) {
         String name = StringArgumentType.getString(context, "name");
-        CamScene scene = CMDCamServer.get(context.getSource().getLevel(), name);
-        return scene;
+        return CMDCamServer.get(context.getSource().getLevel(), name);
     }
-    
+
     @Override
     public boolean canSelectTarget() {
         return false;
     }
-    
+
     @Override
     public void selectTarget(CommandContext<CommandSourceStack> context, boolean look) {}
-    
+
     @Override
     public boolean canCreatePoint(CommandContext<CommandSourceStack> context) {
         return context.getSource().getEntity() != null;
     }
-    
+
     @Override
     public CamPoint createPoint(CommandContext<CommandSourceStack> context) {
-        return CamPoint.create(context.getSource().getEntity());
+        Entity entity = context.getSource().getEntity();
+        if (entity == null) {
+            throw new IllegalStateException("Entity is null");
+        }
+        return CamPoint.create(entity);
     }
-    
+
     @Override
     public boolean requiresSceneName() {
         return true;
     }
-    
+
     @Override
     public boolean requiresPlayer() {
         return true;
     }
-    
+
     public Collection<ServerPlayer> getPlayers(CommandContext<CommandSourceStack> context) {
         try {
             return EntityArgument.getPlayers(context, "players");
@@ -66,7 +69,7 @@ public class CamCommandProcessorServer implements CamCommandProcessor {
             return Collections.EMPTY_LIST;
         }
     }
-    
+
     @Override
     public void start(CommandContext<CommandSourceStack> context) throws SceneException {
         CamScene scene = getScene(context);
@@ -78,27 +81,27 @@ public class CamCommandProcessorServer implements CamCommandProcessor {
         for (ServerPlayer player : getPlayers(context))
             CMDCam.NETWORK.sendToClient(packet, player);
     }
-    
+
     @Override
     public void teleport(CommandContext<CommandSourceStack> context, int index) {
         CreativePacket packet = new TeleportPathPacket(getScene(context).points.get(index));
         for (ServerPlayer player : getPlayers(context))
             CMDCam.NETWORK.sendToClient(packet, player);
     }
-    
+
     @Override
     public void markDirty(CommandContext<CommandSourceStack> context) {
         CMDCamServer.markDirty(context.getSource().getLevel());
     }
-    
+
     @Override
     public Player getPlayer(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
         return EntityArgument.getPlayer(context, "player");
     }
-    
+
     @Override
     public Entity getEntity(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
         return EntityArgument.getEntity(context, name);
     }
-    
+
 }

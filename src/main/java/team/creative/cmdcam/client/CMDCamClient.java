@@ -28,7 +28,7 @@ import java.util.List;
 public class CMDCamClient implements ClientModInitializer {
     
     public final static Minecraft mc = Minecraft.getInstance();
-    public static final ClientCamCommandProcessorClient PROCESSOR_CLIENT = new ClientCamCommandProcessorClient();
+    public static final CamCommandProcessorClient PROCESSOR_CLIENT = new CamCommandProcessorClient();
     public static final HashMap<String, CamScene> SCENES = new HashMap<>();
     
     private static final CamScene scene = CamScene.createDefault();
@@ -60,7 +60,7 @@ public class CMDCamClient implements ClientModInitializer {
         }));
         KeyHandler.registerKeys();
     }
-
+    
     public static void commands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         var cam = ClientCommandManager.literal("cam");
 

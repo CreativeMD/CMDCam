@@ -7,15 +7,15 @@ import com.mojang.brigadier.tree.CommandNode;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.chat.Component;
-import team.creative.cmdcam.common.command.client.ClientCamCommandProcessor;
+import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.scene.attribute.CamAttribute;
 
 public class ClientFollowArgumentBuilder extends ArgumentBuilder<FabricClientCommandSource, ClientFollowArgumentBuilder> {
     
     private final CamAttribute attribute;
-    private final ClientCamCommandProcessor processor;
+    private final CamCommandProcessor<FabricClientCommandSource> processor;
     
-    public ClientFollowArgumentBuilder(CamAttribute attribute, ClientCamCommandProcessor processor) {
+    public ClientFollowArgumentBuilder(CamAttribute attribute, CamCommandProcessor<FabricClientCommandSource> processor) {
         this.attribute = attribute;
         this.processor = processor;
     }

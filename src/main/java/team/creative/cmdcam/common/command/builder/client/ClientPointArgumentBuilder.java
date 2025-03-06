@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.util.TriConsumer;
 import team.creative.cmdcam.client.SceneException;
-import team.creative.cmdcam.common.command.client.ClientCamCommandProcessor;
+import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.fabric.PosArgHelper;
@@ -28,16 +28,16 @@ public class ClientPointArgumentBuilder extends ArgumentBuilder<FabricClientComm
     private final String literal;
     private final TriConsumer<CommandContext<FabricClientCommandSource>, CamPoint, Integer> indexConsumer;
     private final BiConsumer<CommandContext<FabricClientCommandSource>, CamPoint> consumer;
-    private final ClientCamCommandProcessor processor;
+    private final CamCommandProcessor<FabricClientCommandSource> processor;
     
-    public ClientPointArgumentBuilder(final String literal, TriConsumer<CommandContext<FabricClientCommandSource>, CamPoint, Integer> consumer, ClientCamCommandProcessor processor) {
+    public ClientPointArgumentBuilder(final String literal, TriConsumer<CommandContext<FabricClientCommandSource>, CamPoint, Integer> consumer, CamCommandProcessor<FabricClientCommandSource> processor) {
         this.literal = literal;
         this.indexConsumer = consumer;
         this.consumer = null;
         this.processor = processor;
     }
     
-    public ClientPointArgumentBuilder(final String literal, BiConsumer<CommandContext<FabricClientCommandSource>, CamPoint> consumer, ClientCamCommandProcessor processor) {
+    public ClientPointArgumentBuilder(final String literal, BiConsumer<CommandContext<FabricClientCommandSource>, CamPoint> consumer, CamCommandProcessor<FabricClientCommandSource> processor) {
         this.literal = literal;
         this.indexConsumer = null;
         this.consumer = consumer;

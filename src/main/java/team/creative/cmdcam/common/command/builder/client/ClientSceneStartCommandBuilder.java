@@ -8,13 +8,13 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import team.creative.cmdcam.client.SceneException;
+import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.command.argument.DurationArgument;
-import team.creative.cmdcam.common.command.client.ClientCamCommandProcessor;
 import team.creative.cmdcam.common.scene.CamScene;
 
 public class ClientSceneStartCommandBuilder {
 
-    public static void start(ArgumentBuilder<FabricClientCommandSource, ?> origin, ClientCamCommandProcessor processor) {
+    public static void start(ArgumentBuilder<FabricClientCommandSource, ?> origin, CamCommandProcessor<FabricClientCommandSource> processor) {
         ArgumentBuilder<FabricClientCommandSource, ?> startO = ClientCommandManager.literal("start");
         ArgumentBuilder<FabricClientCommandSource, ?> start = startO;
 

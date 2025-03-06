@@ -12,7 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import team.creative.cmdcam.client.SceneException;
-import team.creative.cmdcam.common.command.client.ClientCamCommandProcessor;
+import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.target.CamTarget;
 import team.creative.cmdcam.fabric.PosArgHelper;
 
@@ -20,9 +20,9 @@ public class ClientTargetArgumentBuilder extends ArgumentBuilder<FabricClientCom
     
     private final String literal;
     private final boolean look;
-    private final ClientCamCommandProcessor processor;
+    private final CamCommandProcessor<FabricClientCommandSource> processor;
     
-    public ClientTargetArgumentBuilder(final String literal, boolean look, ClientCamCommandProcessor processor) {
+    public ClientTargetArgumentBuilder(final String literal, boolean look, CamCommandProcessor<FabricClientCommandSource> processor) {
         this.literal = literal;
         this.look = look;
         this.processor = processor;
