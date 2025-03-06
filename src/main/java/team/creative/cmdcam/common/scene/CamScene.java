@@ -26,7 +26,7 @@ import team.creative.creativecore.common.util.registry.exception.RegistryExcepti
 public class CamScene {
     
     public static CamScene createDefault() {
-        return new CamScene(10000, 0, "default", new ArrayList<>(), CamInterpolation.HERMITE);
+        return new CamScene(10000, 0, "outside", new ArrayList<>(), CamInterpolation.HERMITE);
     }
     
     private boolean started = false;
@@ -52,7 +52,7 @@ public class CamScene {
     
     public List<CamPoint> points;
     
-    public boolean smoothBeginning = true;
+    public boolean smoothBeginning = false;
     public CamPitchMode pitchMode = CamPitchMode.FIX_KEEP_DIRECTION;
     public boolean distanceBasedTiming = false;
 
