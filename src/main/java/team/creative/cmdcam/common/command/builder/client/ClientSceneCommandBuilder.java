@@ -171,6 +171,8 @@ public class ClientSceneCommandBuilder {
             context.getSource().sendError(Component.translatable("scene.save.error"));
             return -1;
         }
+
+        context.getSource().sendFeedback(Component.translatable("scene.save.success"));
         return 0;
     }
 
@@ -183,6 +185,8 @@ public class ClientSceneCommandBuilder {
             context.getSource().sendError(Component.translatable("scene.load.error"));
             return -1;
         }
+
+        context.getSource().sendFeedback(Component.translatable("scene.load.success"));
         return 0;
     }
 
