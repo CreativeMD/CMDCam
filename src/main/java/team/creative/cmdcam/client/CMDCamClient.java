@@ -2,10 +2,17 @@ package team.creative.cmdcam.client;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import io.github.fabricators_of_create.porting_lib.event.client.FieldOfViewEvents;
+import io.github.fabricators_of_create.porting_lib.event.client.RenderTickStartCallback;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
@@ -19,6 +26,7 @@ import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
+import team.creative.cmdcam.fabric.ComputeCameraAnglesCallback;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.creativecore.client.CreativeCoreClient;
 
@@ -48,16 +56,25 @@ public class CMDCamClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        new CamEventHandlerClient();
+        resetScenes();
+        registerEvents();
+    }
+
+    private static void registerEvents() {
+        ClientTickEvents.START_CLIENT_TICK.register(CamEventHandlerClient::onClientTick);
+        RenderTickStartCallback.EVENT.register(CamEventHandlerClient::onRenderTick);
+        FieldOfViewEvents.COMPUTE.register(CamEventHandlerClient::fov);
+        WorldRenderEvents.AFTER_ENTITIES.register(CamEventHandlerClient::worldRender);
+
+        ComputeCameraAnglesCallback.EVENT.register(CamEventHandlerClient::cameraRoll);
+
+        UseBlockCallback.EVENT.register(CamEventHandlerClient::onPlayerUseBlock);
+        UseEntityCallback.EVENT.register(CamEventHandlerClient::onPlayerUseEntity);
+
         CreativeCoreClient.registerClientConfig(CMDCam.MODID);
 
-        load();
-    }
-    
-    public static void load() {
-        ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> {
-            commands(dispatcher);
-        }));
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> commands(dispatcher));
+
         KeyHandler.registerKeys();
     }
     

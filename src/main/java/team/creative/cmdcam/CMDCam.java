@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -30,7 +31,6 @@ import team.creative.cmdcam.common.command.builder.SceneStartCommandBuilder;
 import team.creative.cmdcam.common.packet.*;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.server.CMDCamServer;
-import team.creative.cmdcam.server.CamEventHandler;
 import team.creative.creativecore.common.config.holder.CreativeConfigRegistry;
 import team.creative.creativecore.common.network.CreativeNetwork;
 import team.creative.creativecore.common.network.CreativePacket;
@@ -135,8 +135,14 @@ public class CMDCam implements ModInitializer {
         NETWORK.registerType(PausePathPacket.class, PausePathPacket::new);
         NETWORK.registerType(ResumePathPacket.class, ResumePathPacket::new);
 
-        new CamEventHandler();
+        registerEvents();
 
         CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG);
+    }
+
+    private static void registerEvents() {
+        ServerPlayConnectionEvents.JOIN.register(((handler, sender, server) -> {
+            CMDCam.NETWORK.sendToClient(new ConnectPacket(), handler.getPlayer());
+        }));
     }
 }

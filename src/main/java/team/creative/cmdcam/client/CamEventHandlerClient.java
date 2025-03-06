@@ -4,15 +4,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
-import io.github.fabricators_of_create.porting_lib.event.client.FieldOfViewEvents;
-import io.github.fabricators_of_create.porting_lib.event.client.RenderTickStartCallback;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -64,7 +58,7 @@ public class CamEventHandlerClient {
     public static Entity camera = null;
     
     public static boolean SHOW_ACTIVE_INTERPOLATION = false;
-    
+
     private static double fov = 0;
     private static float roll = 0;
     private static Consumer<CamTarget> selectingTarget = null;
@@ -109,31 +103,19 @@ public class CamEventHandlerClient {
         CamEventHandlerClient.fov = fov;
     }
 
-    public CamEventHandlerClient() {
-        ClientTickEvents.START_CLIENT_TICK.register(this::onClientTick);
-        RenderTickStartCallback.EVENT.register(this::onRenderTick);
-        FieldOfViewEvents.COMPUTE.register(this::fov);
-        WorldRenderEvents.AFTER_ENTITIES.register(this::worldRender);
-
-        ComputeCameraAnglesCallback.EVENT.register(this::cameraRoll);
-
-        UseBlockCallback.EVENT.register(this::onPlayerUseBlock);
-        UseEntityCallback.EVENT.register(this::onPlayerUseEntity);
-    }
-
-    public void onClientTick(Minecraft mc) {
+    public static void onClientTick(Minecraft mc) {
         if (MC.player != null && MC.level != null && !MC.isPaused() && CMDCamClient.isPlaying())
             CMDCamClient.gameTickPath(MC.level);
     }
     
-    private double calculatePointInCurve(double fov) {
+    private static double calculatePointInCurve(double fov) {
         fov -= MIN_FOV;
         fov /= FOV_RANGE_HALF;
         fov = Mth.clamp(fov, 0, 2);
         return Math.asin(fov - 1) / Math.PI + 0.5;
     }
     
-    private double transformFov(double x) {
+    private static double transformFov(double x) {
         if (x <= 0)
             return MIN_FOV;
         if (x >= 1)
@@ -141,7 +123,7 @@ public class CamEventHandlerClient {
         return (Math.sin((x - 0.5) * Math.PI) + 1) * FOV_RANGE_HALF + MIN_FOV;
     }
 
-    public void onRenderTick() {
+    public static void onRenderTick() {
         if (MC.level == null) {
             CMDCamClient.resetServerAvailability();
             CMDCamClient.resetTargetMarker();
@@ -219,7 +201,7 @@ public class CamEventHandlerClient {
         }
     }
 
-    public double fov(GameRenderer renderer, Camera camera, double partialTicks, boolean usedFovSetting, double current) {
+    public static double fov(GameRenderer renderer, Camera camera, double partialTicks, boolean usedFovSetting, double current) {
         if (skipFov)
             return current;
 
@@ -238,7 +220,7 @@ public class CamEventHandlerClient {
         return newFov;
     }
 
-    public void worldRender(WorldRenderContext ctx) {
+    public static void worldRender(WorldRenderContext ctx) {
         if (CMDCamClient.isPlaying())
             return;
         RenderSystem.enableBlend();
@@ -372,11 +354,11 @@ public class CamEventHandlerClient {
             (float) view.x, (float) view.y, (float) view.z).endVertex();
     }
 
-    public void cameraRoll(ComputeCameraAnglesCallback event) {
+    public static void cameraRoll(ComputeCameraAnglesCallback event) {
         event.setRoll(roll);
     }
 
-    public InteractionResult onPlayerUseBlock(Player player, Level world, InteractionHand hand, BlockHitResult hitResult) {
+    public static InteractionResult onPlayerUseBlock(Player player, Level world, InteractionHand hand, BlockHitResult hitResult) {
         if (selectingTarget == null || !world.isClientSide)
             return InteractionResult.PASS;
 
@@ -387,7 +369,7 @@ public class CamEventHandlerClient {
         return InteractionResult.PASS;
     }
 
-    public InteractionResult onPlayerUseEntity(Player player, Level world, InteractionHand hand, Entity entity, @Nullable EntityHitResult hitResult) {
+    public static InteractionResult onPlayerUseEntity(Player player, Level world, InteractionHand hand, Entity entity, @Nullable EntityHitResult hitResult) {
         if (selectingTarget == null || !world.isClientSide || hitResult == null)
             return InteractionResult.PASS;
 
