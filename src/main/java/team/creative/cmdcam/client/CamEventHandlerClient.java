@@ -192,7 +192,13 @@ public class CamEventHandlerClient {
                             MC.player.sendSystemMessage(Component.translatable(e.getMessage()));
                         }
                 }
-                
+
+                for (int i = 0; i < KeyHandler.numpadPoints.length; i++) {
+                    if (KeyHandler.numpadPoints[i].consumeClick()) {
+                        switchScene(i + 1);
+                    }
+                }
+
                 while (KeyHandler.clearPoint.consumeClick()) {
                     CMDCamClient.getPoints().clear();
                     MC.player.sendSystemMessage(Component.translatable("scene.clear"));
@@ -219,6 +225,23 @@ public class CamEventHandlerClient {
 
         return newFov;
     }
+
+    private static void switchScene(int i) {
+        if (MC.player == null || MC.level == null)
+            return;
+
+        boolean isPlaying = CMDCamClient.isPlaying();
+        CMDCamClient.switchScene(i - 1, !isPlaying);
+
+        if (isPlaying && !CMDCamClient.getScene().points.isEmpty()) {
+            try {
+                CMDCamClient.start(CMDCamClient.createScene());
+            } catch (SceneException e) {
+                MC.player.sendSystemMessage(Component.translatable(e.getMessage()));
+            }
+        }
+    }
+
 
     public static void worldRender(WorldRenderContext ctx) {
         if (CMDCamClient.isPlaying())

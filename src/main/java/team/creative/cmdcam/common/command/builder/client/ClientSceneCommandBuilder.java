@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -120,14 +121,6 @@ public class ClientSceneCommandBuilder {
             return 0;
         })));
 
-        origin.then(ClientCommandManager.literal("smooth_start").then(ClientCommandManager.argument("value", BoolArgumentType.bool()).executes((x) -> {
-            boolean value = BoolArgumentType.getBool(x, "value");
-            processor.getScene(x).smoothBeginning = value;
-            processor.markDirty(x);
-            x.getSource().sendFeedback(Component.translatable("scene.smooth_beginning", value));
-            return 0;
-        })));
-
         origin.then(ClientCommandManager.literal("spinning_fix").then(ClientCommandManager.argument("mode", CamPitchModeArgument.pitchMode()).executes((x) -> {
             CamPitchMode mode = CamPitchModeArgument.getMode(x, "mode");
             processor.getScene(x).pitchMode = mode;
@@ -144,8 +137,30 @@ public class ClientSceneCommandBuilder {
             return 0;
         })));
 
+        origin.then(ClientCommandManager.literal("smooth_start")
+                .then(ClientCommandManager.argument("value", BoolArgumentType.bool())
+                        .executes((context) -> setSmoothStart(BoolArgumentType.getBool(context, "value"), "default", processor, context))
+                        .then(ClientCommandManager.argument("mode", new SceneSwitchArgument())
+                                .executes((context) -> setSmoothStart(BoolArgumentType.getBool(context, "value"),
+                                        StringArgumentType.getString(context, "mode"), processor, context))
+                        )
+                )
+        );
+
         if (processor.requiresSceneName())
             original.then(origin);
 
+    }public static int setSmoothStart(boolean value, String mode, CamCommandProcessor<FabricClientCommandSource> processor, CommandContext<FabricClientCommandSource> context) {
+        if (mode.equals("default")) {
+            processor.getScene(context).smoothBeginning = value;
+        } else if (mode.equals("all")) {
+            CMDCamClient.setSmoothStart(value);
+        } else {
+            CMDCamClient.setSmoothStart(value, Integer.parseInt(mode));
+        }
+
+        processor.markDirty(context);
+        context.getSource().sendFeedback(Component.translatable("scene.smooth_beginning", value));
+        return 0;
     }
 }

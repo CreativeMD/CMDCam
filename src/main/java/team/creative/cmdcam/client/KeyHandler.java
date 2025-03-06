@@ -19,6 +19,20 @@ public class KeyHandler {
     
     public static KeyMapping clearPoint = new KeyMapping("key.clearPoint", GLFW.GLFW_KEY_DELETE, "key.categories.cmdcam");
 
+    public static KeyMapping[] numpadPoints = {
+            new KeyMapping("key.point1", GLFW.GLFW_KEY_KP_1, "key.categories.cmdcam"),
+            new KeyMapping("key.point2", GLFW.GLFW_KEY_KP_2, "key.categories.cmdcam"),
+            new KeyMapping("key.point3", GLFW.GLFW_KEY_KP_3, "key.categories.cmdcam"),
+            new KeyMapping("key.point4", GLFW.GLFW_KEY_KP_4, "key.categories.cmdcam"),
+            new KeyMapping("key.point5", GLFW.GLFW_KEY_KP_5, "key.categories.cmdcam"),
+            new KeyMapping("key.point6", GLFW.GLFW_KEY_KP_6, "key.categories.cmdcam"),
+            new KeyMapping("key.point7", GLFW.GLFW_KEY_KP_7, "key.categories.cmdcam"),
+            new KeyMapping("key.point8", GLFW.GLFW_KEY_KP_8, "key.categories.cmdcam"),
+            new KeyMapping("key.point9", GLFW.GLFW_KEY_KP_9, "key.categories.cmdcam")
+    };
+
+
+    // TODO: come up with a better registry system
     public static void registerKeys() {
         KeyBindingHelper.registerKeyBinding(zoomIn);
         KeyBindingHelper.registerKeyBinding(zoomCenter);
@@ -32,5 +46,9 @@ public class KeyHandler {
         KeyBindingHelper.registerKeyBinding(startStop);
         
         KeyBindingHelper.registerKeyBinding(clearPoint);
+
+        for (KeyMapping numpadPoint : numpadPoints) {
+            KeyBindingHelper.registerKeyBinding(numpadPoint);
+        }
     }
 }

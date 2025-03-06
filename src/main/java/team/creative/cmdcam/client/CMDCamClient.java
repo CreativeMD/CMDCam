@@ -38,8 +38,8 @@ public class CMDCamClient implements ClientModInitializer {
     public final static Minecraft mc = Minecraft.getInstance();
     public static final CamCommandProcessorClient PROCESSOR_CLIENT = new CamCommandProcessorClient();
     public static final HashMap<String, CamScene> SCENES = new HashMap<>();
-    
-    private static final CamScene scene = CamScene.createDefault();
+    private static final CamScene[] scenes = new CamScene[9];
+    private static int currentScene = 0;
     private static CamScene playing;
     private static boolean serverAvailable = false;
     private static boolean hideGuiCache;
@@ -77,7 +77,17 @@ public class CMDCamClient implements ClientModInitializer {
 
         KeyHandler.registerKeys();
     }
-    
+
+    public static void resetScenes() {
+        for (int i = 0; i < scenes.length; i++) {
+            scenes[i] = CamScene.createDefault();
+        }
+
+        lastWorldName = null;
+        currentScene = 0;
+        isDirty = false;
+    }
+
     public static void commands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         var cam = ClientCommandManager.literal("cam");
 
@@ -166,14 +176,41 @@ public class CMDCamClient implements ClientModInitializer {
         
     }
 
+    public static void setSmoothStart(boolean smoothStart) {
+        for (int i = 0; i < scenes.length; i++) {
+            setSmoothStart(smoothStart, i);
+        }
+    }
+
+    public static void setSmoothStart(boolean smoothStart, int sceneId) {
+        scenes[sceneId].smoothBeginning = smoothStart;
+    }
+
+    public static void switchScene(int sceneId, boolean sendMessage) {
+        if (sceneId < 0 || sceneId > scenes.length) {
+            throw new IllegalArgumentException("sceneId out of bounds");
+        }
+
+        CamScene prevScene = CMDCamClient.getScene();
+
+        currentScene = sceneId;
+        if (CMDCamClient.getScene().smoothBeginning) {
+            prevScene.mode.finished(prevScene.run);
+        }
+
+        if (mc.player != null && sendMessage) {
+            mc.player.sendSystemMessage(Component.translatable("scenes.get", currentScene + 1));
+        }
+    }
+
     public static CamScene getScene() {
         if (isPlaying())
             return playing;
-        return scene;
+        return scenes[currentScene];
     }
     
     public static CamScene getConfigScene() {
-        return scene;
+        return scenes[currentScene];
     }
     
     public static boolean isPlaying() {
@@ -181,16 +218,16 @@ public class CMDCamClient implements ClientModInitializer {
     }
     
     public static List<CamPoint> getPoints() {
-        return scene.points;
+        return scenes[currentScene].points;
     }
     
     public static void set(CamScene scene) {
-        CMDCamClient.scene.set(scene);
+        CMDCamClient.scenes[currentScene].set(scene);
         checkTargetMarker();
     }
     
     public static void checkTargetMarker() {
-        hasTargetMarker = scene.posTarget != null;
+        hasTargetMarker = scenes[currentScene].posTarget != null;
         if (hasTargetMarker && targetMarker == null)
             targetMarker = CamPoint.createLocal();
     }
@@ -254,7 +291,7 @@ public class CMDCamClient implements ClientModInitializer {
     }
     
     public static boolean hasTargetMarker() {
-        return hasTargetMarker && targetMarker != null && scene.posTarget != null;
+        return hasTargetMarker && targetMarker != null && scenes[currentScene].posTarget != null;
     }
     
     public static CamPoint getTargetMarker() {
@@ -262,10 +299,10 @@ public class CMDCamClient implements ClientModInitializer {
     }
     
     public static CamScene createScene() throws SceneException {
-        if (scene.points.size() < 1)
+        if (scenes[currentScene].points.size() < 1)
             throw new SceneException("scene.create_fail");
         
-        CamScene newScene = scene.copy();
+        CamScene newScene = scenes[currentScene].copy();
         if (newScene.points.size() == 1)
             newScene.points.add(newScene.points.get(0));
         return newScene;
@@ -280,5 +317,9 @@ public class CMDCamClient implements ClientModInitializer {
         CamEventHandlerClient.fov(point.zoom - CamEventHandlerClient.fovExactVanilla(partialTick));
         mc.player.absMoveTo(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
         mc.player.absMoveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
+    }
+
+    public static int getScenesCount() {
+        return scenes.length;
     }
 }
