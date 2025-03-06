@@ -147,10 +147,46 @@ public class ClientSceneCommandBuilder {
                 )
         );
 
+        origin.then(ClientCommandManager.literal("save_scenes")
+                .executes((x) -> saveScenes("default", x))
+                .then(ClientCommandManager.argument("name", StringArgumentType.string())
+                        .executes((x) -> saveScenes(StringArgumentType.getString(x, "name"), x))));
+
+        origin.then(ClientCommandManager.literal("load_scenes")
+                .executes((x) -> loadScenes("default", x))
+                .then(ClientCommandManager.argument("name", StringArgumentType.string())
+                        .executes((x) -> loadScenes(StringArgumentType.getString(x, "name"), x))));
+
         if (processor.requiresSceneName())
             original.then(origin);
 
-    }public static int setSmoothStart(boolean value, String mode, CamCommandProcessor<FabricClientCommandSource> processor, CommandContext<FabricClientCommandSource> context) {
+    }
+
+    public static int saveScenes(String name, CommandContext<FabricClientCommandSource> context) {
+        if (name == null || name.isBlank()) {
+            name = "scenes";
+        }
+
+        if (!CMDCamClient.saveScenes(name)) {
+            context.getSource().sendError(Component.translatable("scene.save.error"));
+            return -1;
+        }
+        return 0;
+    }
+
+    public static int loadScenes(String name, CommandContext<FabricClientCommandSource> context) {
+        if (name == null || name.isBlank()) {
+            name = "scenes";
+        }
+
+        if (!CMDCamClient.loadScenes(name)) {
+            context.getSource().sendError(Component.translatable("scene.load.error"));
+            return -1;
+        }
+        return 0;
+    }
+
+    public static int setSmoothStart(boolean value, String mode, CamCommandProcessor<FabricClientCommandSource> processor, CommandContext<FabricClientCommandSource> context) {
         if (mode.equals("default")) {
             processor.getScene(context).smoothBeginning = value;
         } else if (mode.equals("all")) {

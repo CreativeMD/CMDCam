@@ -8,6 +8,7 @@
     "ArgumentTypeInfosAccessor",
     "LocalCoordinatesAccessor",
     "MinecraftAccessor",
+    "MinecraftServerAccessor",
     "ServerLevelAccessor",
     "WorldCoordinatesAccessor"
   ],

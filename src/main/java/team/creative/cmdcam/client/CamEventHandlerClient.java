@@ -8,7 +8,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.Camera;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
@@ -29,6 +31,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import team.creative.cmdcam.client.mixin.GameRendererAccessor;
 import team.creative.cmdcam.client.mixin.MinecraftAccessor;
+import team.creative.cmdcam.client.mixin.MinecraftServerAccessor;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.math.point.CamPoints;
@@ -178,6 +181,7 @@ public class CamEventHandlerClient {
                             point.sub(vec);
                         }
                         CMDCamClient.getPoints().add(point);
+                        CMDCamClient.markDirty();
                         MC.player.sendSystemMessage(Component.translatable("scene.add", CMDCamClient.getPoints().size()));
                     }
                 }
@@ -318,8 +322,26 @@ public class CamEventHandlerClient {
         RenderSystem.enableBlend();
         
     }
+
+    public static void onDisconnect(ClientPacketListener handler, Minecraft minecraft) {
+        if (CMDCamClient.isDirty()) {
+            CMDCamClient.saveScenes(minecraft, "scenes");
+        }
+
+        CMDCamClient.resetScenes();
+    }
+
+    public static void onJoin(ClientPacketListener clientPacketListener, PacketSender packetSender, Minecraft minecraft) {
+        if (!CMDCamClient.loadScenes(minecraft, "scenes")) {
+            CMDCamClient.resetScenes();
+        }
+
+        if (minecraft.getSingleplayerServer() != null) {
+            CMDCamClient.setLastWorldName(((MinecraftServerAccessor) minecraft.getSingleplayerServer()).getStorageSource().getLevelId());
+        }
+    }
     
-    public void renderPath(PoseStack mat, CamInterpolation inter, CamScene scene) {
+    public static void renderPath(PoseStack mat, CamInterpolation inter, CamScene scene) {
         double steps = 20 * (scene.points.size() - 1);
         RenderSystem.depthMask(true);
         RenderSystem.disableCull();

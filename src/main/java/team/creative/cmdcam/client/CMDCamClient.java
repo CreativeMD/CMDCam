@@ -14,10 +14,14 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.client.mixin.MinecraftAccessor;
+import team.creative.cmdcam.client.mixin.MinecraftServerAccessor;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
 import team.creative.cmdcam.common.command.builder.client.ClientPointArgumentBuilder;
 import team.creative.cmdcam.common.command.builder.client.ClientSceneCommandBuilder;
@@ -28,6 +32,7 @@ import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
 import team.creative.cmdcam.fabric.ComputeCameraAnglesCallback;
 import team.creative.cmdcam.common.scene.CamScene;
+import team.creative.cmdcam.common.util.SceneJsonIO;
 import team.creative.creativecore.client.CreativeCoreClient;
 
 import java.util.HashMap;
@@ -45,7 +50,9 @@ public class CMDCamClient implements ClientModInitializer {
     private static boolean hideGuiCache;
     private static boolean hasTargetMarker;
     private static CamPoint targetMarker;
-    
+    private static boolean isDirty = false;
+    private static String lastWorldName;
+
     public static void resetServerAvailability() {
         serverAvailable = false;
     }
@@ -70,6 +77,9 @@ public class CMDCamClient implements ClientModInitializer {
 
         UseBlockCallback.EVENT.register(CamEventHandlerClient::onPlayerUseBlock);
         UseEntityCallback.EVENT.register(CamEventHandlerClient::onPlayerUseEntity);
+
+        ClientPlayConnectionEvents.DISCONNECT.register(CamEventHandlerClient::onDisconnect);
+        ClientPlayConnectionEvents.JOIN.register(CamEventHandlerClient::onJoin);
 
         CreativeCoreClient.registerClientConfig(CMDCam.MODID);
 
@@ -176,6 +186,18 @@ public class CMDCamClient implements ClientModInitializer {
         
     }
 
+    public static void markDirty() {
+        isDirty = true;
+    }
+
+    public static boolean isDirty() {
+        return isDirty;
+    }
+
+    public static void setLastWorldName(String lastWorldName) {
+        CMDCamClient.lastWorldName = lastWorldName;
+    }
+
     public static void setSmoothStart(boolean smoothStart) {
         for (int i = 0; i < scenes.length; i++) {
             setSmoothStart(smoothStart, i);
@@ -202,6 +224,68 @@ public class CMDCamClient implements ClientModInitializer {
             mc.player.sendSystemMessage(Component.translatable("scenes.get", currentScene + 1));
         }
     }
+
+    public static boolean saveScenes(String name) {
+        return saveScenes(mc, name);
+    }
+
+    public static boolean saveScenes(Minecraft instance, String name) {
+        try {
+            SceneJsonIO.save(getWorldName(instance), name, scenesToListTag(), instance.getCurrentServer() != null);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean loadScenes(String name) {
+        return loadScenes(mc, name);
+    }
+
+    public static boolean loadScenes(Minecraft instance, String name) {
+        try {
+            CamScene[] loadedScenes = SceneJsonIO.load(getWorldName(instance), name, instance.getCurrentServer() != null);
+            if (loadedScenes.length == 0) {
+                return false;
+            }
+
+            for (int i = 0; i < scenes.length; i++) {
+                if (i < loadedScenes.length) {
+                    scenes[i] = loadedScenes[i];
+                } else {
+                    scenes[i] = CamScene.createDefault();
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static String getWorldName(Minecraft instance) {
+        if (instance.hasSingleplayerServer() && instance.getSingleplayerServer() != null) {
+
+            return lastWorldName != null ? lastWorldName :
+                    ((MinecraftServerAccessor) instance.getSingleplayerServer()).getStorageSource().getLevelId();
+
+        } else if (instance.getCurrentServer() != null) {
+            ServerData serverData = instance.getCurrentServer();
+            return !serverData.name.isBlank() ? serverData.name + "@" + serverData.ip : serverData.ip;
+        } else {
+            return null;
+        }
+    }
+
+    public static ListTag scenesToListTag() {
+        ListTag tags = new ListTag();
+
+        for (CamScene scene : scenes) {
+            tags.add(scene.save(new CompoundTag()));
+        }
+
+        return tags;
+    }
+
 
     public static CamScene getScene() {
         if (isPlaying())
