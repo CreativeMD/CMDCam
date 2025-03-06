@@ -185,7 +185,7 @@ public class CamEventHandlerClient {
                         MC.player.sendSystemMessage(Component.translatable("scene.add", CMDCamClient.getPoints().size()));
                     }
                 }
-                
+
                 if (KeyHandler.startStop.consumeClick()) {
                     if (CMDCamClient.isPlaying())
                         CMDCamClient.stop();
@@ -329,6 +329,7 @@ public class CamEventHandlerClient {
         }
 
         CMDCamClient.resetScenes();
+        CMDCamClient.setLastWorldName(null);
     }
 
     public static void onJoin(ClientPacketListener clientPacketListener, PacketSender packetSender, Minecraft minecraft) {
@@ -340,7 +341,7 @@ public class CamEventHandlerClient {
             CMDCamClient.setLastWorldName(((MinecraftServerAccessor) minecraft.getSingleplayerServer()).getStorageSource().getLevelId());
         }
     }
-    
+
     public static void renderPath(PoseStack mat, CamInterpolation inter, CamScene scene) {
         double steps = 20 * (scene.points.size() - 1);
         RenderSystem.depthMask(true);

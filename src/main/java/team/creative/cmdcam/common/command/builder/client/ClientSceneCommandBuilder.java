@@ -147,6 +147,13 @@ public class ClientSceneCommandBuilder {
                 )
         );
 
+        origin.then(ClientCommandManager.literal("reset_scenes").executes((x) -> {
+            processor.markDirty(x);
+            CMDCamClient.resetScenes();
+            x.getSource().sendFeedback(Component.translatable("scene.reset"));
+            return 0;
+        }));
+
         origin.then(ClientCommandManager.literal("save_scenes")
                 .executes((x) -> saveScenes("default", x))
                 .then(ClientCommandManager.argument("name", StringArgumentType.string())

@@ -93,7 +93,6 @@ public class CMDCamClient implements ClientModInitializer {
             scenes[i] = CamScene.createDefault();
         }
 
-        lastWorldName = null;
         currentScene = 0;
         isDirty = false;
     }

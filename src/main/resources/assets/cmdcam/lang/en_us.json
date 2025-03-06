@@ -80,6 +80,7 @@
     "scene.save.error": "Failed to save scenes.",
     "scene.load.success": "Scenes loaded successfully.",
     "scene.load.error": "Failed to load scenes. Ensure the file exists in '.minecraft/cam-scenes' and is correctly formatted.",
+    "scene.reset": "All scenes have been reset.",
     "scene.output.duration": "Scene is %s long",
     "scene.output.no_loop": "Scene has no loops",
     "scene.output.endless": "Scene has infinite loops",
