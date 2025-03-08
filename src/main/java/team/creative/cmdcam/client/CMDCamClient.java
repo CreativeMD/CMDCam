@@ -269,7 +269,8 @@ public class CMDCamClient implements ClientModInitializer {
 
         } else if (instance.getCurrentServer() != null) {
             ServerData serverData = instance.getCurrentServer();
-            return !serverData.name.isBlank() ? serverData.name + "@" + serverData.ip : serverData.ip;
+            String serverIp = serverData.ip.replace(":", "_");
+            return !serverData.name.isBlank() ? serverData.name + "@" + serverIp : serverIp;
         } else {
             return null;
         }

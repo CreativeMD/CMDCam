@@ -171,7 +171,7 @@ public class ClientSceneCommandBuilder {
 
     public static int saveScenes(String name, CommandContext<FabricClientCommandSource> context) {
         if (name == null || name.isBlank()) {
-            name = "scenes";
+            name = "default";
         }
 
         if (!CMDCamClient.saveScenes(name)) {
@@ -185,7 +185,7 @@ public class ClientSceneCommandBuilder {
 
     public static int loadScenes(String name, CommandContext<FabricClientCommandSource> context) {
         if (name == null || name.isBlank()) {
-            name = "scenes";
+            name = "default";
         }
 
         if (!CMDCamClient.loadScenes(name)) {
