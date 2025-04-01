@@ -1,3 +1,6 @@
+2.2.2
+Adapted to CreativeCore 2.13.0
+
 2.2.1
 Added rendering title even when camera path is active
 
