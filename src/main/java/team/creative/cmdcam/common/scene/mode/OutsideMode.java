@@ -1,12 +1,12 @@
 package team.creative.cmdcam.common.scene.mode;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.run.CamRun;
@@ -21,7 +21,7 @@ public class OutsideMode extends CamMode {
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void started(CamRun run) {
         Minecraft mc = Minecraft.getInstance();
         Vec3 vec = mc.player.getEyePosition(TickUtils.getFrameTime(mc.level));
@@ -30,7 +30,7 @@ public class OutsideMode extends CamMode {
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void finished(CamRun run) {
         super.finished(run);
         Minecraft mc = Minecraft.getInstance();
@@ -38,13 +38,13 @@ public class OutsideMode extends CamMode {
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Entity getCamera() {
         return camPlayer;
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void process(CamPoint point) {
         super.process(point);
         Minecraft.getInstance().cameraEntity = camPlayer;

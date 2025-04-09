@@ -24,4 +24,7 @@ build/
 /.apt_generated_tests/
 /Users/
 
+.gradle/
+.idea/
+
 !/gradle/wrapper/gradle-wrapper.jar

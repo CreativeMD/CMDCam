@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_authors}"
+  ],
+  "contact": {
+    "repo": "https://github.com/BluSpring/CMDCam-Fabric"
+  },
+  "license": "LGPL-2.1-only",
+  "icon": "${mod_id}.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "team.creative.cmdcam.CMDCam"
+    ],
+    "client": [
+      "team.creative.cmdcam.client.CMDCamClient"
+    ]
+  },
+  "mixins": [
+    "cmdcam.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.23",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}",
+    "creativecore": ">=${creativecore_version}"
+  }
+}

@@ -1,9 +1,5 @@
 package team.creative.cmdcam.common.command.builder;
 
-import java.util.function.BiConsumer;
-
-import org.apache.logging.log4j.util.TriConsumer;
-
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -11,7 +7,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
-
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.RotationArgument;
@@ -19,10 +14,13 @@ import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import org.apache.logging.log4j.util.TriConsumer;
 import team.creative.cmdcam.client.SceneException;
 import team.creative.cmdcam.common.command.CamCommandProcessor;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.scene.CamScene;
+
+import java.util.function.BiConsumer;
 
 public class PointArgumentBuilder extends ArgumentBuilder<CommandSourceStack, PointArgumentBuilder> {
     
@@ -78,7 +76,7 @@ public class PointArgumentBuilder extends ArgumentBuilder<CommandSourceStack, Po
                     CamScene scene = processor.getScene(x);
                     if (scene.posTarget != null)
                         try {
-                            processor.makeRelative(processor.getScene(x), x.getSource().getUnsidedLevel(), point);
+                            processor.makeRelative(processor.getScene(x), x.getSource().getLevel(), point);
                         } catch (SceneException e) {
                             x.getSource().sendFailure(e.getComponent());
                         }
@@ -93,7 +91,7 @@ public class PointArgumentBuilder extends ArgumentBuilder<CommandSourceStack, Po
                     CamScene scene = processor.getScene(x);
                     if (scene.posTarget != null)
                         try {
-                            processor.makeRelative(processor.getScene(x), x.getSource().getUnsidedLevel(), point);
+                            processor.makeRelative(processor.getScene(x), x.getSource().getLevel(), point);
                         } catch (SceneException e) {
                             x.getSource().sendFailure(e.getComponent());
                         }

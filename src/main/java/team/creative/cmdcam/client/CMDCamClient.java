@@ -1,49 +1,58 @@
 package team.creative.cmdcam.client;
 
-import java.util.HashMap;
-import java.util.List;
-
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-
+import io.github.fabricators_of_create.porting_lib.event.client.FieldOfViewEvents;
+import io.github.fabricators_of_create.porting_lib.event.client.RenderTickStartCallback;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.client.Minecraft;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.event.RegisterClientCommandsEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.network.NetworkConstants;
 import team.creative.cmdcam.CMDCam;
+import team.creative.cmdcam.client.mixin.MinecraftAccessor;
+import team.creative.cmdcam.client.mixin.MinecraftServerAccessor;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
-import team.creative.cmdcam.common.command.builder.PointArgumentBuilder;
-import team.creative.cmdcam.common.command.builder.SceneCommandBuilder;
-import team.creative.cmdcam.common.command.builder.SceneStartCommandBuilder;
+import team.creative.cmdcam.common.command.builder.client.ClientPointArgumentBuilder;
+import team.creative.cmdcam.common.command.builder.client.ClientSceneCommandBuilder;
+import team.creative.cmdcam.common.command.builder.client.ClientSceneStartCommandBuilder;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
+import team.creative.cmdcam.fabric.ComputeCameraAnglesCallback;
 import team.creative.cmdcam.common.scene.CamScene;
+import team.creative.cmdcam.common.util.SceneJsonIO;
 import team.creative.creativecore.client.CreativeCoreClient;
 
-public class CMDCamClient {
+import java.util.HashMap;
+import java.util.List;
+
+public class CMDCamClient implements ClientModInitializer {
     
     public final static Minecraft mc = Minecraft.getInstance();
-    public static final CamCommandProcessorClient PROCESSOR = new CamCommandProcessorClient();
+    public static final CamCommandProcessorClient PROCESSOR_CLIENT = new CamCommandProcessorClient();
     public static final HashMap<String, CamScene> SCENES = new HashMap<>();
-    
-    private static final CamScene scene = CamScene.createDefault();
+    private static final CamScene[] scenes = new CamScene[9];
+    private static int currentScene = 0;
     private static CamScene playing;
     private static boolean serverAvailable = false;
     private static boolean hideGuiCache;
     private static boolean hasTargetMarker;
     private static CamPoint targetMarker;
-    
+    private static boolean isDirty = false;
+    private static String lastWorldName;
+
     public static void resetServerAvailability() {
         serverAvailable = false;
     }
@@ -51,75 +60,97 @@ public class CMDCamClient {
     public static void setServerAvailability() {
         serverAvailable = true;
     }
-    
-    public static void init(FMLClientSetupEvent event) {
-        MinecraftForge.EVENT_BUS.register(new CamEventHandlerClient());
+
+    @Override
+    public void onInitializeClient() {
+        resetScenes();
+        registerEvents();
+    }
+
+    private static void registerEvents() {
+        ClientTickEvents.START_CLIENT_TICK.register(CamEventHandlerClient::onClientTick);
+        RenderTickStartCallback.EVENT.register(CamEventHandlerClient::onRenderTick);
+        FieldOfViewEvents.COMPUTE.register(CamEventHandlerClient::fov);
+        WorldRenderEvents.AFTER_ENTITIES.register(CamEventHandlerClient::worldRender);
+
+        ComputeCameraAnglesCallback.EVENT.register(CamEventHandlerClient::cameraRoll);
+
+        UseBlockCallback.EVENT.register(CamEventHandlerClient::onPlayerUseBlock);
+        UseEntityCallback.EVENT.register(CamEventHandlerClient::onPlayerUseEntity);
+
+        ClientPlayConnectionEvents.DISCONNECT.register(CamEventHandlerClient::onDisconnect);
+        ClientPlayConnectionEvents.JOIN.register(CamEventHandlerClient::onJoin);
+
         CreativeCoreClient.registerClientConfig(CMDCam.MODID);
-        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
-            () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> commands(dispatcher));
+
+        KeyHandler.registerKeys();
     }
-    
-    public static void load(IEventBus bus) {
-        bus.addListener(CMDCamClient::init);
-        MinecraftForge.EVENT_BUS.addListener(CMDCamClient::commands);
-        bus.addListener(KeyHandler::registerKeys);
+
+    public static void resetScenes() {
+        for (int i = 0; i < scenes.length; i++) {
+            scenes[i] = CamScene.createDefault();
+        }
+
+        currentScene = 0;
+        isDirty = false;
     }
-    
-    public static void commands(RegisterClientCommandsEvent event) {
-        LiteralArgumentBuilder<CommandSourceStack> cam = Commands.literal("cam");
+
+    public static void commands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
+        var cam = ClientCommandManager.literal("cam");
+
+        ClientSceneStartCommandBuilder.start(cam, PROCESSOR_CLIENT);
+        ClientSceneCommandBuilder.scene(cam, PROCESSOR_CLIENT);
         
-        SceneStartCommandBuilder.start(cam, PROCESSOR);
-        
-        SceneCommandBuilder.scene(cam, PROCESSOR);
-        
-        event.getDispatcher().register(cam.then(Commands.literal("stop").executes(x -> {
+        dispatcher.register(cam.then(ClientCommandManager.literal("stop").executes(x -> {
             CMDCamClient.stop();
             return 0;
-        })).then(Commands.literal("pause").executes(x -> {
+        })).then(ClientCommandManager.literal("pause").executes(x -> {
             CMDCamClient.pause();
             return 0;
-        })).then(Commands.literal("resume").executes(x -> {
+        })).then(ClientCommandManager.literal("resume").executes(x -> {
             CMDCamClient.resume();
             return 0;
-        })).then(Commands.literal("show").executes(x -> {
+        })).then(ClientCommandManager.literal("show").executes(x -> {
             CamEventHandlerClient.SHOW_ACTIVE_INTERPOLATION = true;
-            x.getSource().sendSuccess(() -> Component.translatable("scene.interpolation.show_active"), false);
+            x.getSource().sendFeedback(Component.translatable("scene.interpolation.show_active"));
             return 0;
-        }).then(Commands.argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
+        }).then(ClientCommandManager.argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
             String interpolation = StringArgumentType.getString(x, "interpolation");
             if (!interpolation.equalsIgnoreCase("all")) {
                 CamInterpolation.REGISTRY.get(interpolation).isRenderingEnabled = true;
-                x.getSource().sendSuccess(() -> Component.translatable("scene.interpolation.show", interpolation), false);
+                x.getSource().sendFeedback(Component.translatable("scene.interpolation.show", interpolation));
             } else {
                 for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
                     movement.isRenderingEnabled = true;
-                x.getSource().sendSuccess(() -> Component.translatable("scene.interpolation.show_all"), false);
+                x.getSource().sendFeedback(Component.translatable("scene.interpolation.show_all"));
             }
             return 0;
-        }))).then(Commands.literal("hide").executes(x -> {
+        }))).then(ClientCommandManager.literal("hide").executes(x -> {
             CamEventHandlerClient.SHOW_ACTIVE_INTERPOLATION = false;
-            x.getSource().sendSuccess(() -> Component.translatable("scene.interpolation.hide_active"), false);
+            x.getSource().sendFeedback(Component.translatable("scene.interpolation.hide_active"));
             return 0;
-        }).then(Commands.argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
+        }).then(ClientCommandManager.argument("interpolation", InterpolationArgument.interpolationAll()).executes((x) -> {
             String interpolation = StringArgumentType.getString(x, "interpolation");
             if (!interpolation.equalsIgnoreCase("all")) {
                 CamInterpolation.REGISTRY.get(interpolation).isRenderingEnabled = false;
-                x.getSource().sendSuccess(() -> Component.translatable("scene.interpolation.hide", interpolation), false);
+                x.getSource().sendFeedback(Component.translatable("scene.interpolation.hide", interpolation));
             } else {
                 for (CamInterpolation movement : CamInterpolation.REGISTRY.values())
                     movement.isRenderingEnabled = false;
-                x.getSource().sendSuccess(() -> Component.translatable("scene.interpolation.hide_all"), false);
+                x.getSource().sendFeedback(Component.translatable("scene.interpolation.hide_all"));
                 CamEventHandlerClient.SHOW_ACTIVE_INTERPOLATION = false;
             }
             return 0;
-        }))).then(Commands.literal("list").executes((x) -> {
+        }))).then(ClientCommandManager.literal("list").executes((x) -> {
             if (CMDCamClient.serverAvailable) {
-                x.getSource().sendFailure(Component.translatable("scenes.list_fail"));
+                x.getSource().sendError(Component.translatable("scenes.list_fail"));
                 return 0;
             }
-            x.getSource().sendSuccess(() -> Component.translatable("scenes.list", SCENES.size(), String.join(", ", SCENES.keySet())), true);
+            x.getSource().sendFeedback(Component.translatable("scenes.list", SCENES.size(), String.join(", ", SCENES.keySet())));
             return 0;
-        })).then(Commands.literal("load").then(Commands.argument("path", StringArgumentType.string()).executes((x) -> {
+        })).then(ClientCommandManager.literal("load").then(ClientCommandManager.argument("path", StringArgumentType.string()).executes((x) -> {
             String pathArg = StringArgumentType.getString(x, "path");
             if (CMDCamClient.serverAvailable)
                 CMDCam.NETWORK.sendToServer(new GetPathPacket(pathArg));
@@ -127,12 +158,12 @@ public class CMDCamClient {
                 CamScene scene = CMDCamClient.SCENES.get(pathArg);
                 if (scene != null) {
                     set(scene);
-                    x.getSource().sendSuccess(() -> Component.translatable("scenes.load", pathArg), false);
+                    x.getSource().sendFeedback(Component.translatable("scenes.load", pathArg));
                 } else
-                    x.getSource().sendFailure(Component.translatable("scenes.load_fail", pathArg));
+                    x.getSource().sendError(Component.translatable("scenes.load_fail", pathArg));
             }
             return 0;
-        }))).then(Commands.literal("save").then(Commands.argument("path", StringArgumentType.string()).executes((x) -> {
+        }))).then(ClientCommandManager.literal("save").then(ClientCommandManager.argument("path", StringArgumentType.string()).executes((x) -> {
             String pathArg = StringArgumentType.getString(x, "path");
             try {
                 CamScene scene = CMDCamClient.createScene();
@@ -141,29 +172,129 @@ public class CMDCamClient {
                     CMDCam.NETWORK.sendToServer(new SetPathPacket(pathArg, scene));
                 else {
                     CMDCamClient.SCENES.put(pathArg, scene);
-                    x.getSource().sendSuccess(() -> Component.translatable("scenes.save", pathArg), false);
+                    x.getSource().sendFeedback(Component.translatable("scenes.save", pathArg));
                 }
             } catch (SceneException e) {
-                x.getSource().sendFailure(Component.translatable(e.getMessage()));
+                x.getSource().sendError(Component.translatable(e.getMessage()));
             }
             return 0;
-        }))).then(new PointArgumentBuilder("follow_center", (x, y) -> targetMarker = y, PROCESSOR).executes(x -> {
+        }))).then(new ClientPointArgumentBuilder("follow_center", (x, y) -> targetMarker = y, PROCESSOR_CLIENT).executes(x -> {
             targetMarker = CamPoint.createLocal();
             return 0;
         })));
         
     }
-    
-    public static void renderBefore(RenderPlayerEvent.Pre event) {}
-    
+
+    public static void markDirty() {
+        isDirty = true;
+    }
+
+    public static boolean isDirty() {
+        return isDirty;
+    }
+
+    public static void setLastWorldName(String lastWorldName) {
+        CMDCamClient.lastWorldName = lastWorldName;
+    }
+
+    public static void setSmoothStart(boolean smoothStart) {
+        for (int i = 0; i < scenes.length; i++) {
+            setSmoothStart(smoothStart, i);
+        }
+    }
+
+    public static void setSmoothStart(boolean smoothStart, int sceneId) {
+        scenes[sceneId].smoothBeginning = smoothStart;
+    }
+
+    public static void switchScene(int sceneId, boolean sendMessage) {
+        if (sceneId < 0 || sceneId > scenes.length) {
+            throw new IllegalArgumentException("sceneId out of bounds");
+        }
+
+        CamScene prevScene = CMDCamClient.getScene();
+
+        currentScene = sceneId;
+        if (CMDCamClient.getScene().smoothBeginning) {
+            prevScene.mode.finished(prevScene.run);
+        }
+
+        if (mc.player != null && sendMessage) {
+            mc.player.sendSystemMessage(Component.translatable("scenes.get", currentScene + 1));
+        }
+    }
+
+    public static boolean saveScenes(String name) {
+        return saveScenes(mc, name);
+    }
+
+    public static boolean saveScenes(Minecraft instance, String name) {
+        try {
+            SceneJsonIO.save(getWorldName(instance), name, scenesToListTag(), instance.getCurrentServer() != null);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean loadScenes(String name) {
+        return loadScenes(mc, name);
+    }
+
+    public static boolean loadScenes(Minecraft instance, String name) {
+        try {
+            CamScene[] loadedScenes = SceneJsonIO.load(getWorldName(instance), name, instance.getCurrentServer() != null);
+            if (loadedScenes.length == 0) {
+                return false;
+            }
+
+            for (int i = 0; i < scenes.length; i++) {
+                if (i < loadedScenes.length) {
+                    scenes[i] = loadedScenes[i];
+                } else {
+                    scenes[i] = CamScene.createDefault();
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static String getWorldName(Minecraft instance) {
+        if (instance.hasSingleplayerServer() && instance.getSingleplayerServer() != null) {
+
+            return lastWorldName != null ? lastWorldName :
+                    ((MinecraftServerAccessor) instance.getSingleplayerServer()).getStorageSource().getLevelId();
+
+        } else if (instance.getCurrentServer() != null) {
+            ServerData serverData = instance.getCurrentServer();
+            String serverIp = serverData.ip.replace(":", "_");
+            return !serverData.name.isBlank() ? serverData.name + "@" + serverIp : serverIp;
+        } else {
+            return null;
+        }
+    }
+
+    public static ListTag scenesToListTag() {
+        ListTag tags = new ListTag();
+
+        for (CamScene scene : scenes) {
+            tags.add(scene.save(new CompoundTag()));
+        }
+
+        return tags;
+    }
+
+
     public static CamScene getScene() {
         if (isPlaying())
             return playing;
-        return scene;
+        return scenes[currentScene];
     }
     
     public static CamScene getConfigScene() {
-        return scene;
+        return scenes[currentScene];
     }
     
     public static boolean isPlaying() {
@@ -171,16 +302,16 @@ public class CMDCamClient {
     }
     
     public static List<CamPoint> getPoints() {
-        return scene.points;
+        return scenes[currentScene].points;
     }
     
     public static void set(CamScene scene) {
-        CMDCamClient.scene.set(scene);
+        CMDCamClient.scenes[currentScene].set(scene);
         checkTargetMarker();
     }
     
     public static void checkTargetMarker() {
-        hasTargetMarker = scene.posTarget != null;
+        hasTargetMarker = scenes[currentScene].posTarget != null;
         if (hasTargetMarker && targetMarker == null)
             targetMarker = CamPoint.createLocal();
     }
@@ -244,7 +375,7 @@ public class CMDCamClient {
     }
     
     public static boolean hasTargetMarker() {
-        return hasTargetMarker && targetMarker != null && scene.posTarget != null;
+        return hasTargetMarker && targetMarker != null && scenes[currentScene].posTarget != null;
     }
     
     public static CamPoint getTargetMarker() {
@@ -252,10 +383,10 @@ public class CMDCamClient {
     }
     
     public static CamScene createScene() throws SceneException {
-        if (scene.points.size() < 1)
+        if (scenes[currentScene].points.size() < 1)
             throw new SceneException("scene.create_fail");
         
-        CamScene newScene = scene.copy();
+        CamScene newScene = scenes[currentScene].copy();
         if (newScene.points.size() == 1)
             newScene.points.add(newScene.points.get(0));
         return newScene;
@@ -266,9 +397,13 @@ public class CMDCamClient {
         mc.player.getAbilities().flying = true;
         
         CamEventHandlerClient.roll((float) point.roll);
-        CamEventHandlerClient.fov(point.zoom - CamEventHandlerClient.fovExactVanilla(mc.getPartialTick()));
+        var partialTick = mc.isPaused() ? ((MinecraftAccessor) mc).getPausePartialTick() : ((MinecraftAccessor) mc).getTimer().partialTick;
+        CamEventHandlerClient.fov(point.zoom - CamEventHandlerClient.fovExactVanilla(partialTick));
         mc.player.absMoveTo(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
         mc.player.absMoveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
     }
-    
+
+    public static int getScenesCount() {
+        return scenes.length;
+    }
 }

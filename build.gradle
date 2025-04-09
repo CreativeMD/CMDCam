@@ -1,9 +1,8 @@
 plugins {
     id 'eclipse'
     id 'idea'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    id 'com.diffplug.eclipse.apt'
-    id 'org.spongepowered.mixin'
+    id 'fabric-loom' version '1.9-SNAPSHOT'
+    id 'com.diffplug.eclipse.apt' version '3.43.0'
     id 'com.modrinth.minotaur' version '2.+'
     id 'com.matthewprenger.cursegradle' version '1.4+'
 }
@@ -15,73 +14,71 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+    maven {
+        url "https://mvn.devos.one/snapshots/"
+    }
+    maven {
+        name = "JitPack"
+        url = "https://jitpack.io/"
+    }
+
+    maven {
+        name = "Cafeteria Dev"
+        url = "https://maven.cafeteria.dev/releases/"
+    }
+
+    maven {
+        name = "JamiesWhiteShirt Dev"
+        url = "https://maven.jamieswhiteshirt.com/libs-release"
+        content {
+            includeGroup("com.jamieswhiteshirt")
+        }
+    }
 }
 
 group= "team.creative" + project.mod_id
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-project.evaluationDependsOn(":CreativeCore")
+//project.evaluationDependsOn(":CreativeCore")
 
-minecraft {
-    mappings channel: 'official', version: "${project.property 'minecraft_version'}"
+dependencies {
+    minecraft "com.mojang:minecraft:${project.property 'minecraft_version'}"
+    mappings loom.officialMojangMappings()
+
+    modImplementation "net.fabricmc:fabric-loader:${project.property 'fabric_loader_version'}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.property 'fabric_api_version'}"
     
-    runs {
-        client {
-            taskName "cmdcam_client"
-            workingDirectory project.file('run')
+    //implementation project(':CreativeCore')
+    
+    //minecraftLibrary fg.deobf("curse.maven:minema-resurrection-596719:4816846")
+    modImplementation "curse.maven:creativecore-257814:4800161"
 
-            property 'forge.logging.console.level', 'debug'
-            arg '--mixin.config'
-            arg 'creativecore.mixins.json'
-            arg '--mixin.config'
-            arg 'creativecore.forge.mixins.json'
+    def plModules = ['base']
 
-            mods {
-                creativecore {
-                    source project(':CreativeCore').sourceSets.main
-                }
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            taskName "cmdcam_server"
-            workingDirectory project.file('run')
-
-            property 'forge.logging.console.level', 'debug'
-            arg '--mixin.config'
-            arg 'creativecore.mixins.json'
-            arg '--mixin.config'
-            arg 'creativecore.forge.mixins.json'
-
-            mods {
-                creativecore {
-                    source project(':CreativeCore').sourceSets.main
-                }
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
+    for (final def module in plModules) {
+        modImplementation(include("io.github.fabricators_of_create.Porting-Lib:${module}:2.1.1163+1.20.1"))
     }
 }
 
-dependencies {
-    minecraft "net.minecraftforge:forge:${project.property 'minecraft_version'}-${project.property 'forge_version'}"
-    
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    
-    implementation project(':CreativeCore')
-    
-    minecraftLibrary fg.deobf("curse.maven:minema-resurrection-596719:4816846")
-}
-
-modDependencies = [
-    [ modId: "creativecore", mandatory: true, ordering: "NONE", side: "BOTH", versionRange: creativecore_version ]
+def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta', 'fabric.mod.json']
+def replaceProperties = [
+        minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
+        forge_version: forge_version, forge_version_range: forge_version_range,
+        loader_version_range: loader_version_range,
+        mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+        mod_authors: mod_authors, mod_description: mod_description, mod_display_url: mod_display_url,
+        creativecore_version: creativecore_version, github_project: github_project,
+        resource_pack_format: resource_pack_format, data_pack_format: data_pack_format
 ]
+processResources {
+    inputs.properties replaceProperties
+    replaceProperties.put 'project', project
+
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
+}
 
 jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
@@ -99,13 +96,6 @@ jar {
     }
 }
 
-jar.finalizedBy('reobfJar')
-
-mixin {
-    add sourceSets.main, 'cmdcam.mixin.refmap.json'
-     
-    config 'cmdcam.mixins.json'
-}
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
@@ -155,13 +145,13 @@ modrinth {
     uploadFile = jar
     gameVersions = [ project.minecraft_version ]
     changelog = getChangelogText()
-    loaders = [ "forge", "neoforge" ]
+    loaders = [ "fabric" ]
     dependencies {
         required.project "creativecore"
     }
 }
 
-tasks.curseforge.enabled = System.getenv("CURSEFORGE_TOKEN") != null
+/*tasks.curseforge.enabled = System.getenv("CURSEFORGE_TOKEN") != null
 tasks.curseforge.group = 'publishing'
 curseforge {
     apiKey = System.getenv("CURSEFORGE_TOKEN") != null ? System.getenv("CURSEFORGE_TOKEN") : "empty"
@@ -170,8 +160,7 @@ curseforge {
         changelog = getChangelogText()
         changelogType = "markdown"
         addGameVersion project.minecraft_version
-        addGameVersion "Forge"
-        addGameVersion "NeoForge"
+        addGameVersion "Fabric"
         releaseType = project.release_type
         mainArtifact(jar) {
         }
@@ -180,3 +169,4 @@ curseforge {
         }
     }
 }
+*/
