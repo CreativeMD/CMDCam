@@ -36,10 +36,10 @@ public class CamFollowConfig<T extends VecNd> {
     }
     
     public void load(CompoundTag nbt) {
-        type = nbt.getString("type");
-        div = Math.max(1, nbt.getDouble("div"));
-        threshold = nbt.getDouble("threshold");
-        maxSpeed = nbt.getDouble("max_speed");
+        type = nbt.getStringOr("type", "");
+        div = Math.max(1, nbt.getDoubleOr("div", 0));
+        threshold = nbt.getDoubleOr("threshold", 0);
+        maxSpeed = nbt.getDoubleOr("max_speed", 0);
     }
     
     public CompoundTag save(CompoundTag nbt) {

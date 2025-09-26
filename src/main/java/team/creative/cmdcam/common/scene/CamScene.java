@@ -67,27 +67,27 @@ public class CamScene {
     }
     
     public CamScene(CompoundTag nbt) throws RegistryException {
-        this.duration = nbt.getLong("duration");
-        this.loop = nbt.getInt("loop");
+        this.duration = nbt.getLongOr("duration", 0);
+        this.loop = nbt.getIntOr("loop", 0);
         
-        setMode(nbt.getString("mode"));
-        this.interpolation = CamInterpolation.REGISTRY.get(nbt.getString("inter"));
+        setMode(nbt.getStringOr("mode", ""));
+        this.interpolation = CamInterpolation.REGISTRY.get(nbt.getStringOr("inter", ""));
         
-        this.lookTarget = nbt.contains("look_target") ? CamTarget.load(nbt.getCompound("look_target")) : null;
-        this.pitchFollowConfig.load(nbt.getCompound("pitch"));
-        this.yawFollowConfig.load(nbt.getCompound("yaw"));
+        this.lookTarget = nbt.contains("look_target") ? CamTarget.load(nbt.getCompoundOrEmpty("look_target")) : null;
+        this.pitchFollowConfig.load(nbt.getCompoundOrEmpty("pitch"));
+        this.yawFollowConfig.load(nbt.getCompoundOrEmpty("yaw"));
         
-        this.posTarget = nbt.contains("pos_target") ? CamTarget.load(nbt.getCompound("pos_target")) : null;
-        this.posFollowConfig.load(nbt.getCompound("pos"));
+        this.posTarget = nbt.contains("pos_target") ? CamTarget.load(nbt.getCompoundOrEmpty("pos_target")) : null;
+        this.posFollowConfig.load(nbt.getCompoundOrEmpty("pos"));
         
-        ListTag list = nbt.getList("points", 10);
+        ListTag list = nbt.getListOrEmpty("points");
         this.points = new ArrayList<>();
         for (Tag point : list)
             points.add(new CamPoint((CompoundTag) point));
         
-        this.smoothBeginning = nbt.getBoolean("smooth_start");
-        this.pitchMode = CamPitchMode.values()[nbt.getInt("pitch_mode")];
-        this.distanceBasedTiming = nbt.getBoolean("d_timing");
+        this.smoothBeginning = nbt.getBooleanOr("smooth_start", false);
+        this.pitchMode = CamPitchMode.values()[nbt.getIntOr("pitch_mode", 0)];
+        this.distanceBasedTiming = nbt.getBooleanOr("d_timing", false);
     }
     
     public void setServerSynced() {

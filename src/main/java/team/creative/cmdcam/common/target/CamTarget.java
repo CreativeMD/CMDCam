@@ -23,7 +23,7 @@ public abstract class CamTarget {
     
     public static CamTarget load(CompoundTag nbt) {
         try {
-            CamTarget target = REGISTRY.create(nbt.getString("id"));
+            CamTarget target = REGISTRY.create(nbt.getStringOr("id", ""));
             target.loadExtra(nbt);
             return target;
         } catch (RegistryException e) {
@@ -78,7 +78,7 @@ public abstract class CamTarget {
         
         @Override
         protected void loadExtra(CompoundTag nbt) {
-            int[] array = nbt.getIntArray("data");
+            int[] array = nbt.getIntArray("data").orElse(null);
             if (array == null || array.length != 3)
                 throw new IllegalArgumentException("Invalid block target data=" + array);
             pos = new BlockPos(array[0], array[1], array[2]);
@@ -138,7 +138,7 @@ public abstract class CamTarget {
         
         @Override
         protected void loadExtra(CompoundTag nbt) {
-            uuid = UUID.fromString(nbt.getString("uuid"));
+            uuid = UUID.fromString(nbt.getStringOr("uuid", ""));
         }
         
         @Override
@@ -218,7 +218,7 @@ public abstract class CamTarget {
         
         @Override
         protected void loadExtra(CompoundTag nbt) {
-            uuid = UUID.fromString(nbt.getString("uuid"));
+            uuid = UUID.fromString(nbt.getStringOr("uuid", ""));
         }
         
         @Override

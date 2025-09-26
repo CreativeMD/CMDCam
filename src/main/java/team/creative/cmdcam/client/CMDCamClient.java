@@ -34,7 +34,6 @@ import team.creative.creativecore.client.CreativeCoreClient;
 
 public class CMDCamClient {
     
-    public final static Minecraft mc = Minecraft.getInstance();
     public static final CamCommandProcessorClient PROCESSOR = new CamCommandProcessorClient();
     public static final HashMap<String, CamScene> SCENES = new HashMap<>();
     
@@ -204,7 +203,7 @@ public class CMDCamClient {
     public static void pause() {
         if (playing != null)
             playing.pause();
-        mc.options.hideGui = hideGuiCache;
+        Minecraft.getInstance().options.hideGui = hideGuiCache;
     }
     
     public static void resume() {
@@ -217,21 +216,21 @@ public class CMDCamClient {
             return;
         if (playing.serverSynced())
             return;
-        playing.finish(mc.level);
+        playing.finish(Minecraft.getInstance().level);
         playing = null;
-        mc.options.hideGui = hideGuiCache;
+        Minecraft.getInstance().options.hideGui = hideGuiCache;
     }
     
     public static void stopServer() {
         if (playing == null)
             return;
-        playing.finish(mc.level);
+        playing.finish(Minecraft.getInstance().level);
         playing = null;
-        mc.options.hideGui = hideGuiCache;
+        Minecraft.getInstance().options.hideGui = hideGuiCache;
     }
     
     public static void noTickPath(Level level, float renderTickTime) {
-        hideGuiCache = mc.options.hideGui;
+        hideGuiCache = Minecraft.getInstance().options.hideGui;
     }
     
     public static void gameTickPath(Level level) {
@@ -241,7 +240,7 @@ public class CMDCamClient {
     public static void renderTickPath(Level level, float renderTickTime) {
         playing.renderTick(level, renderTickTime);
         if (!playing.playing()) {
-            mc.options.hideGui = hideGuiCache;
+            Minecraft.getInstance().options.hideGui = hideGuiCache;
             playing = null;
         }
     }
@@ -274,8 +273,8 @@ public class CMDCamClient {
         
         CamEventHandlerClient.roll((float) point.roll);
         CamEventHandlerClient.fov(point.zoom - CamEventHandlerClient.fovExactVanilla(mc.getDeltaTracker().getGameTimeDeltaPartialTick(false)));
-        mc.player.absMoveTo(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
-        mc.player.absMoveTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
+        mc.player.absSnapTo(point.x, point.y, point.z, (float) point.rotationYaw, (float) point.rotationPitch);
+        mc.player.absSnapTo(point.x, point.y - mc.player.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
     }
     
 }

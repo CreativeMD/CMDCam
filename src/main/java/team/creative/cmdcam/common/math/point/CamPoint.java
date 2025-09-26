@@ -58,11 +58,11 @@ public class CamPoint extends Vec3d {
     }
     
     public CamPoint(CompoundTag nbt) {
-        super(nbt.getDouble("x"), nbt.getDouble("y"), nbt.getDouble("z"));
-        this.rotationYaw = nbt.getDouble("rotationYaw");
-        this.rotationPitch = nbt.getDouble("rotationPitch");
-        this.roll = nbt.getDouble("roll");
-        this.zoom = nbt.getDouble("zoom");
+        super(nbt.getDoubleOr("x", 0), nbt.getDoubleOr("y", 0), nbt.getDoubleOr("z", 0));
+        this.rotationYaw = nbt.getDoubleOr("rotationYaw", 0);
+        this.rotationPitch = nbt.getDoubleOr("rotationPitch", 0);
+        this.roll = nbt.getDoubleOr("roll", 0);
+        this.zoom = nbt.getDoubleOr("zoom", 0);
     }
     
     public final Vec3d calculateViewVector() {
