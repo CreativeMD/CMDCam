@@ -1,3 +1,8 @@
+2.2.3
+Removed use of OnlyIn
+Fixed error when using /cam target when there is no target selected
+Fixed crashes on server side
+
 2.2.2
 Adapted to CreativeCore 2.13.0
 
