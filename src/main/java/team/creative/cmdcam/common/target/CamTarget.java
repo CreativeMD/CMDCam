@@ -2,7 +2,6 @@ package team.creative.cmdcam.common.target;
 
 import java.util.UUID;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -11,8 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import team.creative.cmdcam.common.scene.run.CamRun;
 import team.creative.creativecore.common.util.math.vec.Vec3d;
 import team.creative.creativecore.common.util.registry.NamedTypeRegistry;
 import team.creative.creativecore.common.util.registry.exception.RegistryException;
@@ -38,7 +36,7 @@ public abstract class CamTarget {
         REGISTRY.register("player", PlayerTarget.class);
     }
     
-    public abstract Vec3d position(Level world, float partialTicks);
+    public abstract Vec3d position(CamRun run);
     
     protected abstract void saveExtra(CompoundTag nbt);
     
@@ -67,7 +65,7 @@ public abstract class CamTarget {
         }
         
         @Override
-        public Vec3d position(Level level, float partialTicks) {
+        public Vec3d position(CamRun run) {
             return new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
         }
         
@@ -103,16 +101,8 @@ public abstract class CamTarget {
         }
         
         @Override
-        @OnlyIn(Dist.CLIENT)
         public void start(Level level) {
-            if (level instanceof ServerLevel)
-                cachedEntity = ((ServerLevel) level).getEntities().get(uuid);
-            else
-                for (Entity entity : ((ClientLevel) level).entitiesForRendering())
-                    if (entity.getUUID().equals(uuid)) {
-                        cachedEntity = entity;
-                        break;
-                    }
+            cachedEntity = level.getEntity(uuid);
         }
         
         @Override
@@ -121,12 +111,12 @@ public abstract class CamTarget {
         }
         
         @Override
-        public Vec3d position(Level level, float partialTicks) {
+        public Vec3d position(CamRun run) {
             if (cachedEntity != null && !cachedEntity.isAlive())
                 cachedEntity = null;
             
             if (cachedEntity != null)
-                return new Vec3d(cachedEntity.getEyePosition(partialTicks));
+                return new Vec3d(cachedEntity.getEyePosition(run.tickTime()));
             
             return null;
         }
@@ -169,9 +159,8 @@ public abstract class CamTarget {
         protected void loadExtra(CompoundTag nbt) {}
         
         @Override
-        @OnlyIn(Dist.CLIENT)
-        public Vec3d position(Level level, float partialTicks) {
-            return new Vec3d(Minecraft.getInstance().player.getEyePosition(partialTicks));
+        public Vec3d position(CamRun run) {
+            return new Vec3d(run.clientPlayer().getEyePosition(run.tickTime()));
         }
         
         @Override
@@ -204,11 +193,11 @@ public abstract class CamTarget {
         }
         
         @Override
-        public Vec3d position(Level level, float partialTicks) {
+        public Vec3d position(CamRun run) {
             if (cachedPlayer == null || !cachedPlayer.isAlive())
                 return null;
             
-            return new Vec3d(cachedPlayer.getEyePosition(partialTicks));
+            return new Vec3d(cachedPlayer.getEyePosition(run.tickTime()));
         }
         
         @Override

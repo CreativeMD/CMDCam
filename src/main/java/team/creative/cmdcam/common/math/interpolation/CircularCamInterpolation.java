@@ -5,11 +5,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import net.minecraft.client.Minecraft;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.attribute.CamAttribute;
+import team.creative.cmdcam.common.scene.run.CamRun;
 import team.creative.cmdcam.common.target.CamTarget;
 import team.creative.creativecore.common.util.math.interpolation.HermiteInterpolation;
 import team.creative.creativecore.common.util.math.interpolation.Interpolation;
@@ -28,10 +26,8 @@ public class CircularCamInterpolation extends CamInterpolation {
         this.clockwise = clockwise;
     }
     
-    @OnlyIn(Dist.CLIENT)
     public <T extends VecNd> Interpolation<T> createClient(double[] timed, CamScene scene, T before, List<T> points, T after, CamAttribute<T> attribute) {
-        Minecraft mc = Minecraft.getInstance();
-        Vec3d center = scene.lookTarget.position(mc.level, mc.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+        Vec3d center = scene.lookTarget.position(scene.run);
         if (center != null) {
             List<Vec3d> points3 = (List<Vec3d>) points;
             points.add(points.get(0));
@@ -86,7 +82,7 @@ public class CircularCamInterpolation extends CamInterpolation {
             vecs.add(new Vec1d(firstPoint.y));
             
             return (Interpolation<T>) new CircularInterpolation(clockwise, (List<Vec3d>) points, scene.lookTarget, sphereOrigin, radius, new HermiteInterpolation<>(ArrayUtils
-                    .toPrimitive(times.toArray(new Double[0])), vecs.toArray(new Vec1d[0])));
+                    .toPrimitive(times.toArray(new Double[0])), vecs.toArray(new Vec1d[0])), scene.run);
         }
         return null;
     }
@@ -108,20 +104,21 @@ public class CircularCamInterpolation extends CamInterpolation {
         public CamTarget target;
         public HermiteInterpolation<Vec1d> yAxis;
         public final boolean clockwise;
+        public final CamRun run;
         
-        public CircularInterpolation(boolean clockwise, List<Vec3d> points, CamTarget target, Vec3d sphereOrigin, double radius, HermiteInterpolation<Vec1d> yAxis) {
+        public CircularInterpolation(boolean clockwise, List<Vec3d> points, CamTarget target, Vec3d sphereOrigin, double radius, HermiteInterpolation<Vec1d> yAxis, CamRun run) {
             super(points);
             this.clockwise = clockwise;
             this.target = target;
             this.sphereOrigin = sphereOrigin;
             this.radius = radius;
             this.yAxis = yAxis;
+            this.run = run;
         }
         
         @Override
         public Vec3d valueAt(double t) {
-            Minecraft mc = Minecraft.getInstance();
-            Vec3d center = target.position(mc.level, mc.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+            Vec3d center = target.position(run);
             if (center != null) {
                 Vec3d centerPoint = new Vec3d(center.x, center.y, center.z);
                 

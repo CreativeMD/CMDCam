@@ -14,8 +14,12 @@ public class CameraMixin {
     
     @Inject(at = @At("HEAD"), method = "Lnet/minecraft/client/Camera;isDetached()Z", cancellable = true)
     public void isDetached(CallbackInfoReturnable<Boolean> info) {
-        if (CMDCamClient.isPlaying() && CMDCamClient.getScene().mode.getCamera() != Minecraft.getInstance().player)
-            info.setReturnValue(true);
+        if (CMDCamClient.isPlaying()) {
+            var scene = CMDCamClient.getScene();
+            if (scene.run != null && scene.mode.getCamera(scene.run) != Minecraft.getInstance().player)
+                info.setReturnValue(true);
+        }
+        
     }
     
 }

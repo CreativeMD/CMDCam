@@ -1,12 +1,9 @@
 package team.creative.cmdcam.common.scene.mode;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.run.CamRun;
@@ -21,33 +18,28 @@ public class OutsideMode extends CamMode {
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void started(CamRun run) {
-        Minecraft mc = Minecraft.getInstance();
-        Vec3 vec = mc.player.getEyePosition(TickUtils.getFrameTime(mc.level));
-        this.camPlayer = new ItemEntity(mc.level, vec.x, vec.y, vec.z, ItemStack.EMPTY);
+        var player = run.clientPlayer();
+        Vec3 vec = player.getEyePosition(TickUtils.getFrameTime(player.level()));
+        this.camPlayer = new ItemEntity(player.level(), vec.x, vec.y, vec.z, ItemStack.EMPTY);
         this.camPlayer.setOldPosAndRot();
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void finished(CamRun run) {
         super.finished(run);
-        Minecraft mc = Minecraft.getInstance();
-        mc.cameraEntity = mc.player;
+        run.setCameraEntity(run.clientPlayer());
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public Entity getCamera() {
+    public Entity getCamera(CamRun run) {
         return camPlayer;
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void process(CamPoint point) {
-        super.process(point);
-        Minecraft.getInstance().cameraEntity = camPlayer;
+    public void process(CamRun run, CamPoint point) {
+        super.process(run, point);
+        run.setCameraEntity(camPlayer);
     }
     
     @Override

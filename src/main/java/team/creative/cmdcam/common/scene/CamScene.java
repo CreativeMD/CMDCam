@@ -7,8 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import team.creative.cmdcam.client.scene.run.CamRunImpl;
 import team.creative.cmdcam.common.math.follow.CamFollowConfig;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.interpolation.CamPitchMode;
@@ -56,7 +55,6 @@ public class CamScene {
     public CamPitchMode pitchMode = CamPitchMode.FIX_KEEP_DIRECTION;
     public boolean distanceBasedTiming = false;
     
-    @OnlyIn(Dist.CLIENT)
     public CamRun run;
     
     public CamScene(long duration, int loop, String mode, List<CamPoint> points, CamInterpolation interpolation) {
@@ -169,7 +167,7 @@ public class CamScene {
             posTarget.start(level);
         
         if (level.isClientSide) {
-            run = new CamRun(level, this);
+            run = new CamRunImpl(level, this);
             mode.started(run);
         }
     }

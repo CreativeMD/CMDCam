@@ -41,7 +41,7 @@ public class CamCommandProcessorClient implements CamCommandProcessor {
     
     @Override
     public CamPoint createPoint(CommandContext<CommandSourceStack> context) {
-        return CamPoint.createLocal();
+        return CMDCamClient.createLocalPoint();
     }
     
     @Override

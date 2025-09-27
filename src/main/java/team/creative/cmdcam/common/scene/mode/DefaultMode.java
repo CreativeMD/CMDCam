@@ -1,9 +1,6 @@
 package team.creative.cmdcam.common.scene.mode;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.run.CamRun;
@@ -21,31 +18,27 @@ public class DefaultMode extends CamMode {
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void process(CamPoint point) {
-        super.process(point);
-        Minecraft.getInstance().mouseHandler.grabMouse();
+    public void process(CamRun run, CamPoint point) {
+        super.process(run, point);
+        run.grabMouse();
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void finished(CamRun run) {
         super.finished(run);
-        Minecraft mc = Minecraft.getInstance();
-        if (!mc.player.isCreative())
-            mc.player.getAbilities().flying = false;
+        var player = run.clientPlayer();
+        if (!player.isCreative())
+            player.getAbilities().flying = false;
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public Entity getCamera() {
-        return Minecraft.getInstance().player;
+    public Entity getCamera(CamRun run) {
+        return run.clientPlayer();
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void correctTargetPosition(Vec3d vec) {
-        vec.y -= Minecraft.getInstance().player.getEyeHeight();
+    public void correctTargetPosition(CamRun run, Vec3d vec) {
+        vec.y -= run.clientPlayer().getEyeHeight();
     }
     
     @Override

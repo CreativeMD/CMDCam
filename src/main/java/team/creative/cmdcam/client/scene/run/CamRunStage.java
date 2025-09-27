@@ -1,4 +1,4 @@
-package team.creative.cmdcam.common.scene.run;
+package team.creative.cmdcam.client.scene.run;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import team.creative.creativecore.common.util.math.vec.VecNd;
 
 public class CamRunStage {
     
-    public final CamRun run;
+    public final CamRunImpl run;
     public final long duration;
     public final int loops;
     public int looped = 0;
@@ -27,7 +27,7 @@ public class CamRunStage {
     private HashMap<CamAttribute, Interpolation> attributes = new HashMap<>();
     private HashMap<CamAttribute, CamFollow> followAttributes;
     
-    public CamRunStage(CamRun run, CamInterpolation inter, long duration, int loops, CamPoints points) {
+    public CamRunStage(CamRunImpl run, CamInterpolation inter, long duration, int loops, CamPoints points) {
         this.run = run;
         this.duration = duration;
         this.loops = loops;
@@ -54,7 +54,7 @@ public class CamRunStage {
     
     public void start() {
         followAttributes = new HashMap<>();
-        CamPoint initial = CamPoint.create(run.scene.mode.getCamera());
+        CamPoint initial = CamPoint.create(run.scene.mode.getCamera(run));
         
         if (run.scene.lookTarget != null) {
             addFollow(CamAttribute.PITCH, run.scene.pitchFollowConfig, initial);
@@ -77,14 +77,14 @@ public class CamRunStage {
         CamPoint point = new CamPoint(generated);
         
         CamPoint targetPoint = new CamPoint(0, 0, 0, 0, 0, 0, 0);
-        Entity camera = run.scene.mode.getCamera();
+        Entity camera = run.scene.mode.getCamera(run);
         Vec3d camPos = new Vec3d(camera.getPosition(partialTicks));
         
         if (run.scene.lookTarget != null) {
-            Vec3d vec = run.scene.lookTarget.position(level, partialTicks);
+            Vec3d vec = run.scene.lookTarget.position(run);
             
             if (vec != null) {
-                run.scene.mode.correctTargetPosition(vec);
+                run.scene.mode.correctTargetPosition(run, vec);
                 
                 double d0 = vec.x - camPos.x;
                 double d1 = vec.y - camPos.y;
@@ -98,10 +98,10 @@ public class CamRunStage {
         
         if (run.scene.posTarget != null) {
             targetPoint.set(point);
-            var newPos = run.scene.posTarget.position(level, partialTicks);
+            var newPos = run.scene.posTarget.position(run);
             if (newPos != null) {
                 Vec3d vec = new Vec3d(newPos);
-                run.scene.mode.correctTargetPosition(vec);
+                run.scene.mode.correctTargetPosition(run, vec);
                 targetPoint.add(vec);
             }
         }

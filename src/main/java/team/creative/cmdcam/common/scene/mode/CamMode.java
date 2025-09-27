@@ -3,9 +3,6 @@ package team.creative.cmdcam.common.scene.mode;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import team.creative.cmdcam.client.CamEventHandlerClient;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.scene.run.CamRun;
@@ -31,26 +28,22 @@ public abstract class CamMode {
         return Component.translatable("cam.mode." + REGISTRY.getId(this));
     }
     
-    @OnlyIn(Dist.CLIENT)
     public void started(CamRun run) {}
     
-    @OnlyIn(Dist.CLIENT)
     public void finished(CamRun run) {
-        CamEventHandlerClient.resetFOV();
-        CamEventHandlerClient.resetRoll();
+        run.resetFOV();
+        run.resetRoll();
     }
     
-    @OnlyIn(Dist.CLIENT)
-    public abstract Entity getCamera();
+    public abstract Entity getCamera(CamRun run);
     
-    @OnlyIn(Dist.CLIENT)
-    public void process(CamPoint point) {
-        CamEventHandlerClient.roll((float) point.roll);
-        CamEventHandlerClient.fov(point.zoom);
+    public void process(CamRun run, CamPoint point) {
+        run.setFOV(point.zoom);
+        run.setRoll(point.roll);
         
-        Entity camera = getCamera();
-        if (camera instanceof Player)
-            ((Player) camera).getAbilities().flying = true;
+        Entity camera = getCamera(run);
+        if (camera instanceof Player p)
+            p.getAbilities().flying = true;
         
         camera.absSnapTo(point.x, point.y - camera.getEyeHeight(), point.z, (float) point.rotationYaw, (float) point.rotationPitch);
         camera.yRotO = (float) point.rotationYaw;
@@ -60,7 +53,6 @@ public abstract class CamMode {
     
     public abstract boolean outside();
     
-    @OnlyIn(Dist.CLIENT)
-    public void correctTargetPosition(Vec3d vec) {}
+    public void correctTargetPosition(CamRun run, Vec3d vec) {}
     
 }

@@ -12,7 +12,6 @@ import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.cmdcam.common.target.CamTarget;
 import team.creative.creativecore.common.util.math.vec.Vec3d;
-import team.creative.creativecore.common.util.mc.TickUtils;
 
 public interface CamCommandProcessor {
     
@@ -47,7 +46,7 @@ public interface CamCommandProcessor {
     
     public default void makeRelative(CamScene scene, Level level, CamPoint point) throws SceneException {
         if (scene.posTarget != null) {
-            Vec3d vec = scene.posTarget.position(level, TickUtils.getFrameTime(level));
+            Vec3d vec = scene.posTarget.position(scene.run);
             if (vec == null)
                 throw new SceneException("scene.follow.not_found");
             point.sub(vec);

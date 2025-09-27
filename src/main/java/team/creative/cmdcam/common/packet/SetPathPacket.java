@@ -25,7 +25,6 @@ public class SetPathPacket extends CreativePacket {
     
     @Override
     public void executeClient(Player player) {
-        
         try {
             CamScene scene = new CamScene(nbt);
             CMDCamClient.set(scene);

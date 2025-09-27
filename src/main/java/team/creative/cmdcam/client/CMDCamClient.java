@@ -12,6 +12,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
@@ -31,6 +32,7 @@ import team.creative.cmdcam.common.packet.GetPathPacket;
 import team.creative.cmdcam.common.packet.SetPathPacket;
 import team.creative.cmdcam.common.scene.CamScene;
 import team.creative.creativecore.client.CreativeCoreClient;
+import team.creative.creativecore.common.util.mc.TickUtils;
 
 public class CMDCamClient {
     
@@ -43,6 +45,14 @@ public class CMDCamClient {
     private static boolean hideGuiCache;
     private static boolean hasTargetMarker;
     private static CamPoint targetMarker;
+    
+    public static CamPoint createLocalPoint() {
+        Minecraft mc = Minecraft.getInstance();
+        float partialTicks = TickUtils.getFrameTime(mc.level);
+        Vec3 vec = mc.player.getEyePosition(partialTicks);
+        return new CamPoint(vec.x, vec.y, vec.z, mc.player.getViewYRot(partialTicks), mc.player.getViewXRot(partialTicks), CamEventHandlerClient.roll(), CamEventHandlerClient
+                .fovExact(partialTicks));
+    }
     
     public static void resetServerAvailability() {
         serverAvailable = false;
@@ -154,7 +164,7 @@ public class CMDCamClient {
             }
             return 0;
         }))).then(new PointArgumentBuilder("follow_center", (x, y) -> targetMarker = y, PROCESSOR).executes(x -> {
-            targetMarker = CamPoint.createLocal();
+            targetMarker = createLocalPoint();
             return 0;
         })));
         
@@ -188,7 +198,7 @@ public class CMDCamClient {
     public static void checkTargetMarker() {
         hasTargetMarker = scene.posTarget != null;
         if (hasTargetMarker && targetMarker == null)
-            targetMarker = CamPoint.createLocal();
+            targetMarker = createLocalPoint();
     }
     
     public static void start(CamScene scene) {

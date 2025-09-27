@@ -3,13 +3,10 @@ package team.creative.cmdcam.common.math.point;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import team.creative.cmdcam.client.CamEventHandlerClient;
 import team.creative.cmdcam.common.scene.attribute.CamAttribute;
 import team.creative.creativecore.common.util.math.vec.Vec3d;
@@ -17,15 +14,6 @@ import team.creative.creativecore.common.util.math.vec.VecNd;
 import team.creative.creativecore.common.util.mc.TickUtils;
 
 public class CamPoint extends Vec3d {
-    
-    @OnlyIn(Dist.CLIENT)
-    public static CamPoint createLocal() {
-        Minecraft mc = Minecraft.getInstance();
-        float partialTicks = TickUtils.getFrameTime(mc.level);
-        Vec3 vec = mc.player.getEyePosition(partialTicks);
-        return new CamPoint(vec.x, vec.y, vec.z, mc.player.getViewYRot(partialTicks), mc.player.getViewXRot(partialTicks), CamEventHandlerClient.roll(), CamEventHandlerClient
-                .fovExact(partialTicks));
-    }
     
     public static CamPoint create(Entity entity) {
         float partialTicks = TickUtils.getFrameTime(entity.level());
