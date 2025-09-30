@@ -1,3 +1,6 @@
+2.2.4
+Added configuration for default scene settings
+
 2.2.2
 Adapted to CreativeCore 2.13.0
 
