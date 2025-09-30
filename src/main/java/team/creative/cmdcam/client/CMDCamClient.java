@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
@@ -39,7 +40,7 @@ public class CMDCamClient {
     public static final CamCommandProcessorClient PROCESSOR = new CamCommandProcessorClient();
     public static final HashMap<String, CamScene> SCENES = new HashMap<>();
     
-    private static final CamScene scene = CamScene.createDefault();
+    private static CamScene scene = CamScene.createDefault();
     private static CamScene playing;
     private static boolean serverAvailable = false;
     private static boolean hideGuiCache;
@@ -70,6 +71,7 @@ public class CMDCamClient {
     public static void load(IEventBus bus) {
         bus.addListener(CMDCamClient::init);
         NeoForge.EVENT_BUS.addListener(CMDCamClient::commands);
+        NeoForge.EVENT_BUS.addListener(CMDCamClient::login);
         bus.addListener(KeyHandler::registerKeys);
         bus.addListener(CMDCamClient::layers);
     }
@@ -168,6 +170,10 @@ public class CMDCamClient {
             return 0;
         })));
         
+    }
+    
+    private static void login(ClientPlayerNetworkEvent.LoggingIn event) {
+        scene = CamScene.createDefault();
     }
     
     public static void renderBefore(RenderPlayerEvent.Pre event) {}
