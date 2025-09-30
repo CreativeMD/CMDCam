@@ -17,4 +17,7 @@ public class CMDCamConfig {
     @CreativeConfig(type = ConfigSynchronization.CLIENT)
     public String defaultInterpolation = "hermite";
     
+    @CreativeConfig(type = ConfigSynchronization.CLIENT)
+    public boolean defaultSmoothStart = true;
+    
 }
