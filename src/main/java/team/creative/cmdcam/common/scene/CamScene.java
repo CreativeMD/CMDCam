@@ -27,8 +27,10 @@ import team.creative.creativecore.common.util.registry.exception.RegistryExcepti
 public class CamScene {
     
     public static CamScene createDefault() {
-        return new CamScene(DurationArgument.parseDuration(CMDCam.CONFIG.defaultDuration, 10000), 0, CMDCam.CONFIG.defaultMode, new ArrayList<>(), CamInterpolation.REGISTRY.get(
-            CMDCam.CONFIG.defaultInterpolation));
+        var scene = new CamScene(DurationArgument.parseDuration(CMDCam.CONFIG.defaultDuration, 10000), 0, CMDCam.CONFIG.defaultMode, new ArrayList<>(), CamInterpolation.REGISTRY
+                .get(CMDCam.CONFIG.defaultInterpolation));
+        scene.smoothBeginning = CMDCam.CONFIG.defaultSmoothStart;
+        return scene;
     }
     
     private boolean started = false;
