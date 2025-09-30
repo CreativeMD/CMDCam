@@ -9,6 +9,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import team.creative.cmdcam.CMDCam;
+import team.creative.cmdcam.common.command.argument.DurationArgument;
 import team.creative.cmdcam.common.math.follow.CamFollowConfig;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.interpolation.CamPitchMode;
@@ -26,7 +28,8 @@ import team.creative.creativecore.common.util.registry.exception.RegistryExcepti
 public class CamScene {
     
     public static CamScene createDefault() {
-        return new CamScene(10000, 0, "default", new ArrayList<>(), CamInterpolation.HERMITE);
+        return new CamScene(DurationArgument.parseDuration(CMDCam.CONFIG.defaultDuration, 10000), 0, CMDCam.CONFIG.defaultMode, new ArrayList<>(), CamInterpolation.REGISTRY.get(
+            CMDCam.CONFIG.defaultInterpolation));
     }
     
     private boolean started = false;

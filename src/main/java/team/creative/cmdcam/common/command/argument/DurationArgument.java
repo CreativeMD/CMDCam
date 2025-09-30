@@ -15,10 +15,14 @@ import net.minecraft.network.chat.Component;
 
 public class DurationArgument implements ArgumentType<Long> {
     
+    private static final DurationArgument INSTANCE = new DurationArgument();
+    
     public static final long SECOND_FACTOR = 1000;
     public static final long MINUTE_FACTOR = SECOND_FACTOR * 60;
     public static final long HOUR_FACTOR = MINUTE_FACTOR * 60;
     public static final long DAY_FACTOR = HOUR_FACTOR * 24;
+    
+    public static final List<String> EXAMPLES = Arrays.asList(new String[] { "10s", "30s", "1m", "500ms" });
     
     public static String printDuration(long duration) {
         StringBuilder output = new StringBuilder();
@@ -52,14 +56,20 @@ public class DurationArgument implements ArgumentType<Long> {
         return output.substring(1); // Remove first space
     }
     
-    public static final List<String> EXAMPLES = Arrays.asList(new String[] { "10s", "30s", "1m", "500ms" });
-    
     public static DurationArgument duration() {
         return new DurationArgument();
     }
     
     public static long getDuration(final CommandContext<?> context, final String name) {
         return context.getArgument(name, long.class);
+    }
+    
+    public static long parseDuration(String value, long defaultValue) {
+        try {
+            return INSTANCE.parse(new StringReader(value));
+        } catch (CommandSyntaxException e) {
+            return defaultValue;
+        }
     }
     
     @Override

@@ -8,4 +8,13 @@ public class CMDCamConfig {
     @CreativeConfig(type = ConfigSynchronization.CLIENT)
     public boolean syncMinema = true;
     
+    @CreativeConfig(type = ConfigSynchronization.CLIENT)
+    public String defaultDuration = "10s";
+    
+    @CreativeConfig(type = ConfigSynchronization.CLIENT)
+    public String defaultMode = "default";
+    
+    @CreativeConfig(type = ConfigSynchronization.CLIENT)
+    public String defaultInterpolation = "hermite";
+    
 }
