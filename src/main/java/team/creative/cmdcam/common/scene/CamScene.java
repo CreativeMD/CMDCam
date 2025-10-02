@@ -171,7 +171,7 @@ public class CamScene {
         if (posTarget != null)
             posTarget.start(level);
         
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             run = new CamRunImpl(level, this);
             mode.started(run);
         }
@@ -184,7 +184,7 @@ public class CamScene {
             posTarget.finish();
         
         stop();
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             mode.finished(run);
             run.finish();
             run = null;

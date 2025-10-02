@@ -215,7 +215,7 @@ public class CamRunImpl implements CamRun {
     
     @Override
     public void setCameraEntity(Entity entity) {
-        Minecraft.getInstance().cameraEntity = entity;
+        Minecraft.getInstance().setCameraEntity(entity);
     }
     
     @Override

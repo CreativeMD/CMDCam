@@ -18,7 +18,7 @@ public class CamPoint extends Vec3d {
     public static CamPoint create(Entity entity) {
         float partialTicks = TickUtils.getFrameTime(entity.level());
         Vec3 vec = entity.getEyePosition(partialTicks);
-        if (entity.level().isClientSide)
+        if (entity.level().isClientSide())
             return new CamPoint(vec.x, vec.y, vec.z, entity.getViewYRot(partialTicks), entity.getViewXRot(partialTicks), CamEventHandlerClient.roll(), CamEventHandlerClient
                     .fovExact(partialTicks));
         else

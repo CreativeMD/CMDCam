@@ -88,7 +88,7 @@ public abstract class EntitySelectorMixin implements EntitySelectorClient {
             return this.findPlayersClient(source);
         else if (this.playerName != null) {
             for (Player player : source.getUnsidedLevel().players())
-                if (player.getGameProfile().getName().equalsIgnoreCase(playerName))
+                if (player.nameAndId().name().equalsIgnoreCase(playerName))
                     return Lists.newArrayList(player);
             return Collections.emptyList();
         } else if (this.entityUUID != null) {
@@ -132,7 +132,7 @@ public abstract class EntitySelectorMixin implements EntitySelectorClient {
         this.checkPermissions(source);
         if (this.playerName != null) {
             for (Player player : source.getUnsidedLevel().players())
-                if (player.getGameProfile().getName().equalsIgnoreCase(playerName))
+                if (player.nameAndId().name().equalsIgnoreCase(playerName))
                     return Lists.newArrayList(player);
             return Collections.emptyList();
         } else if (this.entityUUID != null) {

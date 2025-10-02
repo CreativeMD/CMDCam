@@ -61,7 +61,7 @@ public class CMDCam {
     
     public CMDCam(IEventBus bus) {
         bus.addListener(this::init);
-        if (FMLLoader.getDist() == Dist.CLIENT)
+        if (FMLLoader.getCurrent().getDist() == Dist.CLIENT)
             CMDCamClient.load(bus);
         NeoForge.EVENT_BUS.addListener(this::commands);
         

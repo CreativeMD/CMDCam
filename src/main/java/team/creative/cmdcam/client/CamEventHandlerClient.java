@@ -41,10 +41,10 @@ import team.creative.creativecore.common.util.math.vec.Vec3d;
 public class CamEventHandlerClient {
     
     private static void renderHitbox(PoseStack pMatrixStack, VertexConsumer pBuffer, AABB aabb, float eyeHeight, Vec3d origin, Vec3d view) {
-        ShapeRenderer.renderLineBox(pMatrixStack, pBuffer, aabb, 1.0F, 1.0F, 1.0F, 1.0F);
+        ShapeRenderer.renderLineBox(pMatrixStack.last(), pBuffer, aabb, 1.0F, 1.0F, 1.0F, 1.0F);
         float f = 0.01F;
-        ShapeRenderer.renderLineBox(pMatrixStack, pBuffer, aabb.minX, aabb.minY + (eyeHeight - f), aabb.minZ, aabb.maxX, aabb.minY + (eyeHeight + f), aabb.maxZ, 1.0F, 0.0F, 0.0F,
-            1.0F);
+        ShapeRenderer.renderLineBox(pMatrixStack.last(), pBuffer, aabb.minX, aabb.minY + (eyeHeight - f), aabb.minZ, aabb.maxX, aabb.minY + (eyeHeight + f), aabb.maxZ, 1.0F, 0.0F,
+            0.0F, 1.0F);
         
         Matrix4f matrix4f = pMatrixStack.last().pose();
         pBuffer.addVertex(matrix4f, (float) origin.x, (float) origin.y, (float) origin.z).setColor(0, 0, 255, 255).setNormal(pMatrixStack.last(), (float) view.x, (float) view.y,
@@ -55,14 +55,14 @@ public class CamEventHandlerClient {
     
     public static void setupMouseHandlerBefore() {
         if (CMDCamClient.isPlaying() && CMDCamClient.getScene().mode instanceof OutsideMode) {
-            camera = MC.cameraEntity;
-            MC.cameraEntity = MC.player;
+            camera = MC.getCameraEntity();
+            MC.setCameraEntity(MC.player);
         }
     }
     
     public static void setupMouseHandlerAfter() {
         if (CMDCamClient.isPlaying() && CMDCamClient.getScene().mode instanceof OutsideMode) {
-            MC.cameraEntity = camera;
+            MC.setCameraEntity(camera);
             camera = null;
         }
     }
@@ -172,25 +172,25 @@ public class CamEventHandlerClient {
                     double x = calculatePointInCurve(currentFov);
                     double multiplier = MC.player.isCrouching() ? 5 : 1;
                     
-                    if (KeyHandler.zoomIn.isDown())
+                    if (KeyHandler.ZOOM_IN.isDown())
                         fov = transformFov(multiplier * timeFactor * -ZOOM_STEP + x) - vanillaFov;
                     
-                    if (KeyHandler.zoomOut.isDown())
+                    if (KeyHandler.ZOOM_OUT.isDown())
                         fov = transformFov(multiplier * timeFactor * ZOOM_STEP + x) - vanillaFov;
                     
-                    if (KeyHandler.zoomCenter.isDown())
+                    if (KeyHandler.ZOOM_RESET.isDown())
                         resetFOV();
                     
-                    if (KeyHandler.rollLeft.isDown())
+                    if (KeyHandler.ROLL_LEFT.isDown())
                         roll -= timeFactor * ROLL_STEP;
                     
-                    if (KeyHandler.rollRight.isDown())
+                    if (KeyHandler.ROLL_RIGHT.isDown())
                         roll += timeFactor * ROLL_STEP;
                     
-                    if (KeyHandler.rollCenter.isDown())
+                    if (KeyHandler.ROLL_RESET.isDown())
                         resetRoll();
                     
-                    while (KeyHandler.pointKey.consumeClick()) {
+                    while (KeyHandler.POINT_ADD.consumeClick()) {
                         CamPoint point = CMDCamClient.createLocalPoint();
                         if (CMDCamClient.getScene().posTarget != null) {
                             Vec3d vec = CMDCamClient.getTargetMarker();
@@ -205,7 +205,7 @@ public class CamEventHandlerClient {
                     }
                 }
                 
-                if (KeyHandler.startStop.consumeClick()) {
+                if (KeyHandler.START_STOP.consumeClick()) {
                     if (CMDCamClient.isPlaying())
                         CMDCamClient.stop();
                     else
@@ -216,7 +216,7 @@ public class CamEventHandlerClient {
                         }
                 }
                 
-                while (KeyHandler.clearPoint.consumeClick()) {
+                while (KeyHandler.CLEAR_POINT.consumeClick()) {
                     CMDCamClient.getPoints().clear();
                     MC.player.displayClientMessage(Component.translatable("scene.clear"), false);
                 }
@@ -340,7 +340,7 @@ public class CamEventHandlerClient {
     }
     
     public void interact(PlayerInteractEvent event) {
-        if (selectingTarget == null || !event.getLevel().isClientSide)
+        if (selectingTarget == null || !event.getLevel().isClientSide())
             return;
         
         if (event instanceof EntityInteract) {
