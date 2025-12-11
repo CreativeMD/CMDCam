@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import team.creative.cmdcam.CMDCam;
 import team.creative.cmdcam.common.scene.CamScene;
@@ -24,7 +25,7 @@ public class CamSaveData extends SavedData {
     
     private HashMap<String, CamScene> scenes = new HashMap<>();
     
-    public CamSaveData(SavedData.Context context) {}
+    public CamSaveData(ServerLevel level) {}
     
     public CamScene get(String key) {
         return scenes.get(key);

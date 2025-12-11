@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
@@ -77,7 +77,7 @@ public class CMDCamClient {
     }
     
     private static void layers(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.TITLE, ResourceLocation.fromNamespaceAndPath(CMDCam.MODID, VanillaGuiLayers.TITLE.getNamespace()), (graphics, tracker) -> {
+        event.registerAbove(VanillaGuiLayers.TITLE, Identifier.fromNamespaceAndPath(CMDCam.MODID, VanillaGuiLayers.TITLE.getNamespace()), (graphics, tracker) -> {
             if (CMDCamClient.isPlaying())
                 ((GuiAccessor) Minecraft.getInstance().gui).callRenderTitle(graphics, tracker);
         });

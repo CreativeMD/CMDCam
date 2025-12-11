@@ -3,6 +3,7 @@ package team.creative.cmdcam.common.packet;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.player.Player;
 import team.creative.cmdcam.client.CMDCamClient;
 import team.creative.cmdcam.common.scene.CamScene;
@@ -39,7 +40,7 @@ public class SetPathPacket extends CreativePacket {
     public void executeServer(ServerPlayer player) {
         try {
             CamScene path = new CamScene(nbt);
-            if (player.hasPermissions(4)) {
+            if (player.permissions().hasPermission(Permissions.COMMANDS_ADMIN)) {
                 CMDCamServer.set(player.level(), id, path);
                 player.sendSystemMessage(Component.translatable("scene.save", id));
             } else

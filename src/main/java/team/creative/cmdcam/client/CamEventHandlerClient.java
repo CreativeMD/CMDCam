@@ -3,16 +3,12 @@ package team.creative.cmdcam.client;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-import org.joml.Matrix4f;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShapeRenderer;
-import net.minecraft.client.renderer.debug.DebugRenderer;
+import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.gizmos.Gizmos;
+import net.minecraft.gizmos.TextGizmo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -37,20 +33,16 @@ import team.creative.cmdcam.common.scene.mode.OutsideMode;
 import team.creative.cmdcam.common.target.CamTarget;
 import team.creative.creativecore.common.util.math.interpolation.Interpolation;
 import team.creative.creativecore.common.util.math.vec.Vec3d;
+import team.creative.creativecore.common.util.mc.ColorUtils;
 
 public class CamEventHandlerClient {
     
-    private static void renderHitbox(PoseStack pMatrixStack, VertexConsumer pBuffer, AABB aabb, float eyeHeight, Vec3d origin, Vec3d view) {
-        ShapeRenderer.renderLineBox(pMatrixStack.last(), pBuffer, aabb, 1.0F, 1.0F, 1.0F, 1.0F);
+    private static void renderHitbox(AABB aabb, float eyeHeight, Vec3d origin, Vec3d view) {
         float f = 0.01F;
-        ShapeRenderer.renderLineBox(pMatrixStack.last(), pBuffer, aabb.minX, aabb.minY + (eyeHeight - f), aabb.minZ, aabb.maxX, aabb.minY + (eyeHeight + f), aabb.maxZ, 1.0F, 0.0F,
-            0.0F, 1.0F);
+        Gizmos.cuboid(aabb, GizmoStyle.stroke(ColorUtils.WHITE));
+        Gizmos.cuboid(new AABB(aabb.minX, aabb.minY + (eyeHeight - f), aabb.minZ, aabb.maxX, aabb.minY + (eyeHeight + f), aabb.maxZ), GizmoStyle.stroke(ColorUtils.WHITE));
         
-        Matrix4f matrix4f = pMatrixStack.last().pose();
-        pBuffer.addVertex(matrix4f, (float) origin.x, (float) origin.y, (float) origin.z).setColor(0, 0, 255, 255).setNormal(pMatrixStack.last(), (float) view.x, (float) view.y,
-            (float) view.z);
-        pBuffer.addVertex(matrix4f, (float) (origin.x + view.x * 2), (float) (origin.y + view.y * 2), (float) (origin.z + view.z * 2)).setColor(0, 0, 255, 255).setNormal(
-            pMatrixStack.last(), (float) view.x, (float) view.y, (float) view.z);
+        //Gizmos.line(origin.toVanilla(), view.toVanilla().scale(2).add(origin.toVanilla()), 0);
     }
     
     public static void setupMouseHandlerBefore() {
@@ -241,7 +233,7 @@ public class CamEventHandlerClient {
     
     @SubscribeEvent
     public void worldRender(RenderLevelStageEvent.AfterEntities event) {
-        Vec3 view = MC.gameRenderer.getMainCamera().getPosition();
+        Vec3 view = MC.gameRenderer.getMainCamera().position();
         
         PoseStack pose = event.getPoseStack();
         
@@ -250,8 +242,8 @@ public class CamEventHandlerClient {
         
         if (CMDCamClient.hasTargetMarker()) {
             CamPoint point = CMDCamClient.getTargetMarker();
-            renderHitbox(pose, MC.renderBuffers().bufferSource().getBuffer(RenderType.lines()),
-                new AABB(point.x - 0.3, point.y - 1.62, point.z - 0.3, point.x + 0.3, point.y + 0.18, point.z + 0.3), MC.player.getEyeHeight(), point, point.calculateViewVector());
+            renderHitbox(new AABB(point.x - 0.3, point.y - 1.62, point.z - 0.3, point.x + 0.3, point.y + 0.18, point.z + 0.3), MC.player.getEyeHeight(), point, point
+                    .calculateViewVector());
         }
         
         boolean shouldRender = false;
@@ -269,9 +261,8 @@ public class CamEventHandlerClient {
                     point.add(CMDCamClient.getTargetMarker());
                 }
                 
-                DebugRenderer.renderFilledBox(pose, MC.renderBuffers().bufferSource(), point.x - 0.05, point.y - 0.05, point.z - 0.05, point.x + 0.05, point.y + 0.05,
-                    point.z + 0.05, 1, 1, 1, 1);
-                DebugRenderer.renderFloatingText(pose, MC.renderBuffers().bufferSource(), (i + 1) + "", point.x + view.x, point.y + 0.2 + view.y, point.z + view.z, -1);
+                Gizmos.cuboid(new AABB(point.x - 0.05, point.y - 0.05, point.z - 0.05, point.x + 0.05, point.y + 0.05, point.z + 0.05), GizmoStyle.fill(ColorUtils.WHITE));
+                Gizmos.billboardText((i + 1) + "", new Vec3(point.x, point.y + 0.2, point.z), TextGizmo.Style.forColor(ColorUtils.WHITE));
             }
             
             MC.renderBuffers().bufferSource().endLastBatch();
@@ -294,10 +285,7 @@ public class CamEventHandlerClient {
     
     public void renderPath(PoseStack mat, CamInterpolation inter, CamScene scene) {
         double steps = 20 * (scene.points.size() - 1);
-        var bufferbuilder = MC.renderBuffers().bufferSource().getBuffer(RenderType.debugLineStrip(1));
-        
-        RenderSystem.lineWidth(1.0F);
-        Vec3d color = inter.color.toVec();
+        int color = inter.color.toInt();
         CamPoints points = new CamPoints(scene.points);
         
         if (scene.lookTarget != null)
@@ -307,16 +295,22 @@ public class CamEventHandlerClient {
         
         double[] times = points.createTimes(scene);
         Interpolation<Vec3d> interpolation = inter.create(times, scene, null, new ArrayList<Vec3d>(scene.points), null, CamAttribute.POSITION);
+        Vec3 previous = null;
         for (int i = 0; i < steps; i++) {
             Vec3d pos = interpolation.valueAt(i / steps);
             if (CMDCamClient.hasTargetMarker())
                 pos.add(CMDCamClient.getTargetMarker());
-            bufferbuilder.addVertex(mat.last(), (float) pos.x, (float) pos.y, (float) pos.z).setColor((float) color.x, (float) color.y, (float) color.z, 1);
+            var vec = pos.toVanilla();
+            if (previous != null)
+                Gizmos.line(previous, vec, color, 1);
+            previous = vec;
         }
         Vec3d last = interpolation.valueAt(1);
         if (CMDCamClient.hasTargetMarker())
             last.add(CMDCamClient.getTargetMarker());
-        bufferbuilder.addVertex(mat.last(), (float) last.x, (float) last.y, (float) last.z).setColor((float) color.x, (float) color.y, (float) color.z, 1);
+        
+        if (previous != null)
+            Gizmos.line(previous, last.toVanilla(), color, 1);
         
         if (scene.lookTarget != null)
             scene.lookTarget.finish();

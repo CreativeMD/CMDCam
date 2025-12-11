@@ -3,13 +3,13 @@ package team.creative.cmdcam.client;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import team.creative.cmdcam.CMDCam;
 
 public class KeyHandler {
     
-    public static final KeyMapping.Category CATEGORY = new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath(CMDCam.MODID, "cmdcam"));
+    public static final KeyMapping.Category CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath(CMDCam.MODID, "cmdcam"));
     public static final KeyMapping ZOOM_IN = new KeyMapping("key.zoomin", GLFW.GLFW_KEY_V, CATEGORY);
     public static final KeyMapping ZOOM_RESET = new KeyMapping("key.centerzoom", GLFW.GLFW_KEY_B, CATEGORY);
     public static final KeyMapping ZOOM_OUT = new KeyMapping("key.zoomout", GLFW.GLFW_KEY_N, CATEGORY);
