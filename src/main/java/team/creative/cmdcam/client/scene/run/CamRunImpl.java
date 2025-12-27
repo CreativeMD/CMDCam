@@ -52,7 +52,7 @@ public class CamRunImpl implements CamRun {
             points.add(scene.points.get(0).copy());
             points.after(scene.points.get(0).copy());
             points.fixSpinning(CamPitchMode.FIX);
-            stages.add(new CamRunStage(this, CamInterpolation.HERMITE, (long) Mth.clampedLerp(points.estimateLength() / 10, 1000, 20000), 0, points));
+            stages.add(new CamRunStage(this, CamInterpolation.HERMITE, (long) Mth.clampedLerp(points.estimateLength() / 10000, 1000, 20000), 0, points));
         }
         
         { // First sequence
