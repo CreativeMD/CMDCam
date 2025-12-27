@@ -1,3 +1,6 @@
+2.2.6
+Fixed way too long smooth start
+
 2.2.5
 Added defaultSmoothStart option
 
