@@ -69,40 +69,8 @@ public class PointArgumentBuilder extends ArgumentBuilder<CommandSourceStack, Po
     
     @Override
     public CommandNode<CommandSourceStack> build() {
-        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal(literal);
         
-        if (indexConsumer != null)
-            builder.then(RequiredArgumentBuilder.<CommandSourceStack, Integer>argument("index", IntegerArgumentType.integer()).executes((x) -> {
-                if (processor.canCreatePoint(x)) {
-                    CamPoint point = processor.createPoint(x);
-                    CamScene scene = processor.getScene(x);
-                    if (scene.posTarget != null)
-                        try {
-                            processor.makeRelative(processor.getScene(x), x.getSource().getUnsidedLevel(), point);
-                        } catch (SceneException e) {
-                            x.getSource().sendFailure(e.getComponent());
-                        }
-                    processPoint(x, point);
-                }
-                return 0;
-            }));
-        else
-            builder.executes((x) -> {
-                if (processor.canCreatePoint(x)) {
-                    CamPoint point = processor.createPoint(x);
-                    CamScene scene = processor.getScene(x);
-                    if (scene.posTarget != null)
-                        try {
-                            processor.makeRelative(processor.getScene(x), x.getSource().getUnsidedLevel(), point);
-                        } catch (SceneException e) {
-                            x.getSource().sendFailure(e.getComponent());
-                        }
-                    processPoint(x, point);
-                }
-                return 0;
-            });
-        
-        builder.then(Commands.argument("location", Vec3Argument.vec3()).executes((x) -> {
+        var command = Commands.argument("location", Vec3Argument.vec3()).executes((x) -> {
             Vec3 vec = Vec3Argument.getVec3(x, "location");
             CamPoint point = new CamPoint(vec.x, vec.y, vec.z, 0, 0, 0, 70);
             processPoint(x, point);
@@ -125,7 +93,40 @@ public class PointArgumentBuilder extends ArgumentBuilder<CommandSourceStack, Po
             CamPoint point = new CamPoint(vec.x, vec.y, vec.z, rotation.y, rotation.x, DoubleArgumentType.getDouble(x, "roll"), DoubleArgumentType.getDouble(x, "fov"));
             processPoint(x, point);
             return 0;
-        })))));
+        }))));
+        
+        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal(literal);
+        
+        if (indexConsumer != null)
+            builder = builder.then(RequiredArgumentBuilder.<CommandSourceStack, Integer>argument("index", IntegerArgumentType.integer()).executes((x) -> {
+                if (processor.canCreatePoint(x)) {
+                    CamPoint point = processor.createPoint(x);
+                    CamScene scene = processor.getScene(x);
+                    if (scene.posTarget != null)
+                        try {
+                            processor.makeRelative(processor.getScene(x), x.getSource().getUnsidedLevel(), point);
+                        } catch (SceneException e) {
+                            x.getSource().sendFailure(e.getComponent());
+                        }
+                    processPoint(x, point);
+                }
+                return 0;
+            }).then(command));
+        else
+            builder = builder.executes((x) -> {
+                if (processor.canCreatePoint(x)) {
+                    CamPoint point = processor.createPoint(x);
+                    CamScene scene = processor.getScene(x);
+                    if (scene.posTarget != null)
+                        try {
+                            processor.makeRelative(processor.getScene(x), x.getSource().getUnsidedLevel(), point);
+                        } catch (SceneException e) {
+                            x.getSource().sendFailure(e.getComponent());
+                        }
+                    processPoint(x, point);
+                }
+                return 0;
+            }).then(command);
         
         return builder.build();
     }
