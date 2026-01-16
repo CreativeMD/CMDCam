@@ -1,3 +1,6 @@
+2.2.7
+Fixed insert command
+
 2.2.5
 Added defaultSmoothStart option
 
