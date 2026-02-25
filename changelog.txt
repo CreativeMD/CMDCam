@@ -1,3 +1,6 @@
+2.2.8
+Adapted changes from CreativeCore v2.13.32
+
 2.2.7
 Fixed insert command
 
