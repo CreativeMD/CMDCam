@@ -23,7 +23,7 @@ import net.neoforged.neoforge.client.event.ViewportEvent.ComputeFov;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
-import team.creative.cmdcam.client.mixin.GameRendererAccessor;
+import team.creative.cmdcam.client.mixin.CameraAccessor;
 import team.creative.cmdcam.common.math.interpolation.CamInterpolation;
 import team.creative.cmdcam.common.math.point.CamPoint;
 import team.creative.cmdcam.common.math.point.CamPoints;
@@ -102,7 +102,7 @@ public class CamEventHandlerClient {
     public static double fovExactVanilla(float partialTickTime) {
         try {
             skipFov = true;
-            return ((GameRendererAccessor) MC.gameRenderer).callGetFov(MC.gameRenderer.getMainCamera(), partialTickTime, true);
+            return ((CameraAccessor) MC.gameRenderer.getMainCamera()).callCalculateFov(partialTickTime);
         } finally {
             skipFov = false;
         }
@@ -187,13 +187,13 @@ public class CamEventHandlerClient {
                         if (CMDCamClient.getScene().posTarget != null) {
                             Vec3d vec = CMDCamClient.getTargetMarker();
                             if (vec == null) {
-                                MC.player.displayClientMessage(Component.translatable("scene.follow.no_marker", CMDCamClient.getPoints().size()), false);
+                                MC.player.sendSystemMessage(Component.translatable("scene.follow.no_marker", CMDCamClient.getPoints().size()));
                                 continue;
                             }
                             point.sub(vec);
                         }
                         CMDCamClient.getPoints().add(point);
-                        MC.player.displayClientMessage(Component.translatable("scene.add", CMDCamClient.getPoints().size()), false);
+                        MC.player.sendSystemMessage(Component.translatable("scene.add", CMDCamClient.getPoints().size()));
                     }
                 }
                 
@@ -204,13 +204,13 @@ public class CamEventHandlerClient {
                         try {
                             CMDCamClient.start(CMDCamClient.createScene());
                         } catch (SceneException e) {
-                            MC.player.displayClientMessage(Component.translatable(e.getMessage()), false);
+                            MC.player.sendSystemMessage(Component.translatable(e.getMessage()));
                         }
                 }
                 
                 while (KeyHandler.CLEAR_POINT.consumeClick()) {
                     CMDCamClient.getPoints().clear();
-                    MC.player.displayClientMessage(Component.translatable("scene.clear"), false);
+                    MC.player.sendSystemMessage(Component.translatable("scene.clear"));
                 }
             }
         }
@@ -232,7 +232,7 @@ public class CamEventHandlerClient {
     }
     
     @SubscribeEvent
-    public void worldRender(RenderLevelStageEvent.AfterEntities event) {
+    public void worldRender(RenderLevelStageEvent.AfterLevel event) {
         Vec3 view = MC.gameRenderer.getMainCamera().position();
         
         PoseStack pose = event.getPoseStack();
@@ -339,13 +339,13 @@ public class CamEventHandlerClient {
         
         if (event instanceof EntityInteract) {
             selectingTarget.accept(new CamTarget.EntityTarget(((EntityInteract) event).getTarget()));
-            event.getEntity().displayClientMessage(Component.translatable("scene.look.target.entity", ((EntityInteract) event).getTarget().getStringUUID()), false);
+            event.getEntity().sendSystemMessage(Component.translatable("scene.look.target.entity", ((EntityInteract) event).getTarget().getStringUUID()));
             selectingTarget = null;
         }
         
         if (event instanceof RightClickBlock) {
             selectingTarget.accept(new CamTarget.BlockTarget(event.getPos()));
-            event.getEntity().displayClientMessage(Component.translatable("scene.look.target.pos", event.getPos().toShortString()), false);
+            event.getEntity().sendSystemMessage(Component.translatable("scene.look.target.pos", event.getPos().toShortString()));
             selectingTarget = null;
         }
     }

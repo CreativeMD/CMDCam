@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import team.creative.cmdcam.CMDCam;
@@ -16,7 +17,7 @@ import team.creative.creativecore.common.util.registry.exception.RegistryExcepti
 
 public class CamSaveData extends SavedData {
     
-    public static final String DATA_NAME = CMDCam.MODID + "_Scenes";
+    public static final Identifier DATA_NAME = Identifier.tryBuild(CMDCam.MODID, "Scenes");
     public static final Codec<CamSaveData> CODEC = CompoundTag.CODEC.flatXmap(tag -> {
         var data = new CamSaveData(null);
         data.load(tag);

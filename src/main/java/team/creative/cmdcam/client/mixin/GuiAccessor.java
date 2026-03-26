@@ -5,11 +5,11 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 @Mixin(Gui.class)
 public interface GuiAccessor {
     
     @Invoker
-    public void callRenderTitle(GuiGraphics graphics, DeltaTracker tracker);
+    public void callExtractTitle(GuiGraphicsExtractor graphics, DeltaTracker tracker);
 }

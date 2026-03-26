@@ -8,10 +8,10 @@
     "mixins": [
     ],
     "client": [
+        "CameraAccessor",
         "CameraMixin",
         "CurrentViewEntityMixin",
         "EntitySelectorMixin",
-        "GameRendererAccessor",
         "GuiAccessor",
         "MouseOverMixin"
     ],

@@ -79,7 +79,7 @@ public class CMDCamClient {
     private static void layers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.TITLE, Identifier.fromNamespaceAndPath(CMDCam.MODID, VanillaGuiLayers.TITLE.getNamespace()), (graphics, tracker) -> {
             if (CMDCamClient.isPlaying())
-                ((GuiAccessor) Minecraft.getInstance().gui).callRenderTitle(graphics, tracker);
+                ((GuiAccessor) Minecraft.getInstance().gui).callExtractTitle(graphics, tracker);
         });
     }
     
