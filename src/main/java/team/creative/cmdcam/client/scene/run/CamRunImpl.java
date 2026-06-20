@@ -131,7 +131,9 @@ public class CamRunImpl implements CamRun {
             }
         }
         
-        Minecraft.getInstance().options.hideGui = true;
+        var hud = Minecraft.getInstance().gui.hud;
+        if (!hud.isHidden())
+            hud.toggle();
         scene.mode.process(this, stage.calculatePoint(level, time, deltaTime));
     }
     

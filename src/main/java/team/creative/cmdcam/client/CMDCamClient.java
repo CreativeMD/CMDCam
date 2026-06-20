@@ -22,7 +22,7 @@ import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 import team.creative.cmdcam.CMDCam;
-import team.creative.cmdcam.client.mixin.GuiAccessor;
+import team.creative.cmdcam.client.mixin.HudAccessor;
 import team.creative.cmdcam.common.command.argument.InterpolationArgument;
 import team.creative.cmdcam.common.command.builder.PointArgumentBuilder;
 import team.creative.cmdcam.common.command.builder.SceneCommandBuilder;
@@ -79,7 +79,7 @@ public class CMDCamClient {
     private static void layers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.TITLE, Identifier.fromNamespaceAndPath(CMDCam.MODID, VanillaGuiLayers.TITLE.getNamespace()), (graphics, tracker) -> {
             if (CMDCamClient.isPlaying())
-                ((GuiAccessor) Minecraft.getInstance().gui).callExtractTitle(graphics, tracker);
+                ((HudAccessor) Minecraft.getInstance().gui.hud).callExtractTitle(graphics, tracker);
         });
     }
     
@@ -219,7 +219,9 @@ public class CMDCamClient {
     public static void pause() {
         if (playing != null)
             playing.pause();
-        Minecraft.getInstance().options.hideGui = hideGuiCache;
+        var hud = Minecraft.getInstance().gui.hud;
+        if (hud.isHidden() != hideGuiCache)
+            hud.toggle();
     }
     
     public static void resume() {
@@ -234,7 +236,9 @@ public class CMDCamClient {
             return;
         playing.finish(Minecraft.getInstance().level);
         playing = null;
-        Minecraft.getInstance().options.hideGui = hideGuiCache;
+        var hud = Minecraft.getInstance().gui.hud;
+        if (hud.isHidden() != hideGuiCache)
+            hud.toggle();
     }
     
     public static void stopServer() {
@@ -242,11 +246,13 @@ public class CMDCamClient {
             return;
         playing.finish(Minecraft.getInstance().level);
         playing = null;
-        Minecraft.getInstance().options.hideGui = hideGuiCache;
+        var hud = Minecraft.getInstance().gui.hud;
+        if (hud.isHidden() != hideGuiCache)
+            hud.toggle();
     }
     
     public static void noTickPath(Level level, float renderTickTime) {
-        hideGuiCache = Minecraft.getInstance().options.hideGui;
+        hideGuiCache = Minecraft.getInstance().gui.hud.isHidden();
     }
     
     public static void gameTickPath(Level level) {
@@ -256,7 +262,9 @@ public class CMDCamClient {
     public static void renderTickPath(Level level, float renderTickTime) {
         playing.renderTick(level, renderTickTime);
         if (!playing.playing()) {
-            Minecraft.getInstance().options.hideGui = hideGuiCache;
+            var hud = Minecraft.getInstance().gui.hud;
+            if (hud.isHidden() != hideGuiCache)
+                hud.toggle();
             playing = null;
         }
     }

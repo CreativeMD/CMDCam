@@ -12,7 +12,7 @@
         "CameraMixin",
         "CurrentViewEntityMixin",
         "EntitySelectorMixin",
-        "GuiAccessor",
+        "HudAccessor",
         "MouseOverMixin"
     ],
     "minVersion": "0.8"

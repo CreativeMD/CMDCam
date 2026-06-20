@@ -102,7 +102,7 @@ public class CamEventHandlerClient {
     public static double fovExactVanilla(float partialTickTime) {
         try {
             skipFov = true;
-            return ((CameraAccessor) MC.gameRenderer.getMainCamera()).callCalculateFov(partialTickTime);
+            return ((CameraAccessor) MC.gameRenderer.mainCamera()).callCalculateFov(partialTickTime);
         } finally {
             skipFov = false;
         }
@@ -233,7 +233,7 @@ public class CamEventHandlerClient {
     
     @SubscribeEvent
     public void worldRender(RenderLevelStageEvent.AfterLevel event) {
-        Vec3 view = MC.gameRenderer.getMainCamera().position();
+        Vec3 view = MC.gameRenderer.mainCamera().position();
         
         PoseStack pose = event.getPoseStack();
         
@@ -265,7 +265,7 @@ public class CamEventHandlerClient {
                 Gizmos.billboardText((i + 1) + "", new Vec3(point.x, point.y + 0.2, point.z), TextGizmo.Style.forColor(ColorUtils.WHITE));
             }
             
-            MC.renderBuffers().bufferSource().endLastBatch();
+            //MC.renderBuffers().bufferSource().endLastBatch();
             
             try {
                 pose.pushPose();
