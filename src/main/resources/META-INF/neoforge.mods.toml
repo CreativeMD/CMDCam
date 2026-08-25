@@ -6,7 +6,7 @@ license="LGPL-3.0-only"
 [[mods]]
     modId="cmdcam"
     iconFile="cmdcam.png"
-    version="2.2.8"
+    version="2.2.9"
     displayName="CMDCam"
     displayURL="https://modrinth.com/mod/cmdcam"
     authors="CreativeMD"

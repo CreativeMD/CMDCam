@@ -1,3 +1,6 @@
+2.2.9
+Fixed saving & loading of paths not working
+
 2.2.8
 Adapted to CreativeCore 2.14.16
 
