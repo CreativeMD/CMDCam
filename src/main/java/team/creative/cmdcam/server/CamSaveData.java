@@ -17,7 +17,7 @@ import team.creative.creativecore.common.util.registry.exception.RegistryExcepti
 
 public class CamSaveData extends SavedData {
     
-    public static final Identifier DATA_NAME = Identifier.tryBuild(CMDCam.MODID, "Scenes");
+    public static final Identifier DATA_NAME = Identifier.tryBuild(CMDCam.MODID, "scenes");
     public static final Codec<CamSaveData> CODEC = CompoundTag.CODEC.flatXmap(tag -> {
         var data = new CamSaveData(null);
         data.load(tag);
