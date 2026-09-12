@@ -1,3 +1,6 @@
+2.2.9
+Fixed /cam follow_center command
+
 2.2.8
 Adapted changes from CreativeCore v2.13.32
 
