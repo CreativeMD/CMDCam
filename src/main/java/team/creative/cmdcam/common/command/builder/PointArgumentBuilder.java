@@ -30,12 +30,22 @@ public class PointArgumentBuilder extends ArgumentBuilder<CommandSourceStack, Po
     private final TriConsumer<CommandContext<CommandSourceStack>, CamPoint, Integer> indexConsumer;
     private final BiConsumer<CommandContext<CommandSourceStack>, CamPoint> consumer;
     private final CamCommandProcessor processor;
+    private final boolean noCheck;
     
     public PointArgumentBuilder(final String literal, TriConsumer<CommandContext<CommandSourceStack>, CamPoint, Integer> consumer, CamCommandProcessor processor) {
         this.literal = literal;
         this.indexConsumer = consumer;
         this.consumer = null;
         this.processor = processor;
+        this.noCheck = false;
+    }
+    
+    public PointArgumentBuilder(final String literal, BiConsumer<CommandContext<CommandSourceStack>, CamPoint> consumer, CamCommandProcessor processor, boolean noCheck) {
+        this.literal = literal;
+        this.indexConsumer = null;
+        this.consumer = consumer;
+        this.processor = processor;
+        this.noCheck = noCheck;
     }
     
     public PointArgumentBuilder(final String literal, BiConsumer<CommandContext<CommandSourceStack>, CamPoint> consumer, CamCommandProcessor processor) {
@@ -43,6 +53,7 @@ public class PointArgumentBuilder extends ArgumentBuilder<CommandSourceStack, Po
         this.indexConsumer = null;
         this.consumer = consumer;
         this.processor = processor;
+        this.noCheck = false;
     }
     
     public String getLiteral() {
@@ -88,7 +99,9 @@ public class PointArgumentBuilder extends ArgumentBuilder<CommandSourceStack, Po
             }));
         else
             builder.executes((x) -> {
-                if (processor.canCreatePoint(x)) {
+                if (noCheck)
+                    processPoint(x, processor.createPoint(x));
+                else if (processor.canCreatePoint(x)) {
                     CamPoint point = processor.createPoint(x);
                     CamScene scene = processor.getScene(x);
                     if (scene.posTarget != null)
