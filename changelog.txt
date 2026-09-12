@@ -1,3 +1,6 @@
+2.2.1
+Fixed /cam follow_center command
+
 2.2.0
 Added commands to get current settings of scene
 Added missing translations
