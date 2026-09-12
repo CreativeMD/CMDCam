@@ -43,7 +43,6 @@ public class CMDCamClient {
     private static CamScene playing;
     private static boolean serverAvailable = false;
     private static boolean hideGuiCache;
-    private static boolean hasTargetMarker;
     private static CamPoint targetMarker;
     
     public static void resetServerAvailability() {
@@ -156,7 +155,7 @@ public class CMDCamClient {
                 x.getSource().sendFailure(Component.translatable(e.getMessage()));
             }
             return 0;
-        }))).then(new PointArgumentBuilder("follow_center", (x, y) -> targetMarker = y, PROCESSOR).executes(x -> {
+        }))).then(new PointArgumentBuilder("follow_center", (x, y) -> targetMarker = y, PROCESSOR, true).executes(x -> {
             targetMarker = CamPoint.createLocal();
             return 0;
         })));
@@ -193,8 +192,7 @@ public class CMDCamClient {
     }
     
     public static void checkTargetMarker() {
-        hasTargetMarker = scene.posTarget != null;
-        if (hasTargetMarker && targetMarker == null)
+        if (scene.posTarget != null && targetMarker == null)
             targetMarker = CamPoint.createLocal();
     }
     
@@ -257,7 +255,7 @@ public class CMDCamClient {
     }
     
     public static boolean hasTargetMarker() {
-        return hasTargetMarker && targetMarker != null && scene.posTarget != null;
+        return targetMarker != null && scene.posTarget != null;
     }
     
     public static CamPoint getTargetMarker() {
