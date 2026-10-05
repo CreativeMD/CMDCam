@@ -1,3 +1,6 @@
+2.2.11
+Updated to NeoForge 26.3.0.48-beta
+
 2.2.10
 Fixed /cam follow_center command
 
